@@ -198,26 +198,6 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 		</div>
 	</section>
 
-	<?php /* 4b. SAILINGS I'M HOSTING (only when a sailing is published) -- */ ?>
-	<?php if ( function_exists( 'oomph_has_published_sailings' ) && oomph_has_published_sailings() ) : ?>
-	<section class="oomph-section" aria-labelledby="home-sailings-title">
-		<div class="oomph-container">
-			<div class="oomph-section__intro">
-				<p class="oomph-eyebrow">Group Cruises · Distinctive Voyages</p>
-				<h2 id="home-sailings-title">Sailings I'm hosting.</h2>
-			</div>
-			<div class="oomph-grid oomph-grid--3">
-				<?php foreach ( oomph_get_upcoming_sailings( 3 ) as $sailing_id ) { oomph_render_sailing_card( $sailing_id ); } ?>
-			</div>
-			<p class="oomph-section__cta" style="text-align: center; margin-top: var(--space-7);">
-				<a class="oomph-btn oomph-btn--primary" href="<?php echo esc_url( (string) get_post_type_archive_link( 'oomph_cruise' ) ); ?>">
-					See all sailings <span aria-hidden="true">→</span>
-				</a>
-			</p>
-		</div>
-	</section>
-	<?php endif; ?>
-
 	<?php /* 5. FOUNDER MINI-BIO --------------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-cabin-notes" aria-labelledby="founder-title">
 		<div class="oomph-container">
@@ -271,38 +251,6 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 					<p class="oomph-eyebrow">Step Three · Depart</p>
 					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">Eyes on it the whole time.</h3>
 					<p>If something changes — a delayed flight, a closed restaurant, a sudden chance to do something better — I'm reachable. The point of an advisor isn't the planning; it's the person on call when the day shifts.</p>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<?php /* 7. LEAD MAGNET -------------------------------------------- */ ?>
-	<section class="oomph-section is-style-oomph-quiet-premium" aria-labelledby="lead-magnet-title">
-		<div class="oomph-container">
-			<div class="oomph-grid oomph-grid--2 oomph-leadmagnet">
-				<figure class="oomph-cover oomph-leadmagnet__cover">
-					<?php
-						echo oomph_picture(
-							'cabin-guide-cover.webp',
-							array(
-								'alt'    => 'Cover of the Silversea cabin selection guide',
-								'width'  => 900,
-								'height' => 1443,
-								'sizes'  => '(min-width: 768px) 50vw, 100vw',
-							)
-						); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — escaped in helper.
-						?>
-				</figure>
-				<div class="oomph-leadmagnet__copy">
-					<p class="oomph-eyebrow">Cruise · Cabin Note</p>
-					<h2 id="lead-magnet-title">The cabin you choose determines the trip you have.</h2>
-					<p>Same ship, same itinerary — two cabins three decks apart can be a different vacation. Answer seven questions and I'll point you to the cabin category that fits how you actually sail, plus my full Cabin Selection Guide.</p>
-					<p>
-						<a class="oomph-btn oomph-btn--primary" href="/trip-quiz/">
-							Take the cabin quiz <span aria-hidden="true">→</span>
-						</a>
-						<span class="oomph-btn-microcopy">Seven questions, about two minutes.</span>
-					</p>
 				</div>
 			</div>
 		</div>

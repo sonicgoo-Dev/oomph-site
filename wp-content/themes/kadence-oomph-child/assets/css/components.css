@@ -808,7 +808,7 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Cabin quiz (/trip-quiz/)
+ * Fluent Forms (Discovery Call intake — goes with the plugin, plan §6.15)
  * --------------------------------------------------------------------------- */
 
 .ff-hidden-field { display: none !important; }
@@ -825,93 +825,6 @@
 .frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style):focus-visible {
   background-color: var(--color-champagne) !important;
   color: var(--color-true-ink) !important;
-}
-
-.oomph-quiz__progress {
-  font-size: var(--text-eyebrow);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-slate);
-  margin: 0 0 var(--space-5);
-}
-
-.oomph-quiz__q {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.oomph-quiz__question {
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
-  line-height: 1.2;
-  color: var(--color-marine-navy);
-  padding: 0;
-  margin: 0 0 var(--space-6);
-  outline: none;
-}
-
-.oomph-quiz__options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.oomph-quiz__opt {
-  width: 100%;
-  min-height: 44px;
-  text-align: left;
-  font-family: var(--font-text);
-  font-size: var(--text-body);
-  line-height: 1.4;
-  color: var(--text-default);
-  background: var(--surface-paper);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
-  cursor: pointer;
-  transition: border-color var(--duration-quick) var(--easing-standard),
-              background-color var(--duration-quick) var(--easing-standard),
-              transform var(--duration-quick) var(--easing-standard);
-}
-.oomph-quiz__opt:hover,
-.oomph-quiz__opt:focus-visible {
-  border-color: var(--color-old-brass);
-  background: var(--color-bone);
-  color: var(--text-default); /* hold text color — Kadence's button:hover turns it light */
-  transform: translateY(-1px);
-}
-
-.oomph-quiz__back {
-  margin-top: var(--space-6);
-  background: none;
-  border: 0;
-  color: var(--color-slate);
-  font-size: var(--text-body-sm);
-  cursor: pointer;
-}
-.oomph-quiz__back:hover { color: var(--color-marine-navy); }
-
-.oomph-quiz__ask {
-  margin-top: var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  background: var(--surface-alt);
-  border-left: 3px solid var(--color-old-brass);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-body-sm);
-}
-
-.oomph-quiz__thanks {
-  margin-top: var(--space-8);
-  padding-top: var(--space-7);
-  border-top: 1px solid var(--hairline);
-}
-.oomph-quiz__cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  align-items: center;
-  margin-top: var(--space-6);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1064,49 +977,3 @@
 .oomph-testimonial__meta p { margin: 0 0 var(--space-1); }
 .oomph-testimonial__author strong { color: var(--color-charcoal); }
 .oomph-testimonial__trip { font-style: italic; }
-
-/* Sailing card — shore-event line (shared: /group-cruises/, homepage, cruise page). */
-.oomph-sailing-card__event {
-  color: var(--color-bronze); /* was --signal-accent (old brass): 3.0:1 on bone — under AA; bronze is 4.8:1 (2026-07 audit) */
-  font-size: var(--text-body-sm);
-  font-weight: 600;
-  margin-bottom: var(--space-2);
-}
-
-/* Sailing card — amenity-departure variant. Lighter than a hosted/DV card:
- * these are commodity listings, so the perk line reads as supporting detail
- * rather than the headline event a Distinctive Voyage carries. */
-.oomph-sailing-card__perk {
-  color: var(--text-muted);
-  font-size: var(--text-body-sm);
-  margin-bottom: var(--space-2);
-}
-
-.oomph-sailing-card--amenity .oomph-card__eyebrow {
-  color: var(--text-muted);
-}
-
-/* Amenity block on a sailing single — the offer itself on an amenity
- * departure, a supporting list on a hosted sailing. */
-.oomph-cruise-amenity {
-  margin-bottom: var(--space-8);
-  padding: var(--space-6);
-  background: var(--surface-alt);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-}
-
-.oomph-cruise-amenity__list {
-  margin: var(--space-4) 0 var(--space-4);
-  padding-left: var(--space-5);
-}
-
-.oomph-cruise-amenity__list li {
-  margin-bottom: var(--space-2);
-}
-
-.oomph-cruise-amenity__note {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: var(--text-body-sm);
-}

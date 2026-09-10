@@ -24,7 +24,6 @@ final class Taxonomies {
 		$object_types = array(
 			CPT_Destination::POST_TYPE,
 			CPT_Itinerary::POST_TYPE,
-			CPT_Cruise::POST_TYPE,
 		);
 
 		register_taxonomy(
