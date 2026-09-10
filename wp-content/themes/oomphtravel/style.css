@@ -1,0 +1,17 @@
+/*
+Theme Name: OomphTravel
+Theme URI: https://oomphtravel.com/
+Author: Oomph Travel LLC
+Author URI: https://oomphtravel.com/
+Description: Block theme for oomphtravel.com — custom journeys, escorted tours, resorts and villas. Forked from the CruiseOomph theme (D41) and reskinned to the Deep Teal palette (D21). Presentation only; records come from the oomph-travel-core plugin.
+Version: 0.1.0
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.1
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: oomphtravel
+Tags: block-theme, full-site-editing, travel, one-column, accessibility-ready
+*/
+
+/* Every rule lives in assets/css/. Tokens: tokens.css. Type ramp: type.css. */

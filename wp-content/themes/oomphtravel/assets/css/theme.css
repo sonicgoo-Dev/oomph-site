@@ -1,0 +1,65 @@
+/*
+ * OomphTravel — base shell primitives. Every value is a token.
+ * The header, footer, bands and cards arrive in Stage 3 (docs/02-components.md).
+ */
+
+html {
+	-webkit-text-size-adjust: 100%;
+	scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	font-optical-sizing: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	color: var(--text-ink);
+	font-family: var(--font-display);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}
+
+:where(a) {
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.15em;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+	border-radius: var(--radius-card);
+}
+
+/* On the navy grounds the light teal is the readable ring. */
+.ot-band--navy :focus-visible,
+.ot-band--navy-deep :focus-visible { outline-color: var(--accent-teal-on-navy); }
+
+/* Skip link — visible on focus only. */
+.ot-skip-link {
+	position: absolute;
+	left: var(--space-md);
+	top: -100%;
+	z-index: 1000;
+	padding: var(--space-sm) var(--space-lg);
+	background: var(--accent-teal);
+	color: var(--surface-white);
+	border-radius: var(--radius-pill);
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--button--size);
+	font-weight: 500;
+	text-decoration: none;
+}
+.ot-skip-link:focus { top: var(--space-md); }
+
+.ot-main { min-height: 40vh; }

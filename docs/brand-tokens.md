@@ -1,5 +1,11 @@
 # Brand Tokens — Oomph Travel
 
+> **Superseded 2026-09-10.** Colour and type now come from
+> `design-handoff/tokens/` (exported from Figma, D21 Deep Teal). This file is
+> kept for the *print* brand book and for the retiring kadence child theme.
+> Do not port values from here into `wp-content/themes/oomphtravel/`.
+
+
 Single source of truth for colors, typography, spacing, radii, and shadows. Pulled from the Brand Book (Volume I, MMXXVI). When CSS or `theme.json` references a token, the value lives **only** here. Update here first, then propagate.
 
 ---
