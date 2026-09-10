@@ -23,6 +23,7 @@ define( 'OOMPHTRAVEL_THEME_URI', trailingslashit( get_stylesheet_directory_uri()
 
 require_once OOMPHTRAVEL_THEME_DIR . 'inc/setup.php';
 require_once OOMPHTRAVEL_THEME_DIR . 'inc/enqueue.php';
+require_once OOMPHTRAVEL_THEME_DIR . 'inc/template-tags.php';
 
 // Values the oomph-travel-core plugin reads from the active theme. These
 // moved here from kadence-oomph-child so the switch does not lose them.

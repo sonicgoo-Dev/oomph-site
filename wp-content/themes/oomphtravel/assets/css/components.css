@@ -1,0 +1,1216 @@
+/*
+ * OomphTravel — the 21 components of docs/02-components.md.
+ *
+ * Every colour, space, radius, size and duration here resolves to a Stage 1
+ * token (tokens.css names → theme.json presets). No hex. Where a translucent
+ * colour is needed (scrims, shadows) it is mixed from a token with
+ * color-mix() rather than written as rgba(hex).
+ *
+ * Order follows the handoff: Foundations · Cards · Chrome · Bands.
+ * Class prefix `ot-`. Breakpoints: 768 (mobile → desktop tokens), 1024 (the
+ * header collapses to Header / Mobile below this).
+ */
+
+/* ------------------------------------------------------------------ */
+/* Layout primitives                                                   */
+/* ------------------------------------------------------------------ */
+
+.ot-container {
+	box-sizing: border-box;
+	max-width: calc( 1280px + 2 * var(--space-page-margin) );
+	margin-inline: auto;
+	padding-inline: var(--space-page-margin);
+}
+
+.ot-band {
+	padding-block: var(--space-section);
+	background: var(--surface-white);
+	color: var(--text-slate);
+}
+
+.ot-band--mist      { background: var(--surface-mist); }
+.ot-band--mist-deep { background: var(--surface-mist-deep); }
+.ot-band--navy      { background: var(--navy-marine); }
+.ot-band--navy-deep { background: var(--navy-deep); }
+
+.ot-band--navy,
+.ot-band--navy-deep { color: var(--text-on-navy); }
+
+.ot-band--navy :is(h1, h2, h3, h4),
+.ot-band--navy-deep :is(h1, h2, h3, h4) { color: var(--text-on-navy); }
+
+.ot-band--navy a,
+.ot-band--navy-deep a { color: var(--accent-teal-on-navy); }
+
+.ot-visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* The grey rectangle: a missing picture or vendor logo keeps its box. */
+.ot-media--empty { background: var(--surface-mist-deep); }
+
+/* Grid helpers the band patterns use. */
+.ot-grid {
+	display: grid;
+	gap: var(--space-lg);
+	grid-template-columns: repeat( auto-fill, minmax( 260px, 1fr ) );
+}
+.ot-grid__foot { margin: var(--space-lg) 0 0; }
+.ot-grid--3 { grid-template-columns: repeat( 3, minmax( 0, 1fr ) ); }
+.ot-grid--4 { grid-template-columns: repeat( 4, minmax( 0, 1fr ) ); }
+
+@media (max-width: 1023px) {
+	.ot-grid--4 { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+}
+
+@media (max-width: 767px) {
+	.ot-grid--3,
+	.ot-grid--4 { grid-template-columns: minmax( 0, 1fr ); }
+
+	/* Destination rows become a horizontal scroller that bleeds off the right edge (03-rules). */
+	.ot-grid--scroll {
+		display: flex;
+		gap: var(--space-md);
+		margin-inline: calc( -1 * var(--space-page-margin) );
+		padding-inline: var(--space-page-margin);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+	}
+	.ot-grid--scroll::-webkit-scrollbar { display: none; }
+	.ot-grid--scroll > * { flex: 0 0 76%; scroll-snap-align: start; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Logo / Symbol                                                       */
+/* ------------------------------------------------------------------ */
+
+.ot-symbol { display: inline-block; height: auto; flex: none; }
+
+/* The only place logo/teal, logo/coral and logo/ink may appear (D22). */
+.ot-symbol__teal  { fill: var(--logo-teal); }
+.ot-symbol__coral { fill: var(--logo-coral); }
+.ot-symbol__ink   { fill: var(--logo-ink); }
+.ot-symbol__white { fill: var(--surface-white); }
+
+.ot-lockup {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-sm);
+	color: var(--text-ink);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.ot-lockup__wordmark {
+	font-family: var(--font-display);
+	font-weight: var(--wp--custom--type--desktop--wordmark--weight);
+	font-size: var(--type-wordmark-size);
+	line-height: var(--wp--custom--type--desktop--wordmark--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--wordmark--letter-spacing);
+	transition: font-size var(--wp--custom--motion--quick) ease;
+}
+
+.ot-lockup--on-navy,
+.ot-band--navy .ot-lockup--on-navy,
+.ot-band--navy-deep .ot-lockup--on-navy { color: var(--text-on-navy); }
+.ot-lockup:hover .ot-lockup__wordmark { color: var(--accent-teal); }
+.ot-lockup--on-navy:hover .ot-lockup__wordmark { color: var(--accent-teal-on-navy); }
+
+/* ------------------------------------------------------------------ */
+/* Button (Style=Primary|Ghost × Ground=Light|Navy)                     */
+/* ------------------------------------------------------------------ */
+
+.ot-btn {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-xs);
+	padding: 15px 28px; /* plan §5.4 */
+	border: 1px solid transparent;
+	border-radius: var(--radius-pill);
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--button--size);
+	font-weight: var(--wp--custom--type--desktop--button--weight);
+	line-height: var(--wp--custom--type--desktop--button--line-height);
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--wp--custom--motion--quick) ease,
+		color var(--wp--custom--motion--quick) ease,
+		border-color var(--wp--custom--motion--quick) ease;
+}
+
+.ot-btn--primary {
+	background: var(--accent-teal);
+	border-color: var(--accent-teal);
+	color: var(--surface-white);
+}
+.ot-btn--primary:hover {
+	background: color-mix( in srgb, var(--accent-teal) 82%, var(--text-ink) );
+	border-color: color-mix( in srgb, var(--accent-teal) 82%, var(--text-ink) );
+	color: var(--surface-white);
+}
+
+.ot-btn--ghost {
+	background: transparent;
+	border-color: var(--text-ink);
+	color: var(--text-ink);
+}
+.ot-btn--ghost:hover {
+	background: var(--surface-mist);
+	color: var(--text-ink);
+}
+
+/* Ground=Navy: the stroke and label lighten to accent/teal-on-navy. */
+.ot-btn--on-navy.ot-btn--ghost,
+.ot-band--navy .ot-btn--ghost,
+.ot-band--navy-deep .ot-btn--ghost {
+	border-color: var(--accent-teal-on-navy);
+	color: var(--accent-teal-on-navy);
+}
+.ot-btn--on-navy.ot-btn--ghost:hover,
+.ot-band--navy .ot-btn--ghost:hover,
+.ot-band--navy-deep .ot-btn--ghost:hover {
+	background: color-mix( in srgb, var(--accent-teal-on-navy) 14%, transparent );
+	color: var(--accent-teal-on-navy);
+}
+
+.ot-btn--on-navy.ot-btn--primary:hover,
+.ot-band--navy .ot-btn--primary:hover,
+.ot-band--navy-deep .ot-btn--primary:hover {
+	background: var(--accent-teal-on-navy);
+	border-color: var(--accent-teal-on-navy);
+	color: var(--navy-deep);
+}
+
+.ot-btn:hover .ot-arrow { transform: translateX(4px); } /* D23 nudge */
+
+.ot-band--navy .ot-btn--primary,
+.ot-band--navy-deep .ot-btn--primary { color: var(--surface-white); }
+
+/* ------------------------------------------------------------------ */
+/* Eyebrow                                                             */
+/* ------------------------------------------------------------------ */
+
+.ot-eyebrow {
+	margin: 0;
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	line-height: var(--wp--custom--type--desktop--eyebrow--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	color: var(--accent-teal);
+}
+
+/* A category is not an action: muted slate, never teal. */
+.ot-eyebrow--muted { color: var(--text-muted); }
+
+.ot-band--navy .ot-eyebrow,
+.ot-band--navy-deep .ot-eyebrow { color: var(--accent-teal-on-navy); }
+.ot-band--navy .ot-eyebrow--muted,
+.ot-band--navy-deep .ot-eyebrow--muted { color: var(--text-on-navy-faint); }
+
+/* ------------------------------------------------------------------ */
+/* Section heading (eyebrow + static contrail + H2)                    */
+/* ------------------------------------------------------------------ */
+
+.ot-contrail {
+	display: inline-block;
+	flex: none;
+	vertical-align: middle;
+	color: var(--accent-teal);
+}
+
+.ot-band--navy .ot-contrail,
+.ot-band--navy-deep .ot-contrail { color: var(--accent-teal-on-navy); }
+
+/* Animated form, under an H1, once per page (D23). */
+.ot-contrail--draw path {
+	stroke-dasharray: 60;
+	stroke-dashoffset: 60;
+	animation: ot-contrail-draw var(--wp--custom--motion--contrail) ease-out 300ms forwards;
+}
+@keyframes ot-contrail-draw { to { stroke-dashoffset: 0; } }
+
+.ot-section-heading {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+	margin-bottom: var(--space-xl);
+}
+
+.ot-section-heading__eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-sm);
+}
+
+.ot-section-heading__title {
+	margin: 0;
+	font-size: var(--type-h2-size);
+	line-height: var(--type-h2-line);
+	max-width: var(--wp--custom--measure--heading);
+}
+
+.ot-section-heading--center {
+	align-items: center;
+	text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Link / Underlined                                                   */
+/* ------------------------------------------------------------------ */
+
+.ot-link {
+	display: inline-block;
+	color: var(--text-ink);
+	font-family: var(--font-body);
+	font-size: var(--type-body-small-size);
+	font-weight: 500;
+	line-height: 1.3;
+	text-decoration: underline;
+	text-decoration-color: var(--accent-teal);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.25em;
+	transition: color var(--wp--custom--motion--quick) ease;
+}
+.ot-link:hover { color: var(--accent-teal); }
+
+.ot-band--navy .ot-link,
+.ot-band--navy-deep .ot-link {
+	color: var(--text-on-navy);
+	text-decoration-color: var(--accent-teal-on-navy);
+}
+.ot-band--navy .ot-link:hover,
+.ot-band--navy-deep .ot-link:hover { color: var(--accent-teal-on-navy); }
+
+/* ------------------------------------------------------------------ */
+/* Pill / On photo                                                     */
+/* ------------------------------------------------------------------ */
+
+.ot-pill {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	height: 36px;
+	padding: 0 var(--space-md);
+	border-radius: var(--radius-pill);
+	background: var(--surface-white);
+	color: var(--text-ink);
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
+	transition: background-color var(--wp--custom--motion--quick) ease;
+}
+.ot-card-dest:hover .ot-pill { background: var(--surface-mist); }
+
+/* ------------------------------------------------------------------ */
+/* Credential strip                                                    */
+/* ------------------------------------------------------------------ */
+
+.ot-credentials {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 50px;
+	background: var(--surface-mist-deep);
+}
+
+.ot-credentials__list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0 var(--space-lg);
+	margin: 0;
+	padding: var(--space-sm) var(--space-page-margin);
+	list-style: none;
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	line-height: 2;
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.ot-credentials__list li { display: inline-flex; align-items: center; gap: var(--space-lg); }
+.ot-credentials__list li + li::before { content: "\00B7"; color: var(--text-muted); }
+
+/* ------------------------------------------------------------------ */
+/* Cards — shared                                                      */
+/* ------------------------------------------------------------------ */
+
+.ot-card {
+	position: relative;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--radius-card);
+	background: var(--surface-white);
+	color: var(--text-slate);
+	transition:
+		transform var(--wp--custom--motion--lift) ease,
+		box-shadow var(--wp--custom--motion--lift) ease;
+}
+
+.ot-card h3 { margin: 0; }
+.ot-card h3 a { color: inherit; text-decoration: none; }
+.ot-card h3 a:hover { color: var(--accent-teal); }
+.ot-card p { margin: 0; }
+
+.ot-card [class$="__media"] {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--radius-card);
+}
+.ot-card [class$="__media"] img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform var(--wp--custom--motion--photo) ease;
+}
+
+/* Lift 6px, photo eases to 105% (D23) — destination and tour cards. */
+.ot-card-dest:hover,
+.ot-card-tour:hover {
+	transform: translateY(-6px);
+	box-shadow: 0 18px 40px color-mix( in srgb, var(--navy-deep) 18%, transparent );
+}
+.ot-card-dest:hover img,
+.ot-card-tour:hover img { transform: scale(1.05); }
+
+/* Card / Destination — 4:5 portrait, copy over a scrim. */
+.ot-card-dest {
+	aspect-ratio: 4 / 5;
+	overflow: hidden;
+	text-decoration: none;
+	color: var(--surface-white);
+}
+.ot-card-dest__media { position: absolute; inset: 0; border-radius: 0; }
+.ot-card-dest__media::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient( to top, color-mix( in srgb, var(--navy-deep) 72%, transparent ), transparent 60% );
+}
+.ot-card-dest__copy {
+	position: absolute;
+	left: var(--space-lg);
+	right: var(--space-lg);
+	bottom: var(--space-lg);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-sm);
+}
+.ot-card-dest__name {
+	font-family: var(--font-display);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	letter-spacing: -0.01em;
+	color: var(--surface-white);
+}
+
+/* Card / Way to travel — photo above, title, two lines, one link. */
+.ot-card-way__media { aspect-ratio: 4 / 5; }
+.ot-card-way__body {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-sm);
+	padding-top: var(--space-lg);
+}
+.ot-card-way__title {
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-card-way__text {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+
+/* Card / Tour — Copy frame fixed at 178px so price rows bottom-align. */
+.ot-card-tour {
+	border: 1px solid var(--line-hairline);
+	overflow: hidden;
+}
+.ot-card-tour__media { aspect-ratio: 16 / 10; border-radius: 0; }
+.ot-card-tour__body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+	padding: var(--space-lg);
+}
+.ot-card-tour__copy {
+	box-sizing: border-box;
+	height: 178px; /* docs/02-components.md — do not change */
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	overflow: hidden;
+}
+.ot-card-tour__meta {
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	line-height: var(--wp--custom--type--desktop--meta--line-height);
+	color: var(--text-muted);
+}
+.ot-card-tour__title {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-card-tour__blurb {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+.ot-card-tour__price-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+}
+.ot-card-tour__price {
+	font-family: var(--wp--custom--type--desktop--price--family);
+	font-weight: var(--wp--custom--type--desktop--price--weight);
+	font-size: var(--wp--custom--type--desktop--price--size);
+	line-height: var(--wp--custom--type--desktop--price--line-height);
+	color: var(--text-ink);
+}
+.ot-card-tour__from,
+.ot-card-tour__per {
+	font-family: var(--font-body);
+	font-weight: 400;
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-muted);
+}
+.ot-card-tour__caption {
+	padding-top: var(--space-sm);
+	border-top: 1px solid var(--line-hairline);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	line-height: var(--wp--custom--type--desktop--meta--line-height);
+	color: var(--text-muted);
+}
+
+/* Card / Operator (Kind=Escorted|FIT supplier). */
+.ot-card-operator {
+	gap: var(--space-sm);
+	align-items: flex-start;
+	padding: var(--space-lg);
+	border: 1px solid var(--line-hairline);
+}
+.ot-card-operator__logo {
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	width: 100%;
+	height: 72px;
+	margin-bottom: var(--space-xs);
+	border-radius: var(--radius-card);
+}
+.ot-card-operator__logo img { display: block; max-height: 48px; max-width: 180px; width: auto; height: auto; }
+.ot-card-operator__name { font-size: var(--type-h3-size); line-height: var(--type-h3-line); color: var(--text-ink); }
+.ot-card-operator__fit { font-size: var(--type-body-small-size); line-height: var(--type-body-small-line); }
+.ot-card-operator__meta {
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	line-height: var(--wp--custom--type--desktop--meta--line-height);
+	color: var(--text-muted);
+}
+
+/* Card / Journal — muted category eyebrow. */
+.ot-card-journal__link {
+	display: flex;
+	flex-direction: column;
+	color: inherit;
+	text-decoration: none;
+}
+.ot-card-journal__media { aspect-ratio: 16 / 10; }
+.ot-card-journal__body {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-xs);
+	padding-top: var(--space-md);
+}
+.ot-card-journal__title {
+	font-family: var(--font-display);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	letter-spacing: -0.01em;
+	color: var(--text-ink);
+	transition: color var(--wp--custom--motion--quick) ease;
+}
+.ot-card-journal__link:hover .ot-card-journal__title { color: var(--accent-teal); }
+.ot-card-journal__blurb {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+
+/* ------------------------------------------------------------------ */
+/* Header / Desktop (Default | Scrolled) and Header / Mobile           */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Sticky lives on the element that wraps the bar — the template part's
+ * <header> — because a sticky box only sticks within its parent, and the
+ * pattern's own wrapper is exactly the bar's height.
+ */
+header:has( > .ot-header ),
+.wp-block-template-part:has( > .ot-header ) {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+.ot-header {
+	background: var(--surface-white);
+	border-bottom: 1px solid var(--line-hairline);
+	transition:
+		box-shadow var(--wp--custom--motion--lift) ease,
+		border-color var(--wp--custom--motion--lift) ease;
+}
+
+/* Scrolled: 64px, smaller lockup, the hairline becomes a soft shadow. */
+.ot-header.is-scrolled {
+	border-bottom-color: transparent;
+	box-shadow: 0 6px 24px color-mix( in srgb, var(--navy-deep) 10%, transparent );
+}
+
+.ot-header__bar {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: var(--space-xl);
+	max-width: calc( 1280px + 2 * var(--space-page-margin) );
+	height: var(--size-header);
+	margin-inline: auto;
+	padding-inline: var(--space-page-margin);
+	transition: height var(--wp--custom--motion--lift) ease;
+}
+.is-scrolled .ot-header__bar { height: var(--size-header-mobile); }
+
+.ot-header .ot-symbol { width: 40px; transition: width var(--wp--custom--motion--lift) ease; }
+.is-scrolled .ot-header .ot-symbol,
+.ot-header.is-scrolled .ot-symbol { width: 32px; }
+.ot-header.is-scrolled .ot-lockup__wordmark { font-size: var(--wp--custom--type--mobile--wordmark--size); }
+
+.ot-nav {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xl);
+	margin-left: auto;
+}
+
+.ot-nav__list {
+	display: flex;
+	align-items: center;
+	gap: var(--space-lg);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ot-nav__item { position: relative; }
+
+.ot-nav__link {
+	appearance: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 0;
+	background: none;
+	border: 0;
+	border-bottom: 1px solid transparent;
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--nav--size);
+	font-weight: var(--wp--custom--type--desktop--nav--weight);
+	line-height: 1.2;
+	color: var(--text-ink);
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: border-color var(--wp--custom--motion--quick) ease;
+}
+.ot-nav__link:hover,
+.ot-nav__item.is-open > .ot-nav__link,
+.ot-nav__item.current-menu-item > .ot-nav__link { border-bottom-color: var(--accent-teal); }
+
+.ot-nav__chevron { transition: transform var(--wp--custom--motion--quick) ease; }
+.ot-nav__link[aria-expanded="true"] .ot-nav__chevron { transform: rotate(180deg); }
+
+/* Dropdown panel. Opens on hover / focus-within (CSS) and click (shell.js). */
+.ot-nav__menu {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	z-index: 10;
+	display: none;
+	min-width: 300px;
+	padding: var(--space-lg);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+	box-shadow: 0 18px 40px color-mix( in srgb, var(--navy-deep) 14%, transparent );
+	transform: translateX(-50%);
+}
+.ot-nav__item.is-open > .ot-nav__menu,
+.ot-nav__item:hover > .ot-nav__menu,
+.ot-nav__item:focus-within > .ot-nav__menu { display: block; }
+
+.ot-nav__menu--wide { min-width: 560px; }
+.ot-nav__groups { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+.ot-nav__group-title { margin: 0 0 var(--space-sm); }
+.ot-nav__menu ul { margin: 0; padding: 0; list-style: none; }
+.ot-nav__menu li a {
+	display: block;
+	padding: 6px 0;
+	color: var(--text-ink);
+	font-family: var(--font-body);
+	font-size: var(--type-body-small-size);
+	text-decoration: none;
+}
+.ot-nav__menu li a:hover { color: var(--accent-teal); }
+.ot-nav__menu-foot {
+	margin-top: var(--space-md);
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-nav__menu-foot--stack { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+/* Mobile-only pieces stay hidden on desktop. */
+.ot-header__text-link,
+.ot-menu-toggle,
+.ot-drawer { display: none; }
+
+@media (max-width: 1023px) {
+	.ot-header__bar { gap: var(--space-sm); }
+	.ot-header .ot-symbol { width: 32px; }
+	.ot-header .ot-lockup__wordmark { font-size: var(--wp--custom--type--mobile--wordmark--size); }
+	.ot-nav,
+	.ot-header__cta { display: none; }
+
+	/* The teal button is dropped at this width; a plain text link and Menu. */
+	.ot-header__text-link {
+		display: inline-block;
+		margin-left: auto;
+		padding-block: var(--space-sm);
+		font-family: var(--font-body);
+		font-size: var(--wp--custom--type--mobile--body-small--size);
+		font-weight: var(--wp--custom--type--desktop--nav--weight);
+		color: var(--text-ink);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.ot-header__text-link:hover { color: var(--accent-teal); }
+
+	.ot-menu-toggle,
+	.ot-menu-close {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 0 0 var(--space-xs);
+		background: none;
+		border: 0;
+		font-family: var(--font-body);
+		font-size: var(--wp--custom--type--mobile--body-small--size);
+		font-weight: var(--wp--custom--type--desktop--nav--weight);
+		color: var(--text-ink);
+		cursor: pointer;
+	}
+
+	/* Full-screen navy drawer, a subtitle under every link (03-rules). */
+	.ot-drawer {
+		position: fixed;
+		inset: 0;
+		z-index: 1000;
+		box-sizing: border-box;
+		overflow-y: auto;
+		padding: 0 var(--space-page-margin) var(--space-xl);
+		background: var(--navy-marine);
+		color: var(--text-on-navy);
+	}
+	.ot-drawer.is-open { display: block; }
+	.ot-drawer :focus-visible { outline-color: var(--accent-teal-on-navy); }
+	html.ot-menu-open { overflow: hidden; }
+
+	.ot-drawer__bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: var(--size-header-mobile);
+	}
+	.ot-drawer .ot-menu-close { color: var(--text-on-navy); }
+	.ot-drawer .ot-symbol { width: 32px; }
+
+	.ot-drawer__list { margin: var(--space-lg) 0 0; padding: 0; list-style: none; }
+	.ot-drawer__item { border-bottom: 1px solid var(--line-on-navy); }
+	.ot-drawer__link {
+		display: block;
+		padding: var(--space-md) 0;
+		color: var(--text-on-navy);
+		text-decoration: none;
+	}
+	.ot-drawer__title {
+		display: block;
+		font-family: var(--font-display);
+		font-size: var(--wp--custom--type--mobile--h3--size);
+		line-height: var(--wp--custom--type--mobile--h3--line-height);
+		letter-spacing: -0.01em;
+	}
+	.ot-drawer__subtitle {
+		display: block;
+		margin-top: 4px;
+		font-size: var(--wp--custom--type--mobile--body-small--size);
+		line-height: var(--wp--custom--type--mobile--body-small--line-height);
+		color: var(--text-on-navy-faint);
+	}
+	/* Dropdown groups read as a plain list on mobile. */
+	.ot-drawer__sub { margin: 0 0 var(--space-md); padding: 0; list-style: none; }
+	.ot-drawer__sub li a {
+		display: block;
+		padding: 8px 0;
+		color: var(--text-on-navy);
+		font-size: var(--wp--custom--type--mobile--body--size);
+		text-decoration: none;
+	}
+	.ot-drawer__sub li a:hover { color: var(--accent-teal-on-navy); }
+	.ot-drawer__cta { margin-top: var(--space-xl); }
+	.ot-drawer__cta .ot-btn { width: 100%; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer                                                              */
+/* ------------------------------------------------------------------ */
+
+.ot-footer {
+	background: var(--navy-deep);
+	color: var(--text-on-navy);
+	font-family: var(--font-body);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+.ot-footer p { margin: 0; }
+.ot-footer a { color: var(--text-on-navy); text-decoration: none; }
+.ot-footer a:hover { color: var(--accent-teal-on-navy); }
+.ot-footer ul { margin: 0; padding: 0; list-style: none; }
+
+.ot-footer__inner {
+	box-sizing: border-box;
+	max-width: calc( 1280px + 2 * var(--space-page-margin) );
+	margin-inline: auto;
+	padding: var(--space-xl) var(--space-page-margin) var(--space-lg);
+}
+
+/* Signup row above the columns. */
+.ot-footer__signup {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: var(--space-xl);
+	align-items: center;
+	padding-block: var(--space-xl);
+	border-bottom: 1px solid var(--line-on-navy);
+}
+.ot-footer__signup-heading {
+	margin: 0;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-on-navy);
+}
+.ot-footer__signup-copy { margin-top: var(--space-xs); color: var(--text-on-navy-faint); }
+.ot-footer__signup-note {
+	margin-top: var(--space-sm);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-on-navy-faint);
+}
+
+.ot-signup__row { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: end; }
+.ot-signup__label {
+	flex: 1 1 100%;
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-on-navy-faint);
+}
+.ot-signup__input {
+	box-sizing: border-box;
+	flex: 1 1 220px;
+	min-height: 48px;
+	padding: 0 var(--space-lg);
+	border: 1px solid var(--line-on-navy);
+	border-radius: var(--radius-pill);
+	background: var(--surface-on-navy-light);
+	color: var(--text-ink);
+	font: inherit;
+	font-size: var(--type-body-small-size);
+}
+.ot-signup__input:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 2px; }
+.ot-signup__submit { flex: none; }
+.ot-signup__trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.ot-signup__message { min-height: 1.5em; margin-top: var(--space-sm); color: var(--text-on-navy); }
+.ot-signup__message:empty { display: none; }
+
+/* Four columns. */
+.ot-footer__columns {
+	display: grid;
+	grid-template-columns: repeat( 4, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+	padding-block: var(--space-xl);
+}
+.ot-footer__heading { margin-bottom: var(--space-sm); }
+.ot-footer__list a { display: inline-block; padding-block: 5px; } /* ~24px targets */
+.ot-footer__list li { line-height: 1.4; }
+.ot-footer__contact li { padding-block: 5px; }
+.ot-footer__credentials {
+	margin-top: var(--space-md);
+	font-size: var(--type-eyebrow-size);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	line-height: 1.9;
+	color: var(--text-on-navy-faint);
+}
+.ot-footer__social { display: flex; gap: var(--space-sm); margin-top: var(--space-md); }
+.ot-footer__social a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border: 1px solid var(--line-on-navy);
+	border-radius: var(--radius-pill);
+}
+.ot-footer__social a:hover { border-color: var(--accent-teal-on-navy); }
+
+/* Family lockup, legal. */
+.ot-footer__bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--space-lg);
+	padding-top: var(--space-xl);
+	border-top: 1px solid var(--line-on-navy);
+}
+.ot-family {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-xs);
+}
+.ot-family__name {
+	font-family: var(--font-display);
+	font-size: var(--wp--custom--type--mobile--wordmark--size);
+	letter-spacing: var(--wp--custom--type--desktop--wordmark--letter-spacing);
+	line-height: 1.1;
+}
+.ot-family__rule { width: 40px; height: 1px; background: var(--line-on-navy); }
+.ot-family__note {
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-on-navy-faint);
+}
+.ot-footer__legal {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-md);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-on-navy-faint);
+}
+.ot-footer__legal a { padding-block: 4px; }
+
+@media (max-width: 1023px) {
+	.ot-footer__columns { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+}
+@media (max-width: 767px) {
+	.ot-footer__signup,
+	.ot-footer__columns { grid-template-columns: minmax( 0, 1fr ); }
+	.ot-footer__bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Band / Statement                                                    */
+/* ------------------------------------------------------------------ */
+
+.ot-statement { text-align: center; }
+.ot-statement__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-lg);
+}
+.ot-statement__heading {
+	margin: 0;
+	max-width: var(--wp--custom--measure--heading);
+	font-size: var(--wp--custom--type--desktop--h2-statement--size);
+	line-height: var(--wp--custom--type--desktop--h2-statement--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h2-statement--letter-spacing);
+}
+.ot-statement__body {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+}
+@media (max-width: 767px) {
+	.ot-statement__heading { font-size: var(--type-h2-size); line-height: var(--type-h2-line); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Band / Process (Number · Title · Body)                               */
+/* ------------------------------------------------------------------ */
+
+.ot-process__steps {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+.ot-step { display: flex; flex-direction: column; gap: var(--space-sm); }
+.ot-step p { margin: 0; }
+
+/* The only numeral on the site that carries the accent. */
+.ot-step__number {
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h1-size);
+	line-height: 1;
+	color: var(--accent-teal);
+}
+.ot-step__title {
+	margin: 0;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+}
+.ot-step__body {
+	max-width: 36ch;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+.ot-process__action { margin-top: var(--space-xl); }
+
+@media (max-width: 767px) {
+	.ot-process__steps { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-lg); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Band / Ticker (homepage only)                                       */
+/* ------------------------------------------------------------------ */
+
+.ot-ticker {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 60px;
+	overflow: hidden;
+	background: var(--surface-mist-deep);
+}
+.ot-ticker__track {
+	display: flex;
+	align-items: center;
+	width: max-content;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	animation: ot-ticker var(--wp--custom--motion--ticker) linear infinite;
+}
+.ot-ticker__track li {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-lg);
+	padding-right: var(--space-lg);
+	white-space: nowrap;
+}
+.ot-ticker__track a {
+	font-family: var(--font-body);
+	font-size: var(--type-body-small-size);
+	font-weight: 500;
+	color: var(--text-slate);
+	text-decoration: none;
+}
+.ot-ticker__track a:hover { color: var(--accent-teal); }
+.ot-ticker__plane { flex: none; color: var(--accent-teal); }
+
+.ot-ticker:hover .ot-ticker__track,
+.ot-ticker:focus-within .ot-ticker__track,
+.ot-ticker__track.is-paused { animation-play-state: paused; }
+
+@keyframes ot-ticker {
+	from { transform: translateX(0); }
+	to   { transform: translateX(-50%); }
+}
+
+.ot-ticker__toggle {
+	position: absolute;
+	right: var(--space-md);
+	top: 50%;
+	transform: translateY(-50%);
+	appearance: none;
+	min-height: 32px;
+	padding: 0 var(--space-sm);
+	background: var(--surface-mist-deep);
+	border: 0;
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	color: var(--text-muted);
+	cursor: pointer;
+}
+.ot-ticker__toggle:hover { color: var(--text-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+	.ot-ticker { height: auto; padding-block: var(--space-sm); }
+	.ot-ticker__track { width: auto; flex-wrap: wrap; justify-content: center; animation: none; }
+	.ot-ticker__track--copy,
+	.ot-ticker__toggle { display: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Quotation                                                           */
+/* ------------------------------------------------------------------ */
+
+.ot-quote {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+	margin: 0;
+	padding-left: var(--space-lg);
+	border-left: 2px solid var(--accent-teal);
+}
+.ot-quote__text { margin: 0; }
+.ot-quote__text p {
+	margin: 0;
+	font-family: var(--wp--custom--type--desktop--quote--family);
+	font-weight: var(--wp--custom--type--desktop--quote--weight);
+	font-style: var(--wp--custom--type--desktop--quote--style);
+	font-size: var(--wp--custom--type--desktop--quote--size);
+	line-height: var(--wp--custom--type--desktop--quote--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--quote--letter-spacing);
+	color: var(--text-ink);
+}
+.ot-quote__attribution {
+	font-family: var(--font-body);
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	line-height: var(--wp--custom--type--desktop--meta--line-height);
+	color: var(--text-muted);
+}
+.ot-band--navy .ot-quote,
+.ot-band--navy-deep .ot-quote { border-color: var(--accent-teal-on-navy); }
+.ot-band--navy .ot-quote__text p,
+.ot-band--navy-deep .ot-quote__text p { color: var(--text-on-navy); }
+.ot-band--navy .ot-quote__attribution,
+.ot-band--navy-deep .ot-quote__attribution { color: var(--text-on-navy-faint); }
+
+@media (max-width: 767px) {
+	.ot-quote__text p { font-size: var(--type-h3-size); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Band / CruiseOomph                                                  */
+/* ------------------------------------------------------------------ */
+
+.ot-cruiseoomph {
+	display: grid;
+	grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+	gap: var(--space-xl);
+	align-items: center;
+}
+.ot-cruiseoomph__lockup {
+	display: inline-flex;
+	flex-direction: column;
+	margin-bottom: var(--space-lg);
+	color: var(--text-on-navy);
+	text-decoration: none;
+	line-height: 1;
+}
+.ot-cruiseoomph__name {
+	font-family: var(--font-display);
+	font-size: var(--type-wordmark-size);
+	letter-spacing: var(--wp--custom--type--desktop--wordmark--letter-spacing);
+}
+.ot-cruiseoomph__by { margin-top: 6px; color: var(--text-on-navy-faint); }
+.ot-cruiseoomph__heading {
+	margin: 0;
+	max-width: var(--wp--custom--measure--heading);
+	font-size: var(--type-h2-size);
+	line-height: var(--type-h2-line);
+}
+.ot-cruiseoomph__actions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-md);
+}
+.ot-cruiseoomph__buttons { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+
+@media (max-width: 767px) {
+	.ot-cruiseoomph { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Band / Closing invitation                                           */
+/* ------------------------------------------------------------------ */
+
+.ot-closing { text-align: center; }
+.ot-closing__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-lg);
+}
+.ot-closing__heading {
+	margin: 0;
+	max-width: var(--wp--custom--measure--heading);
+	font-size: var(--type-h2-size);
+	line-height: var(--type-h2-line);
+}
+.ot-closing__note {
+	margin: 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-on-navy-faint);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion — every motion in this file has a still fallback     */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+	.ot-card-dest:hover,
+	.ot-card-tour:hover { transform: none; }
+	.ot-card-dest:hover img,
+	.ot-card-tour:hover img { transform: none; }
+	.ot-btn:hover .ot-arrow { transform: none; }
+	.ot-contrail--draw path { animation: none; stroke-dashoffset: 0; }
+}
