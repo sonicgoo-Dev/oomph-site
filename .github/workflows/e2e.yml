@@ -53,20 +53,35 @@ jobs:
        github.event.workflow_run.conclusion == 'success')
 
     steps:
+      # Also decides which commit's TESTS to run. A workflow_run checkout
+      # defaults to the repository's default branch, so this suite was running
+      # main's specs against a staging site built from develop — it failed on
+      # /group-cruises/ and /trip-quiz/, pages Stage 2 deleted on develop,
+      # while the site itself was fine. Test the code that is actually on the
+      # site being tested.
       - name: Pick target site
         id: target
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
             echo "url=https://oomphtravel.com" >> "$GITHUB_OUTPUT"
+            echo "ref=main" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.target }}" = "production" ]; then
             echo "url=https://oomphtravel.com" >> "$GITHUB_OUTPUT"
+            echo "ref=main" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_run" ]; then
+            # The exact commit the deploy shipped, not just "develop" — a push
+            # landing mid-run would otherwise swap the specs underneath us.
+            echo "url=https://staging2.oomphtravel.com" >> "$GITHUB_OUTPUT"
+            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           else
             echo "url=https://staging2.oomphtravel.com" >> "$GITHUB_OUTPUT"
+            echo "ref=develop" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ steps.target.outputs.ref }}
           fetch-depth: 1
 
       - name: Set up Node
