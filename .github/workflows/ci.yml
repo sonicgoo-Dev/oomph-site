@@ -162,8 +162,11 @@ jobs:
           OUT=$(npx wp-env run cli wp oomph seed destinations --dry-run 2>&1)
           echo "$OUT"
           echo "$OUT" | grep -q 'nothing written' || { echo "::error::the dry run did not stay dry" >&2; exit 1; }
-          COUNT=$(npx wp-env run cli wp post list --post_type=oomph_destination --post_status=any --format=count 2>&1 | tr -dc '0-9')
-          [ "$COUNT" = "0" ] || { echo "::error::the dry run wrote $COUNT records" >&2; exit 1; }
+          # wp-env narrates to stderr and its "Ran ... (in 0s 762ms)" line has
+          # digits in it, so read stdout only and take the line that is nothing
+          # but a number.
+          COUNT=$(npx wp-env run cli wp post list --post_type=oomph_destination --post_status=any --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
+          [ "$COUNT" = "0" ] || { echo "::error::the dry run wrote ${COUNT:-?} records" >&2; exit 1; }
 
       - name: Seed the destinations and the operators
         run: |
@@ -176,8 +179,8 @@ jobs:
 
       - name: One term per destination, and re-running changes nothing
         run: |
-          TERMS=$(npx wp-env run cli wp term list oomph_place --format=count 2>&1 | tr -dc '0-9')
-          [ "$TERMS" = "11" ] || { echo "::error::expected 11 destination terms, found $TERMS" >&2; exit 1; }
+          TERMS=$(npx wp-env run cli wp term list oomph_place --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
+          [ "$TERMS" = "11" ] || { echo "::error::expected 11 destination terms, found ${TERMS:-?}" >&2; exit 1; }
           OUT=$(npx wp-env run cli wp oomph seed destinations 2>&1)
           echo "$OUT"
           echo "$OUT" | grep -q '0 created, 11 already existed' || { echo "::error::the seed command is not idempotent" >&2; exit 1; }
