@@ -1,0 +1,343 @@
+{
+    "key": "group_oomph_destination",
+    "title": "Destination",
+    "fields": [
+        {
+            "key": "field_oomph_dest_note_hero",
+            "label": "Hero photo",
+            "name": "",
+            "type": "message",
+            "message": "The hero photograph is the <strong>Featured image</strong> in the right-hand panel. Full-width, the place is the subject (D11, D13). One image feeds the hero, the destination card and the social preview.",
+            "new_lines": "",
+            "esc_html": 0
+        },
+        {
+            "key": "field_oomph_dest_headline",
+            "label": "Headline",
+            "name": "headline",
+            "type": "text",
+            "instructions": "The H1. Leave empty to use “{Destination}, planned by someone who keeps going back.” Statements, not slogans (plan §5.6); the No List applies.",
+            "required": 0,
+            "maxlength": 80
+        },
+        {
+            "key": "field_oomph_dest_intro",
+            "label": "Intro",
+            "name": "intro",
+            "type": "wysiwyg",
+            "instructions": "Three paragraphs: why this place, how I plan it, who it suits. Rendered at the 720px body measure.",
+            "required": 0,
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "delay": 1
+        },
+        {
+            "key": "field_oomph_dest_variant",
+            "label": "Page variant",
+            "name": "variant",
+            "type": "select",
+            "instructions": "One template, three variants (readiness doc). Custom-first is the default. Resort-first leads with the resort column and the stays. Guided-first is Africa (D33): operators before custom, a three-state when-to-go strip.",
+            "required": 1,
+            "choices": {
+                "custom": "Custom-first (default)",
+                "resort": "Resort-first — Hawaii, Mexico, Caribbean",
+                "guided": "Guided-first — Africa (D33)"
+            },
+            "default_value": "custom",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0
+        },
+        {
+            "key": "field_oomph_dest_regions",
+            "label": "Regions and places",
+            "name": "regions",
+            "type": "repeater",
+            "instructions": "The areas I plan within this destination (Italy: Tuscany, the Lakes, Amalfi, Puglia, Sicily, Dolomites). A heading and two sentences each; not separate pages yet (Not Now list).",
+            "required": 0,
+            "layout": "block",
+            "min": 0,
+            "max": 8,
+            "collapsed": "field_oomph_dest_region_name",
+            "button_label": "Add region",
+            "sub_fields": [
+                {
+                    "key": "field_oomph_dest_region_name",
+                    "label": "Name",
+                    "name": "name",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 60,
+                    "parent_repeater": "field_oomph_dest_regions"
+                },
+                {
+                    "key": "field_oomph_dest_region_blurb",
+                    "label": "Two sentences",
+                    "name": "blurb",
+                    "type": "textarea",
+                    "required": 1,
+                    "rows": 3,
+                    "maxlength": 280,
+                    "new_lines": "",
+                    "parent_repeater": "field_oomph_dest_regions"
+                }
+            ]
+        },
+        {
+            "key": "field_oomph_dest_itinerary",
+            "label": "Sample itinerary",
+            "name": "sample_itinerary",
+            "type": "repeater",
+            "instructions": "“Ten days, one way to do it.” Illustrative, no prices. Shown as an accordion.",
+            "required": 0,
+            "layout": "block",
+            "min": 0,
+            "max": 21,
+            "collapsed": "field_oomph_dest_itin_title",
+            "button_label": "Add day",
+            "sub_fields": [
+                {
+                    "key": "field_oomph_dest_itin_day",
+                    "label": "Day",
+                    "name": "day",
+                    "type": "number",
+                    "required": 1,
+                    "min": 1,
+                    "max": 60,
+                    "step": 1,
+                    "wrapper": { "width": "20", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_dest_itinerary"
+                },
+                {
+                    "key": "field_oomph_dest_itin_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 80,
+                    "wrapper": { "width": "80", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_dest_itinerary"
+                },
+                {
+                    "key": "field_oomph_dest_itin_text",
+                    "label": "Text",
+                    "name": "text",
+                    "type": "textarea",
+                    "required": 0,
+                    "rows": 3,
+                    "new_lines": "",
+                    "parent_repeater": "field_oomph_dest_itinerary"
+                }
+            ]
+        },
+        {
+            "key": "field_oomph_dest_stays",
+            "label": "Stays — where I'd put you",
+            "name": "stays",
+            "type": "repeater",
+            "instructions": "Four property types or named hotels and villas, one line each. No booking links.",
+            "required": 0,
+            "layout": "block",
+            "min": 0,
+            "max": 6,
+            "collapsed": "field_oomph_dest_stay_name",
+            "button_label": "Add stay",
+            "sub_fields": [
+                {
+                    "key": "field_oomph_dest_stay_name",
+                    "label": "Name",
+                    "name": "name",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 80,
+                    "wrapper": { "width": "60", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_dest_stays"
+                },
+                {
+                    "key": "field_oomph_dest_stay_type",
+                    "label": "Type",
+                    "name": "type",
+                    "type": "select",
+                    "required": 1,
+                    "choices": {
+                        "hotel": "Hotel",
+                        "resort": "Resort",
+                        "villa": "Villa",
+                        "private-home": "Private home"
+                    },
+                    "default_value": "hotel",
+                    "return_format": "value",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "wrapper": { "width": "40", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_dest_stays"
+                },
+                {
+                    "key": "field_oomph_dest_stay_note",
+                    "label": "One line",
+                    "name": "note",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 160,
+                    "parent_repeater": "field_oomph_dest_stays"
+                },
+                {
+                    "key": "field_oomph_dest_stay_perks",
+                    "label": "Perks I can usually add",
+                    "name": "perks",
+                    "type": "text",
+                    "instructions": "Conditional wording only — “Depending on the property and rate, I can usually add…” — and only for a property badged SELECT or CURATED (D40). Hidden for villas and private homes: HVN is vetting and access, never perk language (D27).",
+                    "required": 0,
+                    "maxlength": 200,
+                    "conditional_logic": [
+                        [
+                            { "field": "field_oomph_dest_stay_type", "operator": "!=", "value": "villa" },
+                            { "field": "field_oomph_dest_stay_type", "operator": "!=", "value": "private-home" }
+                        ]
+                    ],
+                    "parent_repeater": "field_oomph_dest_stays"
+                }
+            ]
+        },
+        {
+            "key": "field_oomph_dest_best_months",
+            "label": "Best months",
+            "name": "best_months",
+            "type": "checkbox",
+            "instructions": "Highlighted on the twelve-month strip.",
+            "required": 0,
+            "choices": {
+                "1": "January", "2": "February", "3": "March", "4": "April",
+                "5": "May", "6": "June", "7": "July", "8": "August",
+                "9": "September", "10": "October", "11": "November", "12": "December"
+            },
+            "default_value": [],
+            "return_format": "value",
+            "allow_custom": 0,
+            "layout": "horizontal",
+            "toggle": 0,
+            "save_custom": 0
+        },
+        {
+            "key": "field_oomph_dest_shoulder_months",
+            "label": "Possible months",
+            "name": "shoulder_months",
+            "type": "checkbox",
+            "instructions": "Guided variant only: the strip has three states — best, possible, avoid. Tick the months that work but aren't the best; anything unticked in both lists reads as avoid.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    { "field": "field_oomph_dest_variant", "operator": "==", "value": "guided" }
+                ]
+            ],
+            "choices": {
+                "1": "January", "2": "February", "3": "March", "4": "April",
+                "5": "May", "6": "June", "7": "July", "8": "August",
+                "9": "September", "10": "October", "11": "November", "12": "December"
+            },
+            "default_value": [],
+            "return_format": "value",
+            "allow_custom": 0,
+            "layout": "horizontal",
+            "toggle": 0,
+            "save_custom": 0
+        },
+        {
+            "key": "field_oomph_dest_faq",
+            "label": "FAQ",
+            "name": "faq",
+            "type": "repeater",
+            "instructions": "Four to six questions: timeline to book, fees, flights, mobility. Rendered with FAQPage schema, so only what is on the page.",
+            "required": 0,
+            "layout": "block",
+            "min": 0,
+            "max": 6,
+            "collapsed": "field_oomph_dest_faq_q",
+            "button_label": "Add question",
+            "sub_fields": [
+                {
+                    "key": "field_oomph_dest_faq_q",
+                    "label": "Question",
+                    "name": "question",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 120,
+                    "parent_repeater": "field_oomph_dest_faq"
+                },
+                {
+                    "key": "field_oomph_dest_faq_a",
+                    "label": "Answer",
+                    "name": "answer",
+                    "type": "textarea",
+                    "required": 1,
+                    "rows": 4,
+                    "new_lines": "wpautop",
+                    "parent_repeater": "field_oomph_dest_faq"
+                }
+            ]
+        },
+        {
+            "key": "field_oomph_dest_operators",
+            "label": "Related operators",
+            "name": "related_operators",
+            "type": "relationship",
+            "instructions": "The operators the “On an escorted tour” column names. Tours tagged with this destination appear regardless.",
+            "required": 0,
+            "post_type": [ "oomph_operator" ],
+            "post_status": [ "publish", "draft" ],
+            "taxonomy": "",
+            "filters": [ "search" ],
+            "return_format": "id",
+            "min": "",
+            "max": "",
+            "elements": "",
+            "bidirectional": 0
+        },
+        {
+            "key": "field_oomph_dest_cruiseoomph_region",
+            "label": "CruiseOomph region",
+            "name": "cruiseoomph_region",
+            "type": "select",
+            "instructions": "Feeds the “Prefer to see it by ship?” line, which links to cruiseoomph.com/cruises/?region=… with the UTM tag. Leave empty on inland destinations and the line does not render. The choices are the values the CruiseOomph region filter accepts today.",
+            "required": 0,
+            "choices": {
+                "Alaska": "Alaska",
+                "Antarctica": "Antarctica",
+                "Caribbean": "Caribbean",
+                "Japan": "Japan",
+                "Mediterranean": "Mediterranean",
+                "Northern Europe": "Northern Europe"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "ui": 0,
+            "ajax": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "oomph_destination"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "One Destination record per page (plan §6.3, §8.1). Featured image is the hero. Defined in JSON, not in the admin.",
+    "show_in_rest": 0,
+    "modified": 1789000000
+}

@@ -4,6 +4,16 @@ Source-of-truth document for the structured fields that drive page content. **De
 
 **Sync target redirected:** `plugins/oomph-travel-core/includes/class-acf-config.php` filters `acf/settings/save_json` and `acf/settings/load_json` so the JSON lives with the CPTs it describes, not in the theme. Don't put `acf-json/` inside the theme — the filter overrides theme-based detection.
 
+> **Resurfacing 2026-09 (Stage 4).** The rebuild's groups — Destination,
+> Operator, Tour, Inquiry (Groups 5–8 below) — are **written as JSON in the
+> repo first**, not built in the admin (plan §8.1). The JSON is the source of
+> truth; the admin's "Sync available" notice is how each environment adopts
+> it. The plan names **Secure Custom Fields** (the free WordPress.org fork)
+> as the fields plugin; ACF Pro reads the same files. Which one is installed
+> is Eric's decision and is not made by code. Groups 3 and 4 (Group Cruise,
+> Ship Library) were deleted in Stage 2 (D02); their sections are kept below
+> as history only.
+
 ---
 
 ## Workflow
@@ -104,6 +114,79 @@ After sync, editing fields in the admin UI on any environment regenerates the JS
 | `ship_facts` | Repeater | No (3–6 rows when populated) | Each row: `fact_label` (Text), `fact_value` (Text). Guests / Crew / Suites / Launched. |
 
 The ship **intro** is the post_content (classic prose, first person, 2–4 sentences — "When I sailed her in March 2025…"). This group ships as hand-authored JSON (`group_oomph_ship.json`); after deploy, ACF admin will show it pending sync — sync it on each environment.
+
+---
+
+## Group 5 — Destination (`group_oomph_destination.json`)
+
+**Location:** `oomph_destination`. One record per destination page (plan §6.3). The hero is the **featured image**. The Destinations taxonomy term is created and renamed from the post automatically (`CPT_Destination::sync_term()`); nobody edits terms.
+
+| Field name | Type | Notes |
+|---|---|---|
+| `headline` | Text (80) | H1. Empty → "{Destination}, planned by someone who keeps going back." |
+| `intro` | WYSIWYG | Three paragraphs at the 720px measure. |
+| `variant` | Select | `custom` (default) · `resort` (Hawaii, Mexico, Caribbean) · `guided` (Africa, D33). One template, three variants. |
+| `regions` | Repeater | `name`, `blurb`. Max 8. |
+| `sample_itinerary` | Repeater | `day`, `title`, `text`. Illustrative, no prices. |
+| `stays` | Repeater | `name`, `type` (hotel · resort · villa · private-home), `note`, `perks`. `perks` is hidden for villas and private homes (D27, D40). |
+| `best_months` | Checkbox 1–12 | The twelve-month strip. |
+| `shoulder_months` | Checkbox 1–12 | Guided variant only: the third state of the strip. |
+| `faq` | Repeater | `question`, `answer`. Max 6. FAQPage schema. |
+| `related_operators` | Relationship → `oomph_operator` | IDs. |
+| `cruiseoomph_region` | Select | Alaska · Antarctica · Caribbean · Japan · Mediterranean · Northern Europe — the values `cruiseoomph.com/cruises/?region=` accepts. Empty → no "by ship" line. |
+
+## Group 6 — Operator (`group_oomph_operator.json`)
+
+**Location:** `oomph_operator`. Public at `/escorted-tours/{slug}/`. Display order is core `menu_order` (Order box); destinations supported is the Destinations taxonomy.
+
+| Field name | Type | Notes |
+|---|---|---|
+| `kind` | Select, required | `escorted` · `fit` (plan §6.6). |
+| `logo` | Image (ID) | Deferred until brand guidelines are checked. |
+| `fit_line` | Text (120) | The one line on the card. |
+| `fit_note` | WYSIWYG | The operator page body. |
+| `group_size`, `price_band` | Text | |
+| `inclusions` | Textarea | One per line. |
+| `ways` | Checkbox | FIT only: `custom` · `resorts`. Decides the card link. |
+| `cruiseoomph_line` | True/false | Sea voyages sold at CruiseOomph (National Geographic, D32). |
+| `website` | URL | Internal, never printed. |
+
+## Group 7 — Tour (`group_oomph_tour.json`)
+
+**Location:** `oomph_tour`. Public at `/tours/{slug}/`. Featured image is the hero and card photo; destinations are the taxonomy; Publish/Draft is the status. **No departures, no availability** (D35). Every card reads "Dates and availability confirmed on request." (D34).
+
+| Field name | Type | Notes |
+|---|---|---|
+| `operator` | Post object → `oomph_operator`, required | ID. |
+| `blurb` | Textarea (200) | Card blurb. |
+| `nights` | Number, required | |
+| `start_city`, `end_city` | Text | |
+| `from_price` | Number | Whole USD, standard operator from-price only (D36). Empty = unpriced; `$X,XXX` never ships. |
+| `price_note` | Text | Default "per person, double occupancy". |
+| `gallery` | Gallery (IDs) | Max 8. |
+| `itinerary` | Repeater | `day`, `title`, `overnight`, `text`. |
+| `inclusions` | Textarea | One per line. |
+| `group_size`, `pace` | Text | |
+| `brochure_link` | URL | |
+| `erics_note` | WYSIWYG | Required before a tour goes live. |
+| `featured` | True/false | Homepage featured row. |
+
+Admin list columns: operator · nights · from price · destinations · featured (`class-admin-columns.php`).
+
+## Group 8 — Inquiry (`group_oomph_inquiry.json`)
+
+**Location:** `oomph_inquiry`. Private post type: not public, not queryable, not in REST; nobody can add one from the admin. Written by the Start planning form (plan §6.15, Stage P7). Destinations chosen are the taxonomy; the timestamp is the post date.
+
+| Field name | Type | Notes |
+|---|---|---|
+| `trip_type` | Select | `custom` · `escorted` · `resort` · `multigen` · `cruise-land` · `not-sure`. "A cruise" is never stored — it sends to CruiseOomph. |
+| `when`, `travelers`, `budget` | Text | As the form labelled them. |
+| `notes` | Textarea | |
+| `name`, `contact_method` (email · phone · text), `contact_value` | | |
+| `consent`, `newsletter_opt_in` | True/false | The subscribe tick is recorded only; PlainSend handles the subscribe. |
+| `source_page` | Text | |
+| `tour`, `destination` | Post object | Set when the form was opened from a tour or destination page. |
+| `assigned_to` | User | Eric or Amy. |
 
 ---
 

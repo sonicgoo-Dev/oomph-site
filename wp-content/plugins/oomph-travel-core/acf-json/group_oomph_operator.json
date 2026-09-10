@@ -1,0 +1,160 @@
+{
+    "key": "group_oomph_operator",
+    "title": "Operator",
+    "fields": [
+        {
+            "key": "field_oomph_op_note",
+            "label": "Where the rest lives",
+            "name": "",
+            "type": "message",
+            "message": "<strong>Destinations supported</strong> are the Destinations checkboxes in the right-hand panel. <strong>Display order</strong> is the Order box under Page Attributes (lowest first). The title is the operator name as it appears publicly.",
+            "new_lines": "",
+            "esc_html": 0
+        },
+        {
+            "key": "field_oomph_op_kind",
+            "label": "Kind",
+            "name": "kind",
+            "type": "select",
+            "instructions": "Escorted tour operators get an operator page under /escorted-tours/ with their tour cards. FIT suppliers show the destinations and ways to travel they serve and link to Custom journeys or Resorts & villas (plan §6.6). Abercrombie & Kent is escorted only (D26).",
+            "required": 1,
+            "choices": {
+                "escorted": "Escorted tour operator",
+                "fit": "FIT supplier"
+            },
+            "default_value": "escorted",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0
+        },
+        {
+            "key": "field_oomph_op_logo",
+            "label": "Logo",
+            "name": "logo",
+            "type": "image",
+            "instructions": "Deferred until each operator's brand guidelines have been checked (readiness doc). While empty the card shows the grey placeholder, which must not ship.",
+            "required": 0,
+            "return_format": "id",
+            "library": "all",
+            "preview_size": "medium",
+            "mime_types": "svg,png,webp"
+        },
+        {
+            "key": "field_oomph_op_fit_line",
+            "label": "Fit line",
+            "name": "fit_line",
+            "type": "text",
+            "instructions": "The one line on the operator card. Who it suits, in your words.",
+            "required": 0,
+            "maxlength": 120
+        },
+        {
+            "key": "field_oomph_op_fit_note",
+            "label": "Fit note",
+            "name": "fit_note",
+            "type": "wysiwyg",
+            "instructions": "The operator page body: who it suits, who it doesn't, what's included, pace. In my words.",
+            "required": 0,
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "delay": 1
+        },
+        {
+            "key": "field_oomph_op_group_size",
+            "label": "Typical group size",
+            "name": "group_size",
+            "type": "text",
+            "required": 0,
+            "maxlength": 60,
+            "placeholder": "e.g. 24 to 40",
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_op_price_band",
+            "label": "Price band",
+            "name": "price_band",
+            "type": "text",
+            "instructions": "A word or two, not a number: Premium, Luxury, Ultra-luxury.",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_op_inclusions",
+            "label": "Inclusions",
+            "name": "inclusions",
+            "type": "textarea",
+            "instructions": "One per line. What a typical trip with this operator includes.",
+            "required": 0,
+            "rows": 5,
+            "new_lines": ""
+        },
+        {
+            "key": "field_oomph_op_ways",
+            "label": "Ways to travel served",
+            "name": "ways",
+            "type": "checkbox",
+            "instructions": "FIT suppliers only. Decides which page the card links to and the trip types it lists (Card / Operator, FIT variant).",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    { "field": "field_oomph_op_kind", "operator": "==", "value": "fit" }
+                ]
+            ],
+            "choices": {
+                "custom": "Custom journeys",
+                "resorts": "Resorts & villas"
+            },
+            "default_value": [ "custom" ],
+            "return_format": "value",
+            "allow_custom": 0,
+            "layout": "horizontal",
+            "toggle": 0,
+            "save_custom": 0
+        },
+        {
+            "key": "field_oomph_op_cruiseoomph_line",
+            "label": "Sea voyages at CruiseOomph",
+            "name": "cruiseoomph_line",
+            "type": "true_false",
+            "instructions": "This operator also runs ship-based voyages, which are sold at CruiseOomph. Adds the one-line hand-off to the card and page. National Geographic Expeditions (D32).",
+            "required": 0,
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No"
+        },
+        {
+            "key": "field_oomph_op_website",
+            "label": "Website",
+            "name": "website",
+            "type": "url",
+            "instructions": "Internal reference only. Never printed on the site.",
+            "required": 0,
+            "placeholder": "https://"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "oomph_operator"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "One Operator record per vendor (plan §6.6, §8.1). Seven at launch (D25).",
+    "show_in_rest": 0,
+    "modified": 1789000000
+}
