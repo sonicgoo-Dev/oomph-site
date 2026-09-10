@@ -67,6 +67,22 @@ jobs:
             wp-content/themes/kadence-oomph-child/ \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:${{ steps.target.outputs.path }}/
 
+      - name: Deploy oomphtravel block theme via rsync
+        run: |
+          # The new theme (D41) ships alongside kadence-oomph-child until the
+          # switch; inactive on the server, so deploying it changes nothing a
+          # visitor sees. Path derived like the plugin's, no new secret.
+          THEME2_PATH="${{ steps.target.outputs.path }}"
+          THEME2_PATH="${THEME2_PATH/themes\/kadence-oomph-child/themes\/oomphtravel}"
+          echo "Deploying oomphtravel theme to: $THEME2_PATH"
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='*.md' \
+            --exclude='.DS_Store' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }}" \
+            wp-content/themes/oomphtravel/ \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:$THEME2_PATH/
+
       - name: Deploy oomph-travel-core plugin via rsync
         run: |
           # Derive plugin path from theme path — same hosting layout, swap

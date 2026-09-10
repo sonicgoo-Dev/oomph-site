@@ -1,5 +1,24 @@
 # CLAUDE.md — Oomph Travel WordPress Build
 
+> ## Resurfacing 2026-09 — read this box first
+>
+> The site is being repositioned away from cruise (D01) and rebuilt on a new
+> block theme forked from CruiseOomph (D41). **`design-handoff/` is the
+> authority** for colour, type, components and decisions — see
+> `design-handoff/README.md` for the read order. Where anything below
+> disagrees with the handoff, the handoff wins. Specifically superseded:
+>
+> - **Theme:** `wp-content/themes/oomphtravel/` (block theme, no parent). `kadence-oomph-child` is retired at the end of the rebuild — until then both ship, and only the child is active.
+> - **Palette:** D21 Deep Teal — Marine Navy `navy/marine`, Ink, Slate, Deep Teal `accent/teal`, Mist. Warm Bone, Old Brass and the whole "Deep Marine" recipe below are retired. `surface/white` **is** `#FFFFFF`; the "never pure white" rule no longer applies.
+> - **Buttons:** rounded `radius/pill` (999px), 15×28 padding, teal fill, white label (plan §5.4). The "never pill" rule no longer applies. One primary button per section.
+> - **Type:** 22 styles in `design-handoff/tokens/type.css`, ported to `theme.json` + `assets/css/type.css`. Fraunces Display is opsz 144 for the hero only. **Arrows are never set in Fraunces** — use `.ot-arrow`.
+> - **Forms:** Fluent Forms goes once Start planning (plan §6.15) replaces `/discovery-call/` (D31). Newsletter and Travel Trends post to PlainSend (D30).
+> - **Cruise:** sells at cruiseoomph.com; every cruise route here hands off with the UTM tag in `docs/02-components.md`. The importer, sailings, quiz and nine cruise posts are deleted, not redirected (D02).
+> - **Plugin path** is `wp-content/plugins/oomph-travel-core/`, not `plugins/`.
+>
+> The No List gains: bespoke · wanderlust · magical · breathtaking · curated · jaw-dropping · paradise · bucket list (already there) — and the readiness doc's placeholder markers (`[…]`, `$X,XXX`) must never ship.
+
+
 You are the paired developer on the oomphtravel.com rebuild. Read this file at the start of every session. The rules below are imperative — follow them.
 
 ## Project overview
@@ -38,8 +57,8 @@ oomph-site/
 ├── wp-content/
 │   └── themes/
 │       └── kadence-oomph-child/   ← child theme (presentation)
-├── plugins/
-│   └── oomph-travel-core/         ← custom plugin (CPTs, schema, env guards)
+│   └── plugins/
+│       └── oomph-travel-core/     ← custom plugin (CPTs, schema, env guards)
 │           ├── style.css
 │           ├── functions.php
 │           ├── theme.json
@@ -54,7 +73,7 @@ oomph-site/
 └── .gitignore
 ```
 
-**You only edit files inside `wp-content/themes/kadence-oomph-child/` and `plugins/oomph-travel-core/`.** Never modify Kadence parent theme files; if you need to change parent behavior, override in the child. Presentation belongs in the theme; CPTs, schema, and environment-aware code belong in the plugin (so the data layer survives a theme switch).
+**You only edit files inside `wp-content/themes/oomphtravel/`, `wp-content/themes/kadence-oomph-child/` (maintenance only) and `wp-content/plugins/oomph-travel-core/`.** Never modify Kadence parent theme files; if you need to change parent behavior, override in the child. Presentation belongs in the theme; CPTs, schema, and environment-aware code belong in the plugin (so the data layer survives a theme switch).
 
 ## Imported docs (load on demand)
 

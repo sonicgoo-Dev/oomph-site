@@ -1,0 +1,63 @@
+/*
+ * OomphTravel tokens — the Figma names, aliased onto the theme.json presets.
+ *
+ * Source of truth: design-handoff/tokens/tokens.json → theme.json (generated).
+ * WordPress emits every value as --wp--preset-* / --wp--custom-*; this file
+ * only gives them the names the design uses (navy/marine → --navy-marine) so
+ * component CSS can be read against the Figma inspector. No hex lives here.
+ * If a value is wrong, fix it in Figma, re-export, regenerate theme.json.
+ */
+
+:root {
+	/* ---- Colour (18) ---- */
+	--navy-marine:          var(--wp--preset--color--navy-marine);
+	--navy-deep:            var(--wp--preset--color--navy-deep);
+	--text-ink:             var(--wp--preset--color--text-ink);
+	--text-slate:           var(--wp--preset--color--text-slate);
+	--text-muted:           var(--wp--preset--color--text-muted);
+	--text-on-navy:         var(--wp--preset--color--text-on-navy);
+	--text-on-navy-faint:   var(--wp--preset--color--text-on-navy-faint);
+	--accent-teal:          var(--wp--preset--color--accent-teal);
+	--accent-teal-on-navy:  var(--wp--preset--color--accent-teal-on-navy);
+	--surface-white:        var(--wp--preset--color--surface-white);
+	--surface-mist:         var(--wp--preset--color--surface-mist);
+	--surface-mist-deep:    var(--wp--preset--color--surface-mist-deep);
+	--surface-on-navy-light: var(--wp--preset--color--surface-on-navy-light);
+	--line-hairline:        var(--wp--preset--color--line-hairline);
+	--line-on-navy:         var(--wp--preset--color--line-on-navy);
+	--logo-teal:            var(--wp--preset--color--logo-teal);   /* inside the symbol only */
+	--logo-coral:           var(--wp--preset--color--logo-coral);  /* inside the symbol only */
+	--logo-ink:             var(--wp--preset--color--logo-ink);    /* inside the symbol only */
+
+	/* ---- Spacing, radius, size (13) ---- */
+	--space-section-desktop:     var(--wp--preset--spacing--section-desktop);
+	--space-section-mobile:      var(--wp--preset--spacing--section-mobile);
+	--space-xl:                  var(--wp--preset--spacing--xl);
+	--space-lg:                  var(--wp--preset--spacing--lg);
+	--space-md:                  var(--wp--preset--spacing--md);
+	--space-sm:                  var(--wp--preset--spacing--sm);
+	--space-xs:                  var(--wp--preset--spacing--xs);
+	--space-page-margin-desktop: var(--wp--preset--spacing--page-margin-desktop);
+	--space-page-margin-mobile:  var(--wp--preset--spacing--page-margin-mobile);
+	--radius-card:               var(--wp--custom--radius--card);
+	--radius-pill:               var(--wp--custom--radius--pill);
+	--size-header-desktop:       var(--wp--custom--size--header-desktop);
+	--size-header-mobile:        var(--wp--custom--size--header-mobile);
+
+	/* ---- Responsive aliases: mobile values by default, desktop from 768px ---- */
+	--space-section:     var(--space-section-mobile);
+	--space-page-margin: var(--space-page-margin-mobile);
+	--size-header:       var(--size-header-mobile);
+
+	/* ---- Type families ---- */
+	--font-display: var(--wp--preset--font-family--fraunces);
+	--font-body:    var(--wp--preset--font-family--inter);
+}
+
+@media (min-width: 768px) {
+	:root {
+		--space-section:     var(--space-section-desktop);
+		--space-page-margin: var(--space-page-margin-desktop);
+		--size-header:       var(--size-header-desktop);
+	}
+}
