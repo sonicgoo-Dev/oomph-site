@@ -28,6 +28,9 @@ export default defineConfig({
     {
       name: 'desktop-chromium',
       use: { ...devices['Desktop Chrome'] },
+      // @mobile specs describe phone-only behaviour — the drawer toggle is
+      // correctly hidden at desktop width — so they belong to one project.
+      grepInvert: /@mobile/,
     },
     {
       name: 'mobile-chrome',

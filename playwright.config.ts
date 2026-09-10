@@ -45,6 +45,9 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      // @mobile specs belong to the phone project only. Without this they run
+      // here too, against a viewport they were never written for.
+      grepInvert: /@mobile/,
     },
     {
       // Mobile viewport — runs only @mobile-tagged specs (sticky CTA / mobile nav).
