@@ -1,0 +1,20 @@
+<!--
+  PLACEHOLDER — not Eric's artwork.
+
+  docs/02-components.md · Logo / Symbol (487 × 518) calls for a vector redraw of
+  Eric's luggage symbol (D22): a teal organic shape holding a red rolling
+  suitcase with an airplane silhouette and a small cloud (plan §5.7). No vector
+  or PNG of that artwork was supplied with the handoff, so this file stands in
+  with the same viewBox, the same four fills and the same class hooks. Replace
+  the paths, keep the classes: every fill is bound in components.css to
+  logo/teal, logo/coral, logo/ink and surface/white. Nothing else changes.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 487 518" role="img" focusable="false">
+	<path class="ot-symbol__teal" d="M243 12c118 0 222 92 222 216 0 116-62 176-96 216-32 38-72 62-126 62-56 0-100-28-134-70C68 384 22 330 22 224 22 100 126 12 243 12z"/>
+	<rect class="ot-symbol__coral" x="152" y="212" width="184" height="176" rx="22"/>
+	<rect class="ot-symbol__ink" x="212" y="170" width="64" height="42" rx="10"/>
+	<rect class="ot-symbol__ink" x="176" y="388" width="34" height="30" rx="8"/>
+	<rect class="ot-symbol__ink" x="278" y="388" width="34" height="30" rx="8"/>
+	<path class="ot-symbol__white" d="M118 156c0-16 12-28 28-28 6 0 12 2 16 6 6-18 22-30 42-30 22 0 40 16 44 36h4c14 0 24 10 24 24s-10 24-24 24H142c-14 0-24-12-24-32z"/>
+	<path class="ot-symbol__ink" d="M312 92l50-26 14 8-38 30 8 34-10 6-16-30-24 10-4-8 22-14-14-10 4-6 8 6z"/>
+</svg>

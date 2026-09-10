@@ -54,3 +54,18 @@ function oomphtravel_single_title_tag(): void {
 	}
 }
 add_action( 'wp_head', 'oomphtravel_single_title_tag', 0 );
+
+/**
+ * One pattern category for the Stage 3 components, so they sit together in
+ * the inserter. Header and footer are `Inserter: no` and never appear there.
+ */
+function oomphtravel_pattern_category(): void {
+	register_block_pattern_category(
+		'oomphtravel',
+		array(
+			'label'       => __( 'OomphTravel', 'oomphtravel' ),
+			'description' => __( 'Bands, cards and headings from the component inventory.', 'oomphtravel' ),
+		)
+	);
+}
+add_action( 'init', 'oomphtravel_pattern_category' );

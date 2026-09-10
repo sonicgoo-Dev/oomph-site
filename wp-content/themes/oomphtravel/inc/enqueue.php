@@ -4,7 +4,9 @@
  *
  * Fonts are declared in theme.json (fontFace) and emitted by WordPress. This
  * file adds the one preload hint that measured well, and loads the token,
- * type and shell stylesheets. Page-specific CSS arrives with later stages.
+ * type, shell and component stylesheets, plus the small deferred shell script
+ * (header state, dropdowns, mobile drawer, deferred pictures, ticker control).
+ * Page-specific CSS arrives with later stages.
  *
  * @package OomphTravel
  */
@@ -22,6 +24,15 @@ function oomphtravel_enqueue_assets(): void {
 	wp_enqueue_style( 'oomphtravel-tokens', OOMPHTRAVEL_THEME_URI . 'assets/css/tokens.css', array( 'oomphtravel-style' ), $v );
 	wp_enqueue_style( 'oomphtravel-type', OOMPHTRAVEL_THEME_URI . 'assets/css/type.css', array( 'oomphtravel-tokens' ), $v );
 	wp_enqueue_style( 'oomphtravel-theme', OOMPHTRAVEL_THEME_URI . 'assets/css/theme.css', array( 'oomphtravel-type' ), $v );
+	wp_enqueue_style( 'oomphtravel-components', OOMPHTRAVEL_THEME_URI . 'assets/css/components.css', array( 'oomphtravel-theme' ), $v );
+
+	wp_enqueue_script(
+		'oomphtravel-shell',
+		OOMPHTRAVEL_THEME_URI . 'assets/js/shell.js',
+		array(),
+		$v,
+		array( 'strategy' => 'defer' )
+	);
 }
 add_action( 'wp_enqueue_scripts', 'oomphtravel_enqueue_assets' );
 
@@ -29,7 +40,7 @@ add_action( 'wp_enqueue_scripts', 'oomphtravel_enqueue_assets' );
  * Load the same sheets in the block editor so patterns look right there.
  */
 function oomphtravel_editor_styles(): void {
-	add_editor_style( array( 'assets/css/tokens.css', 'assets/css/type.css', 'assets/css/theme.css' ) );
+	add_editor_style( array( 'assets/css/tokens.css', 'assets/css/type.css', 'assets/css/theme.css', 'assets/css/components.css' ) );
 }
 add_action( 'after_setup_theme', 'oomphtravel_editor_styles' );
 

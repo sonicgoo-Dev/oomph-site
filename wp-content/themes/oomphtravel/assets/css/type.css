@@ -275,3 +275,46 @@ a:hover > .ot-arrow,
 	font-style: var(--wp--custom--type--mobile--wordmark--style);
 	text-transform: var(--wp--custom--type--mobile--wordmark--transform);
 }
+
+/*
+ * Responsive role aliases (Stage 3). Eight styles have a Mobile/ twin; these
+ * resolve to the mobile value by default and the desktop value from 768px,
+ * so a component can say `font-size: var(--type-h3-size)` once instead of
+ * repeating the media query. Styles without a mobile twin (quote, price,
+ * meta, button, nav, h2-statement) are read directly from --wp--custom--type.
+ */
+:root {
+	--type-display-size:      var(--wp--custom--type--mobile--display--size);
+	--type-display-line:      var(--wp--custom--type--mobile--display--line-height);
+	--type-h1-size:           var(--wp--custom--type--mobile--h1--size);
+	--type-h1-line:           var(--wp--custom--type--mobile--h1--line-height);
+	--type-h2-size:           var(--wp--custom--type--mobile--h2--size);
+	--type-h2-line:           var(--wp--custom--type--mobile--h2--line-height);
+	--type-h3-size:           var(--wp--custom--type--mobile--h3--size);
+	--type-h3-line:           var(--wp--custom--type--mobile--h3--line-height);
+	--type-body-size:         var(--wp--custom--type--mobile--body--size);
+	--type-body-line:         var(--wp--custom--type--mobile--body--line-height);
+	--type-body-small-size:   var(--wp--custom--type--mobile--body-small--size);
+	--type-body-small-line:   var(--wp--custom--type--mobile--body-small--line-height);
+	--type-eyebrow-size:      var(--wp--custom--type--mobile--eyebrow--size);
+	--type-wordmark-size:     var(--wp--custom--type--mobile--wordmark--size);
+}
+
+@media (min-width: 768px) {
+	:root {
+		--type-display-size:    var(--wp--custom--type--desktop--display--size);
+		--type-display-line:    var(--wp--custom--type--desktop--display--line-height);
+		--type-h1-size:         var(--wp--custom--type--desktop--h1--size);
+		--type-h1-line:         var(--wp--custom--type--desktop--h1--line-height);
+		--type-h2-size:         var(--wp--custom--type--desktop--h2--size);
+		--type-h2-line:         var(--wp--custom--type--desktop--h2--line-height);
+		--type-h3-size:         var(--wp--custom--type--desktop--h3--size);
+		--type-h3-line:         var(--wp--custom--type--desktop--h3--line-height);
+		--type-body-size:       var(--wp--custom--type--desktop--body--size);
+		--type-body-line:       var(--wp--custom--type--desktop--body--line-height);
+		--type-body-small-size: var(--wp--custom--type--desktop--body-small--size);
+		--type-body-small-line: var(--wp--custom--type--desktop--body-small--line-height);
+		--type-eyebrow-size:    var(--wp--custom--type--desktop--eyebrow--size);
+		--type-wordmark-size:   var(--wp--custom--type--desktop--wordmark--size);
+	}
+}
