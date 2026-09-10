@@ -12,9 +12,8 @@
  * - `isDiscoveryDest`: the sitewide "Start a conversation" CTA points here, so
  *               this page is exempt from the CTA-presence check.
  * - `noSitewideCta`: pages that intentionally run their own funnel instead of the
- *               sitewide CTA — the Journal archive, the Cabin Quiz (its results
- *               step has a "Book a 30-minute call" CTA), and the Cruise Trends
- *               lead magnet. Exempt from the CTA-presence check.
+ *               sitewide CTA — today only the Journal archive. Exempt from the
+ *               CTA-presence check.
  */
 
 export interface RouteFixture {
@@ -69,26 +68,6 @@ export const ROUTES: RouteFixture[] = [
     path: '/client-stories/',
     name: 'Client Stories',
     types: ['BreadcrumbList'],
-  },
-  {
-    path: '/trip-quiz/',
-    name: 'Cabin Quiz',
-    h1: /cruise cabin match/i,
-    types: ['BreadcrumbList'],
-    noSitewideCta: true,
-  },
-  {
-    path: '/cruise-travel-trends/',
-    name: 'Cruise Trends (lead magnet)',
-    h1: /worth watching at sea/i,
-    types: ['BreadcrumbList'],
-    noSitewideCta: true,
-  },
-  {
-    path: '/group-cruises/',
-    name: 'Group Cruises (archive)',
-    h1: /sailings worth booking/i,
-    types: [], // CPT archive — no BreadcrumbList
   },
   {
     path: '/links/',

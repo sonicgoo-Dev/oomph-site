@@ -80,8 +80,7 @@ add_action( 'wp_enqueue_scripts', 'oomph_child_enqueue_styles', 20 );
  * so the browser can't discover a font until that CSS has downloaded AND
  * parsed — measured at 4.5–5.3s FCP on throttled mobile. Only Inter is
  * preloaded: it's the body face, so it renders every above-the-fold text
- * element on every template, including `.oomph-dv-hero__ship`, which is the
- * actual LCP element on /group-cruises/. Fraunces is deliberately NOT
+ * element on every template. Fraunces is deliberately NOT
  * preloaded — it only sets headlines, `font-display: swap` paints those in the
  * fallback immediately, and preloading another ~100KB would compete with the
  * hero image for bandwidth on the pages where the hero *is* the LCP.
@@ -118,65 +117,6 @@ function oomph_child_resource_hints(): void {
 	}
 }
 add_action( 'wp_head', 'oomph_child_resource_hints', 1 );
-
-/**
- * Group Cruise single stylesheet — only on single oomph_cruise views.
- *
- * @return void
- */
-function oomph_child_enqueue_cruise(): void {
-	if ( ! is_singular( 'oomph_cruise' ) && ! is_post_type_archive( 'oomph_cruise' ) ) {
-		return;
-	}
-	$path = get_stylesheet_directory() . '/assets/css/dv-sailing.css';
-	if ( file_exists( $path ) ) {
-		wp_enqueue_style(
-			'oomph-dv-sailing',
-			get_stylesheet_directory_uri() . '/assets/css/dv-sailing.css',
-			array( 'oomph-components' ),
-			(string) filemtime( $path )
-		);
-	}
-}
-add_action( 'wp_enqueue_scripts', 'oomph_child_enqueue_cruise', 20 );
-
-/**
- * Force light color-scheme on cruise singles.
- *
- * The DV and hosted layouts use deep navy surfaces with light type; a mobile
- * browser's automatic dark mode would otherwise recolour them and break
- * contrast. Emitted in <head> because a template can't reach it after the fact.
- *
- * @return void
- */
-function oomph_child_cruise_color_scheme(): void {
-	if ( is_singular( 'oomph_cruise' ) || is_post_type_archive( 'oomph_cruise' ) ) {
-		echo '<meta name="color-scheme" content="light only">' . "\n";
-	}
-}
-add_action( 'wp_head', 'oomph_child_cruise_color_scheme', 1 );
-
-/**
- * Cabin quiz script — only on the /trip-quiz/ page.
- *
- * @return void
- */
-function oomph_child_enqueue_quiz(): void {
-	if ( ! is_page( 'trip-quiz' ) ) {
-		return;
-	}
-	$path = get_stylesheet_directory() . '/assets/js/cabin-quiz.js';
-	if ( file_exists( $path ) ) {
-		wp_enqueue_script(
-			'oomph-cabin-quiz',
-			get_stylesheet_directory_uri() . '/assets/js/cabin-quiz.js',
-			array( 'jquery' ),
-			(string) filemtime( $path ),
-			true
-		);
-	}
-}
-add_action( 'wp_enqueue_scripts', 'oomph_child_enqueue_quiz', 20 );
 
 /**
  * Link-in-bio stylesheet — only on the /links/ page.
@@ -237,7 +177,7 @@ add_action( 'init', 'oomph_child_disable_emojis' );
  * Dequeue Fluent Forms assets on pages that render no Fluent form.
  *
  * Fluent Forms contributes ~43KB of the combined CSS on every page while
- * its forms only appear on Discovery Call and Trip Quiz. Dropping the
+ * its only remaining form is the Discovery Call intake. Dropping the
  * assets elsewhere fixes the /links/ LCP regression traced to the
  * combined stylesheet.
  *
@@ -246,8 +186,8 @@ add_action( 'init', 'oomph_child_disable_emojis' );
  * @return void
  */
 function oomph_child_dequeue_fluentform_assets(): void {
-	// The only pages that render a Fluent form.
-	if ( is_page( array( 'discovery-call', 'trip-quiz' ) ) ) {
+	// The only page that still renders a Fluent form (Start planning replaces it — plan §6.15).
+	if ( is_page( 'discovery-call' ) ) {
 		return;
 	}
 

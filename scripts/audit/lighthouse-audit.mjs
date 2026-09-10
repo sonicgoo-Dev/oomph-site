@@ -7,7 +7,7 @@
  *   LH_RUNS=1 npm run audit:lh             # single run (fast, but not evidence)
  *
  * Reads the page-type inventory from tests/e2e/fixtures/routes.ts (single
- * source of truth), adds the newest journal post + soonest sailing discovered
+ * source of truth), adds the newest journal post discovered
  * from the live site, runs `npx lighthouse` (mobile emulation is Lighthouse's
  * default) against each, and writes:
  *   - scripts/audit/out/lighthouse.json   (full per-URL numbers)
@@ -49,12 +49,7 @@ const journalPost = await discoverFirst(
   '/journal/',
   /class="oomph-card oomph-card--clickable[^"]*" href="([^"]+)"/
 );
-const sailing = await discoverFirst(
-  '/group-cruises/',
-  /class="oomph-card oomph-card--clickable oomph-sailing-card" href="([^"]+)"/
-);
 if (journalPost) paths.push(journalPost);
-if (sailing) paths.push(sailing);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const results = [];

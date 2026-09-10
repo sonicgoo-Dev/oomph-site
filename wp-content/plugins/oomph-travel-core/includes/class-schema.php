@@ -4,7 +4,7 @@
  *
  * Single output() entry on wp_head outputs one combined @graph that
  * covers Organization, Person, BreadcrumbList sitewide, plus contextual
- * Service / Event / FAQPage / Article depending on page type.
+ * Service / FAQPage / Article depending on page type.
  *
  * Bodies of each graph come from docs/schema.md. Real values (URLs,
  * dates, photo paths) substitute placeholders at runtime via
@@ -108,13 +108,6 @@ final class Schema {
 
 		if ( is_singular() || is_front_page() ) {
 			$graph[] = self::breadcrumb();
-		}
-
-		if ( is_singular( CPT_Cruise::POST_TYPE ) ) {
-			$event = self::event_for_current_post();
-			if ( $event ) {
-				$graph[] = $event;
-			}
 		}
 
 		if ( is_singular( 'post' ) ) {
@@ -364,114 +357,6 @@ final class Schema {
 			'@id'        => (string) get_permalink( get_post() ) . '#faq',
 			'mainEntity' => $main_entity,
 		);
-	}
-
-	/**
-	 * Event schema for a single oomph_cruise, driven by the Group Cruise ACF
-	 * fields. Every property is emitted only when its source field is real:
-	 *
-	 *   • Distinctive Voyages → Event + startDate/endDate + ship-as-Place
-	 *     location + one subEvent per populated shore event. NO offers — these
-	 *     sailings carry no price data, and availability is never fabricated.
-	 *   • Hosted / amenity → Event + offers when a real price exists.
-	 *
-	 * Booking references are never read here.
-	 */
-	private static function event_for_current_post(): ?array {
-		$post = get_post();
-		if ( ! $post ) {
-			return null;
-		}
-
-		$f = static function ( string $name ) use ( $post ) {
-			return function_exists( 'get_field' ) ? get_field( $name, $post->ID ) : null;
-		};
-
-		$sailing_type = (string) ( $f( 'sailing_type' ) ?: 'hosted_group' );
-		$ship         = trim( (string) $f( 'cruise_ship_name' ) );
-		$line         = trim( (string) $f( 'cruise_line' ) );
-		$start        = (string) $f( 'cruise_dates_start' );
-		$end          = (string) $f( 'cruise_dates_end' );
-		$url          = (string) get_permalink( $post );
-
-		$event = array(
-			'@type'               => 'Event',
-			'@id'                 => $url . '#event',
-			'name'                => get_the_title( $post ),
-			'url'                 => $url,
-			'eventStatus'         => 'https://schema.org/EventScheduled',
-			'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-			'organizer'           => array( '@id' => home_url( '/' ) . '#organization' ),
-		);
-
-		if ( '' !== $start ) {
-			$event['startDate'] = $start;
-		}
-		if ( '' !== $end ) {
-			$event['endDate'] = $end;
-		}
-		if ( '' !== $ship ) {
-			$event['location'] = array(
-				'@type' => 'Place',
-				'name'  => '' !== $line ? "{$ship} ({$line})" : $ship,
-			);
-		}
-
-		// Description only from real editorial copy — never the import placeholder.
-		$desc = wp_strip_all_tags( (string) get_the_excerpt( $post ) );
-		if ( '' !== $desc && false === strpos( $desc, 'WHY THIS SAILING' ) ) {
-			$event['description'] = $desc;
-		}
-
-		if ( 'distinctive_voyage' === $sailing_type ) {
-			$subs = array();
-			for ( $n = 1; $n <= 3; $n++ ) {
-				$name = trim( (string) $f( "shore_event_{$n}_name" ) );
-				if ( '' === $name ) {
-					continue;
-				}
-				$sub  = array(
-					'@type' => 'Event',
-					'name'  => $name,
-				);
-				$sdate = (string) $f( "shore_event_{$n}_date" );
-				if ( '' !== $sdate ) {
-					$sub['startDate'] = $sdate;
-				}
-				$sloc = trim( (string) $f( "shore_event_{$n}_location" ) );
-				if ( '' !== $sloc ) {
-					$sub['location'] = array( '@type' => 'Place', 'name' => $sloc );
-				}
-				$sdet = trim( (string) $f( "shore_event_{$n}_details" ) );
-				if ( '' !== $sdet ) {
-					$sub['description'] = $sdet;
-				}
-				$slink = trim( (string) $f( "shore_event_{$n}_link" ) ); // Flyer — also shown on the page.
-				if ( '' !== $slink ) {
-					$sub['url'] = $slink;
-				}
-				$subs[] = $sub;
-			}
-			if ( ! empty( $subs ) ) {
-				$event['subEvent'] = $subs;
-			}
-			// No offers for Distinctive Voyages — price data does not exist.
-			return $event;
-		}
-
-		// Hosted / amenity — attach offers only when a real price is set.
-		$price = $f( 'cruise_price_per_person' );
-		if ( is_numeric( $price ) && (float) $price > 0 ) {
-			$event['offers'] = array(
-				'@type'         => 'Offer',
-				'price'         => (string) ( (float) $price ),
-				'priceCurrency' => 'USD',
-				'availability'  => 'https://schema.org/InStock',
-				'url'           => $url,
-			);
-		}
-
-		return $event;
 	}
 
 	/**

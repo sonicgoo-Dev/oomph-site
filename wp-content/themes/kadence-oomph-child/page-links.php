@@ -12,9 +12,6 @@
  *     post and this page updates itself — nothing to swap after a post goes
  *     live. Override with the `oomph_links_featured_post_id` filter to pin a
  *     different post (e.g. an evergreen one during a quiet month).
- *   • The Group Cruises row is the one exception: its meta line is a fixed
- *     string, not a live count — see the inline comment at $sailings_meta
- *     and #46 for why.
  *
  * One primary CTA (the discovery call) per CLAUDE.md; everything else is a
  * quiet row. Deep ground because the page is read on a phone in a feed
@@ -55,8 +52,7 @@ if ( (bool) apply_filters( 'oomph_links_noindex', true ) ) {
 	);
 }
 
-// Automatic dark-mode recolouring would wreck a deep-ground page (same reason
-// the cruise singles pin this). Emitted here because wp_head has not run yet.
+// Automatic dark-mode recolouring would wreck a deep-ground page. Emitted here because wp_head has not run yet.
 add_action(
 	'wp_head',
 	static function (): void {
@@ -92,40 +88,9 @@ if ( $featured && 'publish' !== $featured->post_status ) {
 }
 
 /* -------------------------------------------------------------------------
- * Group Cruises row copy.
- *
- * Deliberately a fixed string, not a live count. The count was live and, after
- * #45, accurate — but no available filter produced a number worth printing:
- * every published sailing came to ~900, the archive's bookable window to 731,
- * and hosted-only to 338 on production and zero on staging. The "three
- * sailings open right now" this row was written for describes a catalogue that
- * the Silversea and amenity imports have long since outgrown.
- *
- * Restoring the count means deciding what the number should mean first. The
- * machinery is in git — see #45 — and the archive helper to rebuild it from is
- * oomph_sailings_query_args().
- * ---------------------------------------------------------------------- */
-$sailings_meta = 'The sailings I’m hosting';
-
-/* -------------------------------------------------------------------------
  * The quiet rows. Order is deliberate: lowest commitment first.
  * ---------------------------------------------------------------------- */
 $rows = array(
-	array(
-		'url'   => '/trip-quiz/',
-		'label' => 'Which cabin actually suits you?',
-		'meta'  => 'Seven questions, about two minutes',
-	),
-	array(
-		'url'   => '/group-cruises/',
-		'label' => 'Group cruises',
-		'meta'  => $sailings_meta,
-	),
-	array(
-		'url'   => '/cruise-travel-trends/',
-		'label' => 'Cruise Trends guide',
-		'meta'  => 'What’s changing at sea, and what it means for your next booking',
-	),
 	array(
 		'url'   => '/journal/',
 		'label' => 'The Journal',

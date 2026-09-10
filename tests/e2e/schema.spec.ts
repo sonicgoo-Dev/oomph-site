@@ -36,18 +36,4 @@ test.describe('JSON-LD schema', () => {
     await expectSchemaTypes(page, ['BlogPosting', 'TravelAgency', 'Person']);
   });
 
-  test('a published DV sailing carries Event', async ({ page }) => {
-    await page.goto('/group-cruises/', { waitUntil: 'domcontentloaded' });
-    // Scope to actual sailing cards — not the nav's "Group Cruises" link.
-    const firstSailing = page.locator('a.oomph-sailing-card').first();
-
-    if ((await firstSailing.count()) === 0) {
-      test.skip(true, 'No published sailings to assert against.');
-    }
-
-    await firstSailing.click();
-    await page.waitForLoadState('domcontentloaded');
-    const types = await getJsonLdTypes(page);
-    expect(types, `sailing schema (found: ${types.join(', ')})`).toContain('Event');
-  });
 });

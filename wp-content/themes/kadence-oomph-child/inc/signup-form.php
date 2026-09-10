@@ -2,8 +2,8 @@
 /**
  * The Plainsend signup form, in one place.
  *
- * Three surfaces need the same markup — the sitewide footer, the Cruise Travel
- * Trends landing page, and (next) the cabin quiz — differing only in which
+ * More than one surface needs the same markup — the sitewide footer today, the
+ * Travel Trends landing page next (plan §6.14) — differing only in which
  * Plainsend form receives the signup and what the button says. Duplicating it
  * would mean the honeypot or the timing field going missing from one copy and
  * nobody noticing until signups quietly stopped arriving.
