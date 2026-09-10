@@ -1,12 +1,17 @@
 <?php
 /**
- * ACF Pro configuration — redirect JSON sync into the plugin.
+ * Fields plugin configuration — redirect JSON sync into the plugin.
  *
- * By default ACF saves field groups to the database and (optionally)
- * to acf-json/ in the active theme. We want them in the plugin
+ * Works with Secure Custom Fields (the WordPress.org fork the plan names in
+ * §8.1) and with ACF Pro: both read the same acf-json format and honour the
+ * same `acf/settings/*` filters. Which one is installed is Eric's call; the
+ * field groups in acf-json/ are the source of truth either way.
+ *
+ * By default the fields plugin saves field groups to the database and
+ * (optionally) to acf-json/ in the active theme. We want them in the plugin
  * because:
  *   1. The fields describe data that lives on plugin-registered CPTs
- *      (Destination, Itinerary, Cruise) — they belong with the CPT
+ *      (Destination, Operator, Tour, Inquiry) — they belong with the CPT
  *      definitions, not with the theme.
  *   2. Switching themes shouldn't orphan field group definitions.
  *

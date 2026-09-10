@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Oomph Travel Core
  * Plugin URI:        https://oomphtravel.com
- * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the child theme; this lives in a plugin so it survives a theme switch.
- * Version:           1.1.0
+ * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the theme; this lives in a plugin so it survives a theme switch.
+ * Version:           1.2.0
  * Requires PHP:      8.1
  * Requires at least: 6.7
  * Tested up to:      6.8
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OOMPH_CORE_VERSION', '1.1.0' );
+define( 'OOMPH_CORE_VERSION', '1.2.0' );
 define( 'OOMPH_CORE_FILE',    __FILE__ );
 define( 'OOMPH_CORE_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
@@ -32,8 +32,13 @@ define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
 require_once OOMPH_CORE_DIR . 'includes/class-environment.php';
 require_once OOMPH_CORE_DIR . 'includes/class-cpt-destination.php';
 require_once OOMPH_CORE_DIR . 'includes/class-cpt-itinerary.php';
+require_once OOMPH_CORE_DIR . 'includes/class-cpt-operator.php';
+require_once OOMPH_CORE_DIR . 'includes/class-cpt-tour.php';
+require_once OOMPH_CORE_DIR . 'includes/class-cpt-inquiry.php';
 require_once OOMPH_CORE_DIR . 'includes/class-taxonomies.php';
-require_once OOMPH_CORE_DIR . 'includes/class-advisor.php'; // Advisor identity — read by class-schema.php and the child theme.
+require_once OOMPH_CORE_DIR . 'includes/class-admin-columns.php';
+require_once OOMPH_CORE_DIR . 'includes/class-seed.php';
+require_once OOMPH_CORE_DIR . 'includes/class-advisor.php'; // Advisor identity — read by class-schema.php and the theme.
 require_once OOMPH_CORE_DIR . 'includes/class-schema.php';
 require_once OOMPH_CORE_DIR . 'includes/class-clarity-guard.php';
 require_once OOMPH_CORE_DIR . 'includes/class-plainsend.php';
@@ -44,11 +49,16 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once OOMPH_CORE_DIR . 'includes/class-cli.php';
 }
 
-// Boot.
+// Boot. Post types first, then the taxonomies that attach to them.
 add_action( 'init', array( \OomphTravel\Core\CPT_Destination::class, 'register' ) );
 add_action( 'init', array( \OomphTravel\Core\CPT_Itinerary::class,   'register' ) );
+add_action( 'init', array( \OomphTravel\Core\CPT_Operator::class,    'register' ) );
+add_action( 'init', array( \OomphTravel\Core\CPT_Tour::class,        'register' ) );
+add_action( 'init', array( \OomphTravel\Core\CPT_Inquiry::class,     'register' ) );
 add_action( 'init', array( \OomphTravel\Core\Taxonomies::class,      'register' ) );
 
+\OomphTravel\Core\CPT_Destination::init();
+\OomphTravel\Core\Admin_Columns::init();
 \OomphTravel\Core\Schema::init();
 \OomphTravel\Core\Clarity_Guard::init();
 \OomphTravel\Core\Plainsend::init();
@@ -74,11 +84,27 @@ add_action( 'init', static function (): void {
 }, 99 );
 
 /**
+ * Rewrite rules are flushed once per plugin version, so a deploy that adds a
+ * post type (1.2.0 added operators and tours) resolves its URLs without a
+ * manual re-activation. Cheap: one option read per request.
+ */
+add_action( 'init', static function (): void {
+	if ( OOMPH_CORE_VERSION === get_option( 'oomph_core_rewrite_version' ) ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'oomph_core_rewrite_version', OOMPH_CORE_VERSION, false );
+}, 100 );
+
+/**
  * Activation — flush rewrite rules so CPT slugs resolve immediately.
  */
 register_activation_hook( __FILE__, function (): void {
 	\OomphTravel\Core\CPT_Destination::register();
 	\OomphTravel\Core\CPT_Itinerary::register();
+	\OomphTravel\Core\CPT_Operator::register();
+	\OomphTravel\Core\CPT_Tour::register();
+	\OomphTravel\Core\CPT_Inquiry::register();
 	\OomphTravel\Core\Taxonomies::register();
 	flush_rewrite_rules();
 } );

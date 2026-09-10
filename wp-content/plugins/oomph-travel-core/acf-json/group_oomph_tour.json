@@ -1,0 +1,246 @@
+{
+    "key": "group_oomph_tour",
+    "title": "Tour",
+    "fields": [
+        {
+            "key": "field_oomph_tour_note",
+            "label": "Where the rest lives",
+            "name": "",
+            "type": "message",
+            "message": "The hero photograph is the <strong>Featured image</strong>; it also fronts the tour card. <strong>Destinations</strong> are the checkboxes in the right-hand panel. Publish / Draft is the tour's status. There is no departures table and no availability flag: dates move, and the page says I check them live (D35). Every card reads “Dates and availability confirmed on request.” (D34).",
+            "new_lines": "",
+            "esc_html": 0
+        },
+        {
+            "key": "field_oomph_tour_operator",
+            "label": "Operator",
+            "name": "operator",
+            "type": "post_object",
+            "required": 1,
+            "post_type": [ "oomph_operator" ],
+            "post_status": [ "publish", "draft" ],
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 0,
+            "bidirectional": 0,
+            "ui": 1
+        },
+        {
+            "key": "field_oomph_tour_blurb",
+            "label": "Card blurb",
+            "name": "blurb",
+            "type": "textarea",
+            "instructions": "Two lines on the tour card. Specifics beat adjectives.",
+            "required": 0,
+            "rows": 2,
+            "maxlength": 200,
+            "new_lines": ""
+        },
+        {
+            "key": "field_oomph_tour_nights",
+            "label": "Nights",
+            "name": "nights",
+            "type": "number",
+            "required": 1,
+            "min": 1,
+            "max": 60,
+            "step": 1,
+            "wrapper": { "width": "34", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_start_city",
+            "label": "Start city",
+            "name": "start_city",
+            "type": "text",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "33", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_end_city",
+            "label": "End city",
+            "name": "end_city",
+            "type": "text",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "33", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_from_price",
+            "label": "From price (USD)",
+            "name": "from_price",
+            "type": "number",
+            "instructions": "The operator's standard from-price per person, whole dollars. Never a promotional or last-minute rate (D36). Leave empty while unpriced; $X,XXX must never ship.",
+            "required": 0,
+            "min": 0,
+            "step": 1,
+            "prepend": "$",
+            "wrapper": { "width": "34", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_price_note",
+            "label": "Price note",
+            "name": "price_note",
+            "type": "text",
+            "required": 0,
+            "default_value": "per person, double occupancy",
+            "maxlength": 80,
+            "wrapper": { "width": "66", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_gallery",
+            "label": "Gallery",
+            "name": "gallery",
+            "type": "gallery",
+            "instructions": "Optional. Stock to the photography rule (D13); one grade across the set.",
+            "required": 0,
+            "return_format": "id",
+            "library": "all",
+            "min": 0,
+            "max": 8,
+            "insert": "append",
+            "preview_size": "medium",
+            "mime_types": "jpg,jpeg,png,webp,avif"
+        },
+        {
+            "key": "field_oomph_tour_itinerary",
+            "label": "Day-by-day itinerary",
+            "name": "itinerary",
+            "type": "repeater",
+            "instructions": "Shown as an accordion on the tour page.",
+            "required": 0,
+            "layout": "block",
+            "min": 0,
+            "max": 40,
+            "collapsed": "field_oomph_tour_itin_title",
+            "button_label": "Add day",
+            "sub_fields": [
+                {
+                    "key": "field_oomph_tour_itin_day",
+                    "label": "Day",
+                    "name": "day",
+                    "type": "number",
+                    "required": 1,
+                    "min": 1,
+                    "max": 60,
+                    "step": 1,
+                    "wrapper": { "width": "15", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_tour_itinerary"
+                },
+                {
+                    "key": "field_oomph_tour_itin_title",
+                    "label": "Title",
+                    "name": "title",
+                    "type": "text",
+                    "required": 1,
+                    "maxlength": 80,
+                    "wrapper": { "width": "50", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_tour_itinerary"
+                },
+                {
+                    "key": "field_oomph_tour_itin_overnight",
+                    "label": "Overnight",
+                    "name": "overnight",
+                    "type": "text",
+                    "required": 0,
+                    "maxlength": 60,
+                    "wrapper": { "width": "35", "class": "", "id": "" },
+                    "parent_repeater": "field_oomph_tour_itinerary"
+                },
+                {
+                    "key": "field_oomph_tour_itin_text",
+                    "label": "Description",
+                    "name": "text",
+                    "type": "textarea",
+                    "required": 0,
+                    "rows": 3,
+                    "new_lines": "",
+                    "parent_repeater": "field_oomph_tour_itinerary"
+                }
+            ]
+        },
+        {
+            "key": "field_oomph_tour_inclusions",
+            "label": "What's included",
+            "name": "inclusions",
+            "type": "textarea",
+            "instructions": "One per line.",
+            "required": 0,
+            "rows": 5,
+            "new_lines": ""
+        },
+        {
+            "key": "field_oomph_tour_group_size",
+            "label": "Group size",
+            "name": "group_size",
+            "type": "text",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_pace",
+            "label": "Pace",
+            "name": "pace",
+            "type": "text",
+            "instructions": "As the operator describes it, or in your words: relaxed, moderate, full days.",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_tour_brochure",
+            "label": "Brochure link",
+            "name": "brochure_link",
+            "type": "url",
+            "instructions": "The operator's own page for this trip. Opens in a new tab.",
+            "required": 0,
+            "placeholder": "https://"
+        },
+        {
+            "key": "field_oomph_tour_erics_note",
+            "label": "Eric's note",
+            "name": "erics_note",
+            "type": "wysiwyg",
+            "instructions": "Why this tour, who it suits. Required before a tour goes live (readiness doc).",
+            "required": 0,
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "delay": 1
+        },
+        {
+            "key": "field_oomph_tour_featured",
+            "label": "Featured",
+            "name": "featured",
+            "type": "true_false",
+            "instructions": "Eligible for the homepage featured tours row.",
+            "required": 0,
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "oomph_tour"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "One Tour record per operator trip (plan §6.7, §8.1; D05, D34, D35, D36). A small hand-entered set, not a catalogue.",
+    "show_in_rest": 0,
+    "modified": 1789000000
+}

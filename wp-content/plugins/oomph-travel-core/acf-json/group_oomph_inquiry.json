@@ -1,0 +1,214 @@
+{
+    "key": "group_oomph_inquiry",
+    "title": "Inquiry",
+    "fields": [
+        {
+            "key": "field_oomph_inq_note",
+            "label": "About this record",
+            "name": "",
+            "type": "message",
+            "message": "Written by the Start planning form (plan §6.15). Private: never public, never in search, never in the REST API. The destinations the traveller picked are the checkboxes in the right-hand panel; the timestamp is the post date. Edit only to correct or to assign.",
+            "new_lines": "",
+            "esc_html": 0
+        },
+        {
+            "key": "field_oomph_inq_trip_type",
+            "label": "Trip type",
+            "name": "trip_type",
+            "type": "select",
+            "required": 0,
+            "choices": {
+                "custom": "A custom journey",
+                "escorted": "An escorted tour",
+                "resort": "A resort or villa stay",
+                "multigen": "A multi-generational trip",
+                "cruise-land": "A cruise plus land",
+                "not-sure": "Not sure yet"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "ui": 0,
+            "ajax": 0,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_when",
+            "label": "When",
+            "name": "when",
+            "type": "text",
+            "instructions": "A month, a season, or flexible.",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_travelers",
+            "label": "Travellers",
+            "name": "travelers",
+            "type": "text",
+            "required": 0,
+            "maxlength": 80,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_budget",
+            "label": "Budget",
+            "name": "budget",
+            "type": "text",
+            "instructions": "The band the traveller chose, as the form labelled it.",
+            "required": 0,
+            "maxlength": 60,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_notes",
+            "label": "Notes",
+            "name": "notes",
+            "type": "textarea",
+            "required": 0,
+            "rows": 6,
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_oomph_inq_name",
+            "label": "Name",
+            "name": "name",
+            "type": "text",
+            "required": 0,
+            "maxlength": 120,
+            "wrapper": { "width": "34", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_contact_method",
+            "label": "Preferred contact",
+            "name": "contact_method",
+            "type": "select",
+            "required": 0,
+            "choices": {
+                "email": "Email",
+                "phone": "Phone call",
+                "text": "Text message"
+            },
+            "default_value": "email",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "wrapper": { "width": "33", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_contact_value",
+            "label": "Email or number",
+            "name": "contact_value",
+            "type": "text",
+            "required": 0,
+            "maxlength": 160,
+            "wrapper": { "width": "33", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_consent",
+            "label": "Consent line accepted",
+            "name": "consent",
+            "type": "true_false",
+            "required": 0,
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No",
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_newsletter",
+            "label": "Asked for trip notes",
+            "name": "newsletter_opt_in",
+            "type": "true_false",
+            "instructions": "The optional subscribe tick. Handled separately through PlainSend; this only records the answer (readiness doc).",
+            "required": 0,
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No",
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_source_page",
+            "label": "Source page",
+            "name": "source_page",
+            "type": "text",
+            "instructions": "The page the traveller started from.",
+            "required": 0,
+            "maxlength": 255
+        },
+        {
+            "key": "field_oomph_inq_tour",
+            "label": "Tour",
+            "name": "tour",
+            "type": "post_object",
+            "instructions": "Set when the form was opened from a tour page (“Ask Eric about this tour”).",
+            "required": 0,
+            "post_type": [ "oomph_tour" ],
+            "post_status": [ "publish", "draft" ],
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_destination",
+            "label": "Destination page",
+            "name": "destination",
+            "type": "post_object",
+            "instructions": "Set when the form was opened from a destination page.",
+            "required": 0,
+            "post_type": [ "oomph_destination" ],
+            "post_status": [ "publish", "draft" ],
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "wrapper": { "width": "50", "class": "", "id": "" }
+        },
+        {
+            "key": "field_oomph_inq_assigned_to",
+            "label": "Assigned to",
+            "name": "assigned_to",
+            "type": "user",
+            "instructions": "Eric or Amy.",
+            "required": 0,
+            "role": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "bidirectional": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "oomph_inquiry"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "A Start planning enquiry, stored privately (plan §6.15, §8.1; D30). Written by the form, read by Eric.",
+    "show_in_rest": 0,
+    "modified": 1789000000
+}
