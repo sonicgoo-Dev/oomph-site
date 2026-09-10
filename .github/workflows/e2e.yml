@@ -33,7 +33,21 @@ concurrency:
 jobs:
   e2e:
     name: Playwright against staging
-    runs-on: ubuntu-latest
+    # Residential self-hosted runner, matching the CruiseOomph repo.
+    # SiteGround's edge anti-bot layer answers GitHub's datacenter IPs with an
+    # HTTP 202 JavaScript challenge instead of the page — 30 of them in run
+    # 34512406670, on pages that serve 200 from any home connection. A home IP
+    # is served like any visitor. If the runner is offline the job queues
+    # rather than failing, and ci.yml still covers the theme and plugin on
+    # GitHub's own machines.
+    runs-on: [self-hosted, Windows, residential]
+
+    # The runner is Windows, where the default shell is PowerShell. Every
+    # run: block below is written in bash, so pin it once here.
+    defaults:
+      run:
+        shell: bash
+
     # For workflow_run triggers, only run for a SUCCESSFUL develop deploy.
     # schedule/workflow_dispatch have no workflow_run payload, so allow those.
     if: >-
@@ -81,7 +95,9 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser (chromium)
-        run: npx playwright install --with-deps chromium
+        # No --with-deps: that installs Linux OS packages and has nothing to
+        # do on Windows.
+        run: npx playwright install chromium
 
       - name: Run e2e smoke tests
         run: npx playwright test
