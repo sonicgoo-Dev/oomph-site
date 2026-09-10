@@ -1,0 +1,43 @@
+/* OomphTravel design tokens
+ * Exported from Figma file xFlJbvIRQ0S9hrhZWCbvQs on 10 September 2026.
+ * 18 colour variables + 13 spacing/radius/size variables.
+ * This file is the source of truth for the build. Do not hand-edit hex values;
+ * if a value is wrong, fix it in Figma and re-export.
+ */
+
+:root {
+  /* ---- Colour ---- */
+  --navy-marine: #17212E; /* Statement bands, CruiseOomph band, closing invitation */
+  --navy-deep: #0F1620; /* Footer */
+  --text-ink: #1A202C; /* Headlines, wordmark, ghost-button stroke */
+  --text-slate: #2D3748; /* Body text */
+  --text-muted: #64707D; /* Captions, meta */
+  --text-on-navy: #AEB8C4; /* Body text on dark bands */
+  --text-on-navy-faint: #8A93A0; /* Footer fine print */
+  --accent-teal: #1F6F78; /* Primary button, eyebrows, contrail, links, tab indicator */
+  --accent-teal-on-navy: #7FC7CE; /* Eyebrows, links, hero contrail on dark bands */
+  --surface-white: #FFFFFF; /* Page ground, header, cards, text on dark */
+  --surface-mist: #EFF3F4; /* Alternating sections */
+  --surface-mist-deep: #E3EBEC; /* Ticker, How it works band */
+  --surface-on-navy-light: #E3EBEC; /* Hero sub-line on photo */
+  --line-hairline: #E3E8ED; /* Borders, dividers */
+  --line-on-navy: #2E3A4B; /* Dividers on dark bands */
+  --logo-teal: #46BCC7; /* Inside the symbol only */
+  --logo-coral: #E84144; /* Inside the symbol only */
+  --logo-ink: #010103; /* Inside the symbol only */
+
+  /* ---- Spacing, radius, size (px) ---- */
+  --space-section-desktop: 112px;
+  --space-section-mobile: 64px;
+  --space-xl: 40px;
+  --space-lg: 24px;
+  --space-md: 16px;
+  --space-sm: 12px;
+  --space-xs: 8px;
+  --space-page-margin-desktop: 80px;
+  --space-page-margin-mobile: 20px;
+  --radius-card: 4px;
+  --radius-pill: 999px;
+  --size-header-desktop: 80px;
+  --size-header-mobile: 64px;
+}
