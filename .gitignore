@@ -87,3 +87,7 @@ CLAUDE.local.md
 # binaries are large.
 docs/source/*.pdf
 docs/source/*.docx
+
+# wp-env / CI artefacts
+.wp-env.override.json
+playwright-report-ci/

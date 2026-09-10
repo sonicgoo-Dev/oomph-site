@@ -1,0 +1,197 @@
+name: CI
+
+# Runs WordPress inside the runner and drives it with Playwright.
+#
+# Deliberately the same shape as the CruiseOomph repo's ci.yml so both sites
+# can be followed side by side. The point is that nothing here touches
+# SiteGround: staging and production sit behind an edge anti-bot layer that
+# challenges GitHub's datacenter IPs, which made the old post-deploy suite
+# flaky by construction. Here there is no edge, so a red build means our
+# theme or plugin is broken rather than the host's front door.
+#
+# The live-site suite still exists and still matters — it runs from a
+# residential self-hosted runner in e2e.yml.
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guards:
+    name: Source guards
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: PHP syntax
+        run: |
+          FAIL=0
+          while IFS= read -r FILE; do
+            php -l "$FILE" > /dev/null 2>&1 || { echo "::error file=$FILE::PHP syntax error"; FAIL=1; }
+          done < <(find wp-content/themes/oomphtravel wp-content/plugins/oomph-travel-core -name '*.php')
+          exit $FAIL
+
+      - name: Field group JSON parses
+        run: |
+          for FILE in wp-content/plugins/oomph-travel-core/acf-json/*.json; do
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$FILE" \
+              || { echo "::error file=$FILE::invalid JSON"; exit 1; }
+          done
+
+      - name: No List
+        # docs/voice-guide.md. The guide and the decisions log are allowed to
+        # name the words in order to ban them.
+        run: |
+          WORDS='bespoke|wanderlust|magical|breathtaking|curated|jaw-dropping|paradise|bucket list|hidden gem|white-glove|unforgettable'
+          if grep -rniE "\b($WORDS)\b" \
+               wp-content/themes/oomphtravel wp-content/plugins/oomph-travel-core \
+               --include='*.php' --include='*.json' --include='*.html' \
+             | grep -viE 'CURATED \(D40\)|No List'; then
+            echo "::error::a No List word reached the theme or plugin"
+            exit 1
+          fi
+          echo "No List: clean"
+
+      - name: Placeholder markers
+        # docs/03-rules-and-readiness.md asks for a check that fails when an
+        # unfilled placeholder reaches published content. Patterns are allowed
+        # to carry them; template helpers and field definitions are not.
+        run: |
+          if grep -rn '\$X,XXX' wp-content/plugins/oomph-travel-core; then
+            echo "::error::an unpriced-tour placeholder reached the plugin"
+            exit 1
+          fi
+          echo "Placeholders: clean"
+
+  e2e:
+    name: WordPress + Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start WordPress
+        run: npx wp-env start
+
+      - name: Activate the theme and plugins
+        # Secure Custom Fields, not ACF Pro: the free WordPress.org fork carries
+        # every field type the six committed groups use, including the repeater
+        # and gallery that used to require a licence. Proving that here is what
+        # lets the licence lapse.
+        run: |
+          npx wp-env run cli wp theme activate oomphtravel
+          npx wp-env run cli wp plugin activate oomph-travel-core secure-custom-fields
+          npx wp-env run cli wp rewrite structure '/%postname%/' --hard
+          npx wp-env run cli wp option update blogname 'Oomph Travel'
+
+      - name: The plugin boots without a PHP error
+        run: |
+          OUT=$(npx wp-env run cli wp eval 'echo "boot-ok";' 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q 'boot-ok' || { echo "::error::the plugin did not boot" >&2; exit 1; }
+          if echo "$OUT" | grep -qiE 'fatal error|parse error|uncaught'; then
+            echo "::error::PHP error while loading the plugin" >&2
+            exit 1
+          fi
+
+      - name: Record types and the destination taxonomy are registered
+        run: |
+          TYPES=$(npx wp-env run cli wp post-type list --field=name 2>&1)
+          echo "$TYPES"
+          for T in oomph_destination oomph_operator oomph_tour oomph_inquiry; do
+            echo "$TYPES" | grep -qx "$T" || { echo "::error::post type $T is missing" >&2; exit 1; }
+          done
+          npx wp-env run cli wp taxonomy list --field=name 2>&1 | grep -qx 'oomph_place' \
+            || { echo "::error::the oomph_place taxonomy is missing" >&2; exit 1; }
+
+      - name: Every field group loads under Secure Custom Fields
+        run: |
+          OUT=$(npx wp-env run cli wp eval 'foreach ( array( "group_oomph_destination", "group_oomph_operator", "group_oomph_tour", "group_oomph_inquiry", "group_oomph_page_hero", "group_oomph_service_page" ) as $k ) { printf( "%s=%s\n", $k, acf_get_field_group( $k ) ? "loaded" : "MISSING" ); }' 2>&1)
+          echo "$OUT"
+          if echo "$OUT" | grep -q 'MISSING'; then
+            echo "::error::a field group did not load under Secure Custom Fields" >&2
+            exit 1
+          fi
+
+      - name: The repeater and gallery field types exist
+        # These two were the reason the site carried an ACF Pro licence.
+        run: |
+          OUT=$(npx wp-env run cli wp eval 'foreach ( array( "repeater", "gallery" ) as $t ) { printf( "%s=%s\n", $t, acf_get_field_type( $t ) ? "present" : "MISSING" ); }' 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q 'MISSING' && { echo "::error::a formerly-Pro field type is missing" >&2; exit 1; }
+          exit 0
+
+      - name: Seed the destinations, dry run first
+        run: |
+          OUT=$(npx wp-env run cli wp oomph seed destinations --dry-run 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q 'nothing written' || { echo "::error::the dry run did not stay dry" >&2; exit 1; }
+          COUNT=$(npx wp-env run cli wp post list --post_type=oomph_destination --post_status=any --format=count 2>&1 | tr -dc '0-9')
+          [ "$COUNT" = "0" ] || { echo "::error::the dry run wrote $COUNT records" >&2; exit 1; }
+
+      - name: Seed the destinations and the operators
+        run: |
+          OUT=$(npx wp-env run cli wp oomph seed destinations 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q '11 created, 0 already existed' || { echo "::error::destination seed counts changed" >&2; exit 1; }
+          OUT=$(npx wp-env run cli wp oomph seed operators 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q '7 created, 0 already existed' || { echo "::error::operator seed counts changed" >&2; exit 1; }
+
+      - name: One term per destination, and re-running changes nothing
+        run: |
+          TERMS=$(npx wp-env run cli wp term list oomph_place --format=count 2>&1 | tr -dc '0-9')
+          [ "$TERMS" = "11" ] || { echo "::error::expected 11 destination terms, found $TERMS" >&2; exit 1; }
+          OUT=$(npx wp-env run cli wp oomph seed destinations 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q '0 created, 11 already existed' || { echo "::error::the seed command is not idempotent" >&2; exit 1; }
+
+      - name: Prepare the fixtures
+        run: |
+          CODE=$(base64 -w0 tests/fixtures/ci-seed.php)
+          npx wp-env run cli wp eval "eval(base64_decode('$CODE'));"
+
+      - name: Run Playwright
+        env:
+          OOMPH_BASE_URL: http://localhost:8888
+        run: npx playwright test -c playwright.ci.config.ts
+
+      - name: WordPress debug log
+        if: failure()
+        run: npx wp-env run cli cat /var/www/html/wp-content/debug.log || echo "no debug.log"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-ci
+          path: playwright-report-ci/
+          retention-days: 7
