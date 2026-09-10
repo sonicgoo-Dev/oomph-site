@@ -68,11 +68,14 @@ jobs:
 
       - name: Placeholder markers
         # docs/03-rules-and-readiness.md asks for a check that fails when an
-        # unfilled placeholder reaches published content. Patterns are allowed
-        # to carry them; template helpers and field definitions are not.
+        # unfilled placeholder reaches published content. Source is the wrong
+        # place to enforce that: Stage 3 patterns carry [OPERATOR] and $X,XXX
+        # on purpose, and the field definitions name the marker in order to
+        # warn against it. So this only guards executable plugin code, and the
+        # real check is the rendered-page test in tests/ci/records.spec.ts.
         run: |
-          if grep -rn '\$X,XXX' wp-content/plugins/oomph-travel-core; then
-            echo "::error::an unpriced-tour placeholder reached the plugin"
+          if grep -rn '\$X,XXX' wp-content/plugins/oomph-travel-core --include='*.php'; then
+            echo "::error::an unpriced-tour placeholder reached plugin code"
             exit 1
           fi
           echo "Placeholders: clean"
@@ -133,21 +136,26 @@ jobs:
             || { echo "::error::the oomph_place taxonomy is missing" >&2; exit 1; }
 
       - name: Every field group loads under Secure Custom Fields
+        # The command decides, not a grep: wp-env echoes the command it runs,
+        # so any sentinel word in the source would match itself in the output.
+        # WP_CLI::error() exits non-zero and fails the step.
         run: |
-          OUT=$(npx wp-env run cli wp eval 'foreach ( array( "group_oomph_destination", "group_oomph_operator", "group_oomph_tour", "group_oomph_inquiry", "group_oomph_page_hero", "group_oomph_service_page" ) as $k ) { printf( "%s=%s\n", $k, acf_get_field_group( $k ) ? "loaded" : "MISSING" ); }' 2>&1)
-          echo "$OUT"
-          if echo "$OUT" | grep -q 'MISSING'; then
-            echo "::error::a field group did not load under Secure Custom Fields" >&2
-            exit 1
-          fi
+          npx wp-env run cli wp eval '
+            $groups  = array( "group_oomph_destination", "group_oomph_operator", "group_oomph_tour", "group_oomph_inquiry", "group_oomph_page_hero", "group_oomph_service_page" );
+            $absent  = array_values( array_filter( $groups, static fn( $k ) => ! acf_get_field_group( $k ) ) );
+            if ( $absent ) { WP_CLI::error( "field groups did not load: " . implode( ", ", $absent ) ); }
+            WP_CLI::success( count( $groups ) . " field groups loaded" );
+          '
 
       - name: The repeater and gallery field types exist
         # These two were the reason the site carried an ACF Pro licence.
         run: |
-          OUT=$(npx wp-env run cli wp eval 'foreach ( array( "repeater", "gallery" ) as $t ) { printf( "%s=%s\n", $t, acf_get_field_type( $t ) ? "present" : "MISSING" ); }' 2>&1)
-          echo "$OUT"
-          echo "$OUT" | grep -q 'MISSING' && { echo "::error::a formerly-Pro field type is missing" >&2; exit 1; }
-          exit 0
+          npx wp-env run cli wp eval '
+            $types  = array( "repeater", "gallery", "relationship", "post_object", "user" );
+            $absent = array_values( array_filter( $types, static fn( $t ) => ! acf_get_field_type( $t ) ) );
+            if ( $absent ) { WP_CLI::error( "field types unavailable: " . implode( ", ", $absent ) ); }
+            WP_CLI::success( "all " . count( $types ) . " field types available without a licence" );
+          '
 
       - name: Seed the destinations, dry run first
         run: |
