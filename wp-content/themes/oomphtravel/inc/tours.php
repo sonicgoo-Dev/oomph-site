@@ -1,6 +1,6 @@
 	// Rank Math falls back to the title when no description is set; a
 	// description Eric types in its panel is anything else and wins.
-	if ( ! is_post_type_archive( 'oomph_tour' ) || ( '' !== trim(  ) && false === strpos( , 'Tours Archive' ) ) ) {
+	if ( ! is_post_type_archive( 'oomph_tour' ) || ( '' !== trim( $description ) && false === strpos( $description, 'Tours Archive' ) ) ) {
 		return ;
 	}<?php
 /**
