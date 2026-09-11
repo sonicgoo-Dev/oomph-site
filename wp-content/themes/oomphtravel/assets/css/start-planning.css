@@ -1,0 +1,458 @@
+/*
+ * OomphTravel — Start planning (plan §6.15) and its receipt. Loaded on
+ * /start-planning/ only, after components.css. Tokens only, no hex.
+ *
+ * One column throughout (R40). Radio cards and chips are real inputs with
+ * the control hidden and the label carrying the state, so the keyboard,
+ * the screen reader and the no-script post all see ordinary controls.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Hero: type on Mist, and the two-step progress line                    */
+/* ------------------------------------------------------------------ */
+
+.ot-plan-hero { padding-block: var(--space-section); }
+.ot-plan-hero__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-md);
+	max-width: calc( var(--wp--custom--measure--heading) + 2 * var(--space-page-margin) );
+}
+.ot-plan-hero__title {
+	margin: 0;
+	font-size: var(--type-h1-size);
+	line-height: var(--type-h1-line);
+	color: var(--text-ink);
+	text-wrap: balance;
+	outline: none;
+}
+.ot-plan-hero__lead {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-plan__reference {
+	margin: 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+
+.ot-plan-progress {
+	display: flex;
+	gap: var(--space-md);
+	margin: var(--space-xs) 0 0;
+	padding: 0;
+	list-style: none;
+}
+.ot-plan-progress__seg {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	padding-top: var(--space-xs);
+	border-top: 2px solid var(--line-hairline);
+	min-width: 120px;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-plan-progress__seg[aria-current="step"],
+.ot-plan-progress__seg.is-done { border-top-color: var(--accent-teal); color: var(--text-ink); }
+.ot-plan-progress__n {
+	display: inline-grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	border: 1px solid currentColor;
+	font-size: var(--type-eyebrow-size);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+}
+.ot-plan-progress__seg[aria-current="step"] .ot-plan-progress__n,
+.ot-plan-progress__seg.is-done .ot-plan-progress__n {
+	background: var(--accent-teal);
+	border-color: var(--accent-teal);
+	color: var(--surface-white);
+}
+
+/* ------------------------------------------------------------------ */
+/* Body                                                                  */
+/* ------------------------------------------------------------------ */
+
+.ot-plan-body { padding-block: var(--space-section); }
+.ot-plan-body__inner { max-width: calc( 720px + 2 * var(--space-page-margin) ); }
+
+.ot-plan__context {
+	margin: 0 0 var(--space-lg);
+	padding: var(--space-sm) var(--space-md);
+	border-left: 3px solid var(--accent-teal);
+	background: var(--surface-mist);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-ink);
+}
+.ot-plan__context-clear { margin-left: var(--space-xs); color: var(--text-muted); }
+
+.ot-plan__alert {
+	margin: 0 0 var(--space-lg);
+	padding: var(--space-sm) var(--space-md);
+	border: 1px solid var(--accent-teal);
+	border-radius: var(--radius-card);
+	background: var(--surface-white);
+	color: var(--text-ink);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+
+.ot-plan__form { display: flex; flex-direction: column; gap: var(--space-xl); }
+.ot-plan__step,
+.ot-plan__group {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}
+.ot-plan__step { display: flex; flex-direction: column; gap: var(--space-xl); }
+.ot-plan__step[hidden] { display: none; }
+
+.ot-plan__sr,
+.ot-plan__trap {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.ot-plan__legend,
+.ot-plan__label {
+	display: block;
+	margin: 0 0 var(--space-sm);
+	padding: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	font-weight: 500;
+	color: var(--text-ink);
+}
+.ot-plan__optional {
+	margin-left: var(--space-xs);
+	font-weight: 400;
+	font-size: var(--type-body-small-size);
+	color: var(--text-muted);
+}
+.ot-plan__help,
+.ot-plan__actions-note {
+	margin: var(--space-xs) 0 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-plan__help:empty { display: none; }
+
+/* ------------------------------------------------------------------ */
+/* Radio cards, chips, pills                                             */
+/* ------------------------------------------------------------------ */
+
+.ot-plan__cards {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-sm);
+}
+.ot-plan__cards--4 { grid-template-columns: repeat( 4, minmax( 0, 1fr ) ); }
+
+.ot-plan__card,
+.ot-plan__chip,
+.ot-plan__pill {
+	position: relative;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	min-height: 44px; /* R27 */
+	cursor: pointer;
+	color: var(--text-ink);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+	transition:
+		border-color var(--wp--custom--motion--quick) ease,
+		background-color var(--wp--custom--motion--quick) ease,
+		color var(--wp--custom--motion--quick) ease;
+}
+.ot-plan__card {
+	padding: var(--space-md);
+	border-radius: var(--radius-card);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+}
+.ot-plan__chip,
+.ot-plan__pill {
+	padding: 0 var(--space-md);
+	border-radius: var(--radius-pill);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+.ot-plan__chips,
+.ot-plan__pills { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+
+.ot-plan__card-input,
+.ot-plan__chip-input,
+.ot-plan__pill-input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	pointer-events: none;
+}
+.ot-plan__card:hover,
+.ot-plan__chip:hover,
+.ot-plan__pill:hover { border-color: var(--accent-teal); }
+
+.ot-plan__card:has( :checked ),
+.ot-plan__chip:has( :checked ),
+.ot-plan__pill:has( :checked ) {
+	border-color: var(--accent-teal);
+	background: var(--accent-teal);
+	color: var(--surface-white);
+}
+.ot-plan__card:has( :checked ) { box-shadow: inset 0 0 0 1px var(--accent-teal); }
+.ot-plan__card:has( :focus-visible ),
+.ot-plan__chip:has( :focus-visible ),
+.ot-plan__pill:has( :focus-visible ) {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+}
+/* Browsers without :has() still show the native control. */
+@supports not ( selector( :has( a ) ) ) {
+	.ot-plan__card-input,
+	.ot-plan__chip-input,
+	.ot-plan__pill-input {
+		position: static;
+		opacity: 1;
+		width: auto;
+		height: auto;
+		margin-right: var(--space-xs);
+		pointer-events: auto;
+	}
+}
+
+.ot-plan__cruise {
+	margin-top: var(--space-md);
+	padding: var(--space-md) var(--space-lg);
+	border-left: 3px solid var(--accent-teal);
+	background: var(--surface-mist);
+}
+.ot-plan__cruise-text {
+	margin: 0 0 var(--space-sm);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+}
+
+/* ------------------------------------------------------------------ */
+/* Text controls                                                          */
+/* ------------------------------------------------------------------ */
+
+.ot-plan__row {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: var(--space-lg);
+}
+.ot-plan__field { display: flex; flex-direction: column; min-width: 0; }
+.ot-plan__field[hidden] { display: none; }
+.ot-plan__field .ot-plan__label { margin-bottom: var(--space-xs); }
+
+.ot-plan__input,
+.ot-plan__select,
+.ot-plan__textarea {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 48px;
+	padding: var(--space-xs) var(--space-md);
+	font-family: var(--font-body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+}
+.ot-plan__select { appearance: auto; }
+.ot-plan__textarea { resize: vertical; min-height: 120px; }
+.ot-plan__input:focus-visible,
+.ot-plan__select:focus-visible,
+.ot-plan__textarea:focus-visible,
+.ot-plan__checkbox:focus-visible {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+}
+.ot-plan__input::placeholder,
+.ot-plan__textarea::placeholder { color: var(--text-muted); }
+
+.ot-plan__check-label {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-sm);
+	cursor: pointer;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-ink);
+}
+.ot-plan__checkbox {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	margin: 2px 0 0;
+	accent-color: var(--accent-teal);
+}
+.ot-plan__check[hidden] { display: none; }
+
+/* ------------------------------------------------------------------ */
+/* Errors                                                                */
+/* ------------------------------------------------------------------ */
+
+.ot-plan__error {
+	margin: var(--space-xs) 0 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-ink);
+	font-weight: 500;
+}
+.ot-plan__error::before { content: "↑ "; color: var(--accent-teal); }
+.is-invalid .ot-plan__input,
+.is-invalid .ot-plan__select,
+.is-invalid .ot-plan__textarea { border-color: var(--accent-teal); box-shadow: inset 0 0 0 1px var(--accent-teal); }
+.is-invalid .ot-plan__card,
+.is-invalid .ot-plan__pill { border-style: dashed; }
+
+/* ------------------------------------------------------------------ */
+/* Recap, actions, status                                                */
+/* ------------------------------------------------------------------ */
+
+.ot-plan__recap {
+	padding: var(--space-md) var(--space-lg);
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+	background: var(--surface-mist);
+}
+.ot-plan__recap[hidden] { display: none; }
+.ot-plan__recap-label {
+	margin: 0 0 var(--space-xs);
+	font-size: var(--type-eyebrow-size);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.ot-plan__recap-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-ink);
+}
+.ot-plan__textbtn {
+	margin-top: var(--space-xs);
+	padding: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	font-size: var(--type-body-small-size);
+	color: var(--accent-teal);
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.ot-plan__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-md);
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-plan__actions[hidden] { display: none; }
+.ot-plan__actions .ot-plan__actions-note { flex: 1 1 100%; margin: 0; }
+.ot-plan__actions .ot-btn[hidden] { display: none; }
+.ot-btn:disabled { opacity: 0.6; cursor: default; }
+
+.ot-plan__status {
+	margin: 0;
+	min-height: 1.5em;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-plan__status:empty { display: none; }
+
+/* ------------------------------------------------------------------ */
+/* Receipt                                                               */
+/* ------------------------------------------------------------------ */
+
+.ot-plan-sooner { padding-block: var(--space-section); }
+.ot-plan-sooner__inner { max-width: calc( 840px + 2 * var(--space-page-margin) ); }
+.ot-plan-sooner__lead {
+	margin: 0 0 var(--space-lg);
+	max-width: var(--wp--custom--measure--body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+}
+.ot-plan-sooner__widget {
+	min-width: 320px;
+	min-height: 660px;
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+	overflow: hidden;
+	background: var(--surface-white);
+}
+.ot-plan-sooner__widget[hidden] { display: none; }
+.ot-plan-sooner__booked {
+	padding: var(--space-lg);
+	border-left: 3px solid var(--accent-teal);
+	background: var(--surface-mist);
+}
+.ot-plan-sooner__booked[hidden] { display: none; }
+.ot-plan-sooner__booked p { margin: 0; }
+.ot-plan-sooner__alt {
+	margin: var(--space-lg) 0 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-plan-sooner__alt a { color: var(--text-ink); }
+
+/* ------------------------------------------------------------------ */
+/* Phone: cards stack in two columns, the actions become a sticky bar    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+	.ot-plan__cards,
+	.ot-plan__cards--4 { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+	.ot-plan__row { grid-template-columns: minmax( 0, 1fr ); }
+	.ot-plan-progress__seg { min-width: 0; flex: 1 1 0; }
+
+	/* The rules the three mobile screens set (03-rules-and-readiness.md). */
+	.ot-plan__actions {
+		position: sticky;
+		bottom: 0;
+		z-index: 2;
+		margin-inline: calc( -1 * var(--space-page-margin) );
+		padding: var(--space-sm) var(--space-page-margin);
+		background: var(--surface-white);
+		border-top: 1px solid var(--line-hairline);
+		box-shadow: 0 -8px 24px color-mix( in srgb, var(--navy-deep) 8%, transparent );
+	}
+	.ot-plan__actions .ot-btn--primary { flex: 1 1 auto; }
+	.ot-plan__actions .ot-plan__actions-note { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ot-plan__card,
+	.ot-plan__chip,
+	.ot-plan__pill { transition: none; }
+}

@@ -3,7 +3,7 @@
  * Plugin Name:       Oomph Travel Core
  * Plugin URI:        https://oomphtravel.com
  * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the theme; this lives in a plugin so it survives a theme switch.
- * Version:           1.5.0
+ * Version:           1.6.0
  * Requires PHP:      8.1
  * Requires at least: 6.7
  * Tested up to:      6.8
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OOMPH_CORE_VERSION', '1.5.0' );
+define( 'OOMPH_CORE_VERSION', '1.6.0' );
 define( 'OOMPH_CORE_FILE',    __FILE__ );
 define( 'OOMPH_CORE_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
@@ -43,6 +43,7 @@ require_once OOMPH_CORE_DIR . 'includes/class-advisor.php'; // Advisor identity 
 require_once OOMPH_CORE_DIR . 'includes/class-schema.php';
 require_once OOMPH_CORE_DIR . 'includes/class-clarity-guard.php';
 require_once OOMPH_CORE_DIR . 'includes/class-plainsend.php';
+require_once OOMPH_CORE_DIR . 'includes/class-inquiry.php'; // Start planning: the POST, the record, the emails (plan §6.15).
 require_once OOMPH_CORE_DIR . 'includes/class-acf-config.php';
 require_once OOMPH_CORE_DIR . 'includes/class-seo.php';
 
@@ -63,6 +64,7 @@ add_action( 'init', array( \OomphTravel\Core\Taxonomies::class,      'register' 
 \OomphTravel\Core\Schema::init();
 \OomphTravel\Core\Clarity_Guard::init();
 \OomphTravel\Core\Plainsend::init();
+\OomphTravel\Core\Inquiry::init();
 \OomphTravel\Core\ACF_Config::init();
 \OomphTravel\Core\SEO::init();
 
@@ -86,8 +88,9 @@ add_action( 'init', static function (): void {
 
 /**
  * Rewrite rules are flushed once per plugin version, so a deploy that adds a
- * post type (1.2.0 added operators and tours) resolves its URLs without a
- * manual re-activation. Cheap: one option read per request.
+ * post type (1.2.0 added operators and tours) or a rewrite rule (1.6.0 added
+ * /start-planning/received/) resolves its URLs without a manual
+ * re-activation. Cheap: one option read per request.
  */
 add_action( 'init', static function (): void {
 	if ( OOMPH_CORE_VERSION === get_option( 'oomph_core_rewrite_version' ) ) {

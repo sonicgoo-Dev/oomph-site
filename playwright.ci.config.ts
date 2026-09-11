@@ -22,6 +22,10 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // The theme scrolls smoothly; an element that is still gliding into
+    // view never counts as stable, so the click never lands. The theme's
+    // reduced-motion rule switches scrolling to instant.
+    reducedMotion: 'reduce',
   },
 
   projects: [
