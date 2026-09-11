@@ -89,7 +89,7 @@
 	gap: var(--space-lg);
 	max-width: var(--wp--custom--measure--heading);
 }
- (min-width: 768px) {
+@media (min-width: 768px) {
 	/* Desktop: the copy sits top right, over the sky and the far shore, so the
 	   lit village stays clear. */
 	.ot-hero { justify-content: flex-start; }

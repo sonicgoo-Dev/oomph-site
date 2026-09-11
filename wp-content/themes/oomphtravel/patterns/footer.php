@@ -184,7 +184,7 @@ foreach ( array( 'privacy-policy' => __( 'Privacy', 'oomphtravel' ), 'accessibil
 			<div class="ot-family">
 				<a class="ot-family__name" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'OomphTravel', 'oomphtravel' ); ?></a>
 				<span class="ot-family__rule" aria-hidden="true"></span>
-				<a class="ot-family__name ot-family__name--cruise" href="<?php echo esc_url( oomphtravel_cruiseoomph_url( '/' ) ); ?>"><?php esc_html_e( 'CruiseOomph', 'oomphtravel' ); ?> <span class="ot-family__by"><?php esc_html_e( 'by Oomph Travel', 'oomphtravel' ); ?></span></a>
+				<a class="ot-family__name ot-family__name--cruise" href="<?php echo esc_url( oomphtravel_cruiseoomph_url( '/' ) ); ?>"><?php esc_html_e( 'CruiseOomph', 'oomphtravel' ); ?><span class="ot-family__by"><?php esc_html_e( 'by Oomph Travel', 'oomphtravel' ); ?></span></a>
 				<p class="ot-family__note"><?php esc_html_e( 'Two sites, one advisor.', 'oomphtravel' ); ?></p>
 			</div>
 			<div class="ot-footer__legal">

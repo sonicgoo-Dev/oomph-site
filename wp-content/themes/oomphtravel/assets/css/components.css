@@ -925,18 +925,21 @@ header:has( > .ot-header ),
 .ot-family {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: baseline;
+	align-items: flex-start;
 	gap: var(--space-xs) var(--space-md);
 }
 .ot-family__name--cruise {
 	display: inline-flex;
-	align-items: baseline;
-	gap: var(--space-xs);
+	flex-direction: column;
+	gap: 4px;
 }
 .ot-family__by {
 	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
 	font-size: var(--wp--custom--type--desktop--meta--size);
-	letter-spacing: normal;
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	line-height: 1.2;
 	color: var(--text-on-navy-faint);
 }
 .ot-family__name {
