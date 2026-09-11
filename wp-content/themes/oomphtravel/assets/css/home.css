@@ -56,21 +56,18 @@
 	);
 }
 
-/* A second, left-anchored scrim sits directly under the copy so the headline
-   reads over the town as well as over the water. */
-.ot-hero__inner {
-	position: relative;
-}
-.ot-hero__inner::before {
+/* A second scrim, anchored left and running the full width of the band, so
+   the headline reads over the town as well as over the sky. */
+.ot-hero::before {
 	content: "";
 	position: absolute;
-	inset: -40% 0 0 0;
+	inset: 0;
 	z-index: -1;
 	background: linear-gradient(
 		90deg,
-		color-mix( in srgb, var(--navy-deep) 72%, transparent ) 0%,
-		color-mix( in srgb, var(--navy-deep) 55%, transparent ) 40%,
-		transparent 75%
+		color-mix( in srgb, var(--navy-deep) 62%, transparent ) 0%,
+		color-mix( in srgb, var(--navy-deep) 42%, transparent ) 45%,
+		transparent 85%
 	);
 }
 .ot-hero__title,

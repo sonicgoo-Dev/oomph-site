@@ -154,14 +154,14 @@ $ot_credentials = array(
 	<?php /* 1. Hero — full-width photograph, place first (D11). */ ?>
 	<section class="ot-hero" aria-labelledby="ot-hero-title">
 		<picture class="ot-hero__picture">
-			<source media="<?php echo esc_attr( $ot_hero['tall']['media'] ); ?>" srcset="<?php echo esc_attr( $ot_hero['tall']['srcset'] ); ?>" sizes="<?php echo esc_attr( $ot_hero['tall']['sizes'] ); ?>" width="720" height="959">
+			<source media="<?php echo esc_attr( $ot_hero['tall']['media'] ); ?>" srcset="<?php echo esc_attr( $ot_hero['tall']['srcset'] ); ?>" sizes="<?php echo esc_attr( $ot_hero['tall']['sizes'] ); ?>" width="720" height="960">
 			<img
 				src="<?php echo esc_url( $ot_hero['wide']['src'] ); ?>"
 				srcset="<?php echo esc_attr( $ot_hero['wide']['srcset'] ); ?>"
 				sizes="<?php echo esc_attr( $ot_hero['wide']['sizes'] ); ?>"
-				width="1280" height="859"
+				width="1280" height="853"
 				fetchpriority="high" decoding="async"
-				alt="<?php esc_attr_e( 'Positano stacked up the cliff above a blue bay dotted with small boats, on Italy’s Amalfi Coast.', 'oomphtravel' ); ?>">
+				alt="<?php esc_attr_e( 'Orvieto on its cliff of golden tufa in evening light, church towers above the rooftops and olive groves below, in Umbria.', 'oomphtravel' ); ?>">
 		</picture>
 		<div class="ot-container ot-hero__inner">
 			<div class="ot-hero__copy">
@@ -175,7 +175,7 @@ $ot_credentials = array(
 				</div>
 			</div>
 		</div>
-		<p class="ot-hero__caption"><?php esc_html_e( 'Positano, Amalfi Coast', 'oomphtravel' ); ?></p>
+		<p class="ot-hero__caption"><?php esc_html_e( 'Orvieto, Umbria', 'oomphtravel' ); ?></p>
 	</section>
 
 	<?php /* 2. Place-name ticker takes the credential strip's position (D23). */ ?>
