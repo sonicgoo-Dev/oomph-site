@@ -1186,10 +1186,10 @@ header:has( > .ot-header ),
 .ot-cruiseoomph {
 	width: 100%;
 	display: grid;
-	grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-	gap: var(--space-xl);
-	align-items: center;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--space-lg);
 }
+.ot-cruiseoomph > * { max-width: 640px; }
 .ot-cruiseoomph__lockup {
 	display: inline-flex;
 	flex-direction: column;
