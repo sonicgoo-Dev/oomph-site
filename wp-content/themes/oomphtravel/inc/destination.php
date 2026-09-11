@@ -131,24 +131,7 @@ function oomphtravel_destination_tours( int $post_id, int $limit = 3 ): array {
 	);
 
 	foreach ( $posts as $tour ) {
-		$id       = (int) $tour->ID;
-		$operator = \OomphTravel\Core\CPT_Tour::operator_id( $id );
-		$price    = \OomphTravel\Core\CPT_Tour::from_price( $id );
-		$thumb    = (int) get_post_thumbnail_id( $id );
-
-		$cache[ $key ][] = array(
-			'operator_id' => $operator,
-			'operator'    => $operator ? (string) get_the_title( $operator ) : '',
-			'nights'      => (int) get_post_meta( $id, 'nights', true ),
-			'destination' => (string) get_the_title( $post_id ),
-			'title'       => (string) get_the_title( $tour ),
-			'blurb'       => (string) get_post_meta( $id, 'blurb', true ),
-			'price'       => null === $price ? '' : '$' . number_format( $price ),
-			'url'         => (string) get_permalink( $tour ),
-			'slug'        => (string) $tour->post_name,
-			'image_id'    => $thumb,
-			'image_alt'   => $thumb ? (string) get_post_meta( $thumb, '_wp_attachment_image_alt', true ) : '',
-		);
+		$cache[ $key ][] = oomphtravel_tour_card( (int) $tour->ID, (string) get_the_title( $post_id ) );
 	}
 	return $cache[ $key ];
 }

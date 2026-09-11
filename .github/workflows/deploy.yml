@@ -113,7 +113,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
-            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations && wp oomph seed operators"
+            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations && wp oomph seed operators && wp oomph seed tours"
 
       - name: Purge SiteGround cache (WP-CLI via SSH)
         continue-on-error: true

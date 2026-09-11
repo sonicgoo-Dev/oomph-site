@@ -120,6 +120,10 @@ final class Schema {
 			}
 		}
 
+		if ( is_singular( CPT_Tour::POST_TYPE ) ) {
+			$graph[] = self::tour_node();
+		}
+
 		if ( self::is_service_page() ) {
 			$graph[] = self::service_for_current_page();
 			$faqpage = self::faqpage_for_current_page();
@@ -313,6 +317,87 @@ final class Schema {
 		return $nodes;
 	}
 
+	/**
+	 * TouristTrip for a tour page (plan §6.7), with an Offer only where a
+	 * from-price exists (D36). No departures and no availability (D35): the
+	 * Offer carries the standard price and the page URL, nothing dated.
+	 * The itinerary is the same repeater the accordion prints.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private static function tour_node(): array {
+		$post = get_post();
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+		$id  = (int) $post->ID;
+		$url = (string) get_permalink( $post );
+
+		$node = array(
+			'@type' => 'TouristTrip',
+			'@id'   => $url . '#trip',
+			'name'  => get_the_title( $post ),
+			'url'   => $url,
+		);
+
+		$blurb = wp_strip_all_tags( Fields::value( $id, 'blurb' ) );
+		if ( '' !== $blurb ) {
+			$node['description'] = $blurb;
+		}
+
+		$operator = CPT_Tour::operator_id( $id );
+		if ( $operator && 'publish' === get_post_status( $operator ) ) {
+			$node['provider'] = array(
+				'@type' => 'Organization',
+				'name'  => get_the_title( $operator ),
+				'url'   => (string) get_permalink( $operator ),
+			);
+		}
+
+		$places = get_the_terms( $id, Taxonomies::DESTINATION );
+		if ( is_array( $places ) && $places ) {
+			$node['touristType'] = array( 'Escorted tour travelers' );
+			$node['itinerary']   = array(
+				'@type'           => 'ItemList',
+				'itemListElement' => array(),
+			);
+			$position = 0;
+			foreach ( Fields::repeater( $id, 'itinerary', array( 'day', 'title', 'overnight', 'text' ) ) as $row ) {
+				if ( '' === $row['title'] ) {
+					continue;
+				}
+				++$position;
+				$node['itinerary']['itemListElement'][] = array(
+					'@type'    => 'ListItem',
+					'position' => $position,
+					'name'     => ( '' !== $row['day'] ? 'Day ' . $row['day'] . ': ' : '' ) . $row['title'],
+				);
+			}
+			if ( ! $node['itinerary']['itemListElement'] ) {
+				unset( $node['itinerary'] );
+			}
+		}
+
+		$thumb = (int) get_post_thumbnail_id( $post );
+		if ( $thumb ) {
+			$node['image'] = (string) wp_get_attachment_image_url( $thumb, 'full' );
+		}
+
+		$price = CPT_Tour::from_price( $id );
+		if ( null !== $price ) {
+			$node['offers'] = array(
+				'@type'         => 'Offer',
+				'url'           => $url,
+				'price'         => (string) $price,
+				'priceCurrency' => 'USD',
+				'description'   => 'From-price per person, double occupancy. Dates and availability confirmed on request.',
+				'seller'        => array( '@id' => home_url( '/#organization' ) ),
+			);
+		}
+
+		return $node;
+	}
+
 	private static function breadcrumb(): array {
 		$items = array(
 			array(
@@ -330,6 +415,28 @@ final class Schema {
 				'name'     => 'Destinations',
 				'item'     => (string) get_post_type_archive_link( CPT_Destination::POST_TYPE ),
 			);
+		}
+
+		// Tours and operators both sit under the escorted tours index; a tour
+		// also passes through its operator's page when that page is live.
+		if ( is_singular( array( CPT_Tour::POST_TYPE, CPT_Operator::POST_TYPE ) ) ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => 'Escorted tours',
+				'item'     => (string) get_post_type_archive_link( CPT_Tour::POST_TYPE ),
+			);
+			if ( is_singular( CPT_Tour::POST_TYPE ) ) {
+				$operator = CPT_Tour::operator_id( (int) get_queried_object_id() );
+				if ( $operator && 'publish' === get_post_status( $operator ) ) {
+					$items[] = array(
+						'@type'    => 'ListItem',
+						'position' => 3,
+						'name'     => get_the_title( $operator ),
+						'item'     => (string) get_permalink( $operator ),
+					);
+				}
+			}
 		}
 
 		if ( is_singular() && ! is_front_page() ) {

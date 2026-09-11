@@ -458,6 +458,8 @@ function oomphtravel_card_tour( array $card, bool $eager = false ): string {
  *
  * @param array $card kind ('escorted'|'fit'), name, fit (one line), url,
  *                    tour_count, trip_types (array), link_text,
+ *                    logo_id|logo_url, logo_alt, cruiseoomph (bool, D32).|'fit'), name, fit (one line), url,
+ *                    tour_count, trip_types (array), link_text,
  *                    logo_id|logo_url, logo_alt.
  * @return string
  */
@@ -485,6 +487,14 @@ function oomphtravel_card_operator( array $card ): string {
 	$html .= '<div class="ot-card-operator__logo' . ( '' === $logo ? ' ot-media--empty' : '' ) . '">' . $logo . '</div>';
 	$html .= '<h3 class="ot-card-operator__name"><a href="' . esc_url( $url ) . '">' . esc_html( $name ) . '</a></h3>';
 	$html .= '<p class="ot-card-operator__fit">' . esc_html( (string) ( $card['fit'] ?? '' ) ) . '</p>';
+	if ( ! empty( $card['cruiseoomph'] ) ) {
+		// Ship-based voyages sell at CruiseOomph (D32): one line, with the UTM tag.
+		$html .= '<p class="ot-card-operator__cruise">' . sprintf(
+			/* translators: %s: link to CruiseOomph */
+			esc_html__( 'Its ship-based voyages sell at %s.', 'oomphtravel' ),
+			'<a href="' . esc_url( oomphtravel_cruiseoomph_url( '/cruises/', 'operator-card' ) ) . '">CruiseOomph</a>'
+		) . '</p>';
+	}
 
 	if ( 'escorted' === $kind ) {
 		if ( isset( $card['tour_count'] ) ) {

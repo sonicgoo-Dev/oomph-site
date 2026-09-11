@@ -80,24 +80,7 @@ if ( post_type_exists( 'oomph_tour' ) ) {
 		)
 	);
 	foreach ( $ot_tour_posts as $ot_tour ) {
-		$ot_id       = (int) $ot_tour->ID;
-		$ot_operator = class_exists( '\OomphTravel\Core\CPT_Tour' ) ? \OomphTravel\Core\CPT_Tour::operator_id( $ot_id ) : (int) get_post_meta( $ot_id, 'operator', true );
-		$ot_price    = class_exists( '\OomphTravel\Core\CPT_Tour' ) ? \OomphTravel\Core\CPT_Tour::from_price( $ot_id ) : null;
-		$ot_places   = get_the_terms( $ot_id, 'oomph_place' );
-		$ot_thumb    = (int) get_post_thumbnail_id( $ot_id );
-
-		$ot_tours[] = array(
-			'operator'    => $ot_operator ? (string) get_the_title( $ot_operator ) : '',
-			'nights'      => (int) get_post_meta( $ot_id, 'nights', true ),
-			'destination' => ( is_array( $ot_places ) && $ot_places ) ? (string) $ot_places[0]->name : '',
-			'title'       => (string) get_the_title( $ot_tour ),
-			'blurb'       => (string) get_post_meta( $ot_id, 'blurb', true ),
-			'price'       => null === $ot_price ? '' : '$' . number_format( $ot_price ),
-			'url'         => (string) get_permalink( $ot_tour ),
-			'slug'        => (string) $ot_tour->post_name,
-			'image_id'    => $ot_thumb,
-			'image_alt'   => $ot_thumb ? (string) get_post_meta( $ot_thumb, '_wp_attachment_image_alt', true ) : '',
-		);
+		$ot_tours[] = oomphtravel_tour_card( (int) $ot_tour->ID );
 	}
 }
 
