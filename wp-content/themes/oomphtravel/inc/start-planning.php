@@ -124,7 +124,7 @@ function oomphtravel_plan_state(): array {
 		$state['travelers']      = $text( 'travelers' );
 		$state['budget']         = sanitize_key( $text( 'budget' ) );
 		$state['notes']          = isset( $values['notes'] ) && is_scalar( $values['notes'] ) ? sanitize_textarea_field( (string) $values['notes'] ) : '';
-		$state['name']           = $text( 'name' );
+		$state['name']           = $text( 'full_name' );
 		$state['contact_method'] = sanitize_key( $text( 'contact_method' ) );
 		$state['contact_value']  = $text( 'contact_value' );
 		$state['consent']        = '' !== $text( 'consent' );

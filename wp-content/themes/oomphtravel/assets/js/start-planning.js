@@ -142,6 +142,12 @@
 		return form.querySelector( 'input[name="' + name + '"]:checked' );
 	}
 
+	// The traveler's name posts as full_name: "name" is a WordPress query
+	// var, and a posted "name" would turn the page into a 404.
+	function control( field ) {
+		return form.querySelector( '[name="' + ( 'name' === field ? 'full_name' : field ) + '"]' );
+	}
+
 	function labelFor( input ) {
 		var text = input && input.parentNode ? input.parentNode.querySelector( '[class$="-text"]' ) : null;
 		return text ? text.textContent.trim() : ( input ? input.value : '' );
@@ -160,8 +166,8 @@
 		if ( group ) {
 			return group;
 		}
-		var control = form.querySelector( '[name="' + field + '"]' );
-		return control ? control.closest( '.ot-plan__field, .ot-plan__check' ) : null;
+		var c = control( field );
+		return c ? c.closest( '.ot-plan__field, .ot-plan__check' ) : null;
 	}
 
 	function clearError( field ) {
@@ -173,9 +179,9 @@
 		if ( holder ) {
 			holder.classList.remove( 'is-invalid' );
 		}
-		var control = form.querySelector( '[name="' + field + '"]' );
-		if ( control && control.type !== 'radio' && control.type !== 'checkbox' ) {
-			control.removeAttribute( 'aria-invalid' );
+		var c = control( field );
+		if ( c && c.type !== 'radio' && c.type !== 'checkbox' ) {
+			c.removeAttribute( 'aria-invalid' );
 		}
 	}
 
@@ -197,17 +203,17 @@
 			holder.appendChild( p );
 		}
 		holder.classList.add( 'is-invalid' );
-		var control = form.querySelector( '[name="' + field + '"]' );
-		if ( control && control.type !== 'radio' && control.type !== 'checkbox' ) {
-			control.setAttribute( 'aria-invalid', 'true' );
-			control.setAttribute( 'aria-describedby', p.id );
+		var c = control( field );
+		if ( c && c.type !== 'radio' && c.type !== 'checkbox' ) {
+			c.setAttribute( 'aria-invalid', 'true' );
+			c.setAttribute( 'aria-describedby', p.id );
 		}
 	}
 
 	function focusField( field ) {
-		var control = checked( field ) || form.querySelector( '[name="' + field + '"]' );
-		if ( control ) {
-			control.focus();
+		var c = checked( field ) || control( field );
+		if ( c ) {
+			c.focus();
 		}
 	}
 
@@ -230,7 +236,7 @@
 
 	function validateStep2() {
 		var missing = [];
-		var name = form.querySelector( '[name="name"]' );
+		var name = control( 'name' );
 		var consent = form.querySelector( '[name="consent"]' );
 		var method = checked( 'contact_method' );
 		[ 'name', 'contact_method', 'contact_value', 'consent' ].forEach( clearError );
@@ -413,7 +419,7 @@
 	form.addEventListener( 'input', function ( e ) {
 		var t = e.target;
 		if ( t && t.name && t.type !== 'radio' && t.type !== 'checkbox' && t.value.trim() ) {
-			clearError( t.name );
+			clearError( 'full_name' === t.name ? 'name' : t.name );
 		}
 	} );
 	applyCruise();

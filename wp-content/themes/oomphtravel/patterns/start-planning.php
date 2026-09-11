@@ -270,7 +270,7 @@ $ot_method_now = $ot_s['contact_method'];
 
 					<div class="ot-plan__field<?php echo oomphtravel_plan_has_error( 'name' ) ? ' is-invalid' : ''; ?>">
 						<label class="ot-plan__label" for="ot-plan-name"><?php esc_html_e( 'Your name', 'oomphtravel' ); ?></label>
-						<input class="ot-plan__input" type="text" id="ot-plan-name" name="name" value="<?php echo esc_attr( $ot_s['name'] ); ?>" maxlength="120" autocomplete="name" required>
+						<input class="ot-plan__input" type="text" id="ot-plan-name" name="full_name" value="<?php echo esc_attr( $ot_s['name'] ); ?>" maxlength="120" autocomplete="name" required>
 						<?php echo oomphtravel_plan_error( 'name' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 					</div>
 

@@ -452,7 +452,7 @@ final class Inquiry {
 			$errors['when'] = __( 'Pick a month from the list, or "Flexible".', 'oomph-travel-core' );
 		}
 
-		$name = self::text( $in['name'] ?? '', 120 );
+		$name = self::text( $in['full_name'] ?? '', 120 );
 		if ( '' === $name ) {
 			$errors['name'] = __( 'Please tell me your name.', 'oomph-travel-core' );
 		}
