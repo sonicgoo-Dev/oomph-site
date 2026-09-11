@@ -686,6 +686,6 @@ function oomphtravel_tours_archive_seo_description( string $description ): strin
 	if ( ! is_post_type_archive( 'oomph_tour' ) || '' !== trim( $description ) ) {
 		return $description;
 	}
-	return __( 'Escorted tours from Globus, Tauck, Insight Vacations, Abercrombie & Kent and National Geographic Expeditions, chosen for the way you travel. Same price as booking direct.', 'oomphtravel' );
+	return __( 'Escorted tours from Globus, Tauck, Insight Vacations, Abercrombie & Kent and National Geographic, chosen for the way you travel. Same price as booking direct.', 'oomphtravel' );
 }
 add_filter( 'rank_math/frontend/description', 'oomphtravel_tours_archive_seo_description' );
