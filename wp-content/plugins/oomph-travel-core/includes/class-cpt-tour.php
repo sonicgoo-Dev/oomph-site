@@ -2,8 +2,8 @@
 /**
  * Tour CPT — one record per operator trip Eric sells (plan §6.7, §8.1).
  *
- * Slug: oomph_tour · public rewrite: /tours/[slug]/ (plan §4.2). No archive:
- * the tour grid lives on the escorted tours page.
+ * Slug: oomph_tour · public rewrite: /tours/[slug]/ (plan §4.2). The archive is
+ * /escorted-tours/, the index of plan §6.5, with its filters in the URL.
  *
  * A small hand-entered set, three per operator, not a catalogue (D05, D34).
  * No departures, no availability status (D35). From-price is the operator's
@@ -42,7 +42,7 @@ final class CPT_Tour {
 				'description'         => __( 'Escorted tours entered by hand. Dates and availability confirmed on request.', 'oomph-travel-core' ),
 				'public'              => true,
 				'show_in_rest'        => true,
-				'has_archive'         => false,
+				'has_archive'         => 'escorted-tours', // The index (plan §6.5) is this archive; operator singles share the prefix.
 				'menu_position'       => 24,
 				'menu_icon'           => 'dashicons-palmtree',
 				'supports'            => array( 'title', 'thumbnail', 'revisions' ),
@@ -58,6 +58,11 @@ final class CPT_Tour {
 	/** The operator post ID for a tour, or 0. */
 	public static function operator_id( int $post_id ): int {
 		return (int) get_post_meta( $post_id, 'operator', true );
+	}
+
+	/** Months the tour typically runs, as 1–12, or empty when unset. */
+	public static function months( int $post_id ): array {
+		return array_map( 'intval', Fields::choices( $post_id, 'months' ) );
 	}
 
 	/** The from-price in whole dollars, or null when unpriced. */

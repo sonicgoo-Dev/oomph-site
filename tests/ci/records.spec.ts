@@ -73,7 +73,7 @@ test.describe( 'component rules that must not regress', () => {
 } );
 
 test.describe( 'placeholders must never reach a rendered page', () => {
-  for ( const path of [ '/destinations/italy/', '/' ] ) {
+  for ( const path of [ '/destinations/italy/', '/', '/escorted-tours/', '/escorted-tours/globus/', '/tours/globus-rome-florence-venice/' ] ) {
     test( `no unfilled placeholder markers on ${ path }`, async ( { page } ) => {
       await page.goto( path, { waitUntil: 'domcontentloaded' } );
       const main = ( await page.locator( 'body' ).innerText() ) ?? '';

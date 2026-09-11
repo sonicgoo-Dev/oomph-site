@@ -17,8 +17,13 @@
             "name": "operator",
             "type": "post_object",
             "required": 1,
-            "post_type": [ "oomph_operator" ],
-            "post_status": [ "publish", "draft" ],
+            "post_type": [
+                "oomph_operator"
+            ],
+            "post_status": [
+                "publish",
+                "draft"
+            ],
             "taxonomy": "",
             "return_format": "id",
             "multiple": 0,
@@ -46,7 +51,39 @@
             "min": 1,
             "max": 60,
             "step": 1,
-            "wrapper": { "width": "34", "class": "", "id": "" }
+            "wrapper": {
+                "width": "34",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_oomph_tour_months",
+            "label": "Months it runs",
+            "name": "months",
+            "type": "checkbox",
+            "instructions": "The months this tour typically departs, as the operator publishes them. Drives the month filter on the escorted tours index; not a promise of a date (D35).",
+            "required": 0,
+            "choices": {
+                "1": "January",
+                "2": "February",
+                "3": "March",
+                "4": "April",
+                "5": "May",
+                "6": "June",
+                "7": "July",
+                "8": "August",
+                "9": "September",
+                "10": "October",
+                "11": "November",
+                "12": "December"
+            },
+            "default_value": [],
+            "return_format": "value",
+            "allow_custom": 0,
+            "layout": "horizontal",
+            "toggle": 0,
+            "save_custom": 0
         },
         {
             "key": "field_oomph_tour_start_city",
@@ -55,7 +92,11 @@
             "type": "text",
             "required": 0,
             "maxlength": 60,
-            "wrapper": { "width": "33", "class": "", "id": "" }
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_end_city",
@@ -64,7 +105,11 @@
             "type": "text",
             "required": 0,
             "maxlength": 60,
-            "wrapper": { "width": "33", "class": "", "id": "" }
+            "wrapper": {
+                "width": "33",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_from_price",
@@ -76,7 +121,11 @@
             "min": 0,
             "step": 1,
             "prepend": "$",
-            "wrapper": { "width": "34", "class": "", "id": "" }
+            "wrapper": {
+                "width": "34",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_price_note",
@@ -86,7 +135,11 @@
             "required": 0,
             "default_value": "per person, double occupancy",
             "maxlength": 80,
-            "wrapper": { "width": "66", "class": "", "id": "" }
+            "wrapper": {
+                "width": "66",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_gallery",
@@ -125,7 +178,11 @@
                     "min": 1,
                     "max": 60,
                     "step": 1,
-                    "wrapper": { "width": "15", "class": "", "id": "" },
+                    "wrapper": {
+                        "width": "15",
+                        "class": "",
+                        "id": ""
+                    },
                     "parent_repeater": "field_oomph_tour_itinerary"
                 },
                 {
@@ -135,7 +192,11 @@
                     "type": "text",
                     "required": 1,
                     "maxlength": 80,
-                    "wrapper": { "width": "50", "class": "", "id": "" },
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
                     "parent_repeater": "field_oomph_tour_itinerary"
                 },
                 {
@@ -145,7 +206,11 @@
                     "type": "text",
                     "required": 0,
                     "maxlength": 60,
-                    "wrapper": { "width": "35", "class": "", "id": "" },
+                    "wrapper": {
+                        "width": "35",
+                        "class": "",
+                        "id": ""
+                    },
                     "parent_repeater": "field_oomph_tour_itinerary"
                 },
                 {
@@ -177,7 +242,11 @@
             "type": "text",
             "required": 0,
             "maxlength": 60,
-            "wrapper": { "width": "50", "class": "", "id": "" }
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_pace",
@@ -187,7 +256,11 @@
             "instructions": "As the operator describes it, or in your words: relaxed, moderate, full days.",
             "required": 0,
             "maxlength": 60,
-            "wrapper": { "width": "50", "class": "", "id": "" }
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            }
         },
         {
             "key": "field_oomph_tour_brochure",
@@ -242,5 +315,5 @@
     "active": true,
     "description": "One Tour record per operator trip (plan §6.7, §8.1; D05, D34, D35, D36). A small hand-entered set, not a catalogue.",
     "show_in_rest": 0,
-    "modified": 1789000000
+    "modified": 1789107100
 }

@@ -35,6 +35,27 @@ if ( 'publish' !== $italy->post_status ) {
 	WP_CLI::log( 'ci-seed: published destination italy (#' . $italy->ID . ')' );
 }
 
+// 1b. Publish every operator and every tour but one, so the escorted tours
+//     index, an operator page and a tour page all have records behind them,
+//     and one draft tour proves drafts stay private.
+foreach ( array( 'oomph_operator', 'oomph_tour' ) as $ci_type ) {
+	$ci_records = get_posts(
+		array(
+			'post_type'   => $ci_type,
+			'post_status' => 'draft',
+			'numberposts' => -1,
+			'fields'      => 'ids',
+		)
+	);
+	foreach ( $ci_records as $ci_id ) {
+		if ( 'natgeo-andalusia' === get_post_field( 'post_name', $ci_id ) ) {
+			continue; // Stays a draft: tests/ci/tours.spec.ts expects a 404.
+		}
+		wp_update_post( array( 'ID' => $ci_id, 'post_status' => 'publish' ) );
+		WP_CLI::log( 'ci-seed: published ' . $ci_type . ' ' . get_post_field( 'post_name', $ci_id ) . ' (#' . $ci_id . ')' );
+	}
+}
+
 // 2. One page per pattern under test.
 $ci_pattern_pages = array(
 	'pattern-card-tour'   => 'oomphtravel/card-tour',

@@ -53,6 +53,7 @@ final class CLI {
 	 * options:
 	 *   - destinations
 	 *   - operators
+	 *   - tours
 	 * ---
 	 *
 	 * [--dry-run]
@@ -63,6 +64,7 @@ final class CLI {
 	 *     wp oomph seed destinations --dry-run
 	 *     wp @stage oomph seed destinations
 	 *     wp @stage oomph seed operators
+	 *     wp @stage oomph seed tours
 	 *
 	 * @param string[]             $args
 	 * @param array<string,string> $assoc_args
@@ -71,8 +73,8 @@ final class CLI {
 		$what    = $args[0] ?? '';
 		$dry_run = \WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
 
-		if ( ! in_array( $what, array( 'destinations', 'operators' ), true ) ) {
-			\WP_CLI::error( 'Seed set must be "destinations" or "operators".' );
+		if ( ! in_array( $what, array( 'destinations', 'operators', 'tours' ), true ) ) {
+			\WP_CLI::error( 'Seed set must be "destinations", "operators" or "tours".' );
 		}
 
 		if ( Environment::is_production() && ! $dry_run ) {
