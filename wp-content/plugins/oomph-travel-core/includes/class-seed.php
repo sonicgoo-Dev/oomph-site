@@ -68,11 +68,12 @@ final class Seed {
 	}
 
 	/**
-	 * The four ways-to-travel pages (plan §6.4, §6.8, §6.9, §6.10). Each is a
-	 * page record with an empty body: the copy lives in the theme's pattern
-	 * and templates/page-{slug}.html mounts it, so there is nothing for
-	 * anyone to fill in. They are created published (draft on production)
-	 * because the header, footer and destination pages already link to them.
+	 * The four ways-to-travel pages (plan §6.4, §6.8, §6.9, §6.10) and Start
+	 * planning (§6.15). Each is a page record with an empty body: the copy
+	 * lives in the theme's pattern and templates/page-{slug}.html mounts it,
+	 * so there is nothing for anyone to fill in. They are created published
+	 * (draft on production) because the header, footer and destination pages
+	 * already link to them.
 	 *
 	 * @return array<int,array<string,mixed>>
 	 */
@@ -82,6 +83,7 @@ final class Seed {
 			array( 'slug' => 'resorts-and-villas',                 'title' => 'Resorts & villas' ),
 			array( 'slug' => 'multi-generational-travel-planning', 'title' => 'Multi-generational trips' ),
 			array( 'slug' => 'cruise-planning',                    'title' => 'Cruise planning' ),
+			array( 'slug' => 'start-planning',                     'title' => 'Start planning' ),
 		);
 	}
 
