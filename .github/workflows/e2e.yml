@@ -2,7 +2,9 @@ name: E2E smoke (staging)
 
 # Independent, NON-BLOCKING suite — it is not a required status check, so it
 # never gates a deploy or a merge. Targets:
-#   - after each develop "Deploy to SiteGround" run  → STAGING (fresh deploy)
+#   - after a main "Deploy to SiteGround" run (a release) → STAGING copy of
+#     the suite, on demand — see the if: below (Eric, 2026-09-11: milestones
+#     only, not after every develop merge)
 #   - nightly on a schedule                          → PRODUCTION (reliable
 #     canary; prod has no bot-wall issues from datacenter IPs)
 #   - on demand from the Actions tab                 → pick staging/production
@@ -51,11 +53,12 @@ jobs:
       run:
         shell: cmd
 
-    # For workflow_run triggers, only run for a SUCCESSFUL develop deploy.
+    # For workflow_run triggers, only run after a SUCCESSFUL main deploy (a
+    # milestone); develop deploys no longer trigger it.
     # schedule/workflow_dispatch have no workflow_run payload, so allow those.
     if: >-
       github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.head_branch == 'develop' &&
+      (github.event.workflow_run.head_branch == 'main' &&
        github.event.workflow_run.conclusion == 'success')
 
     steps:
