@@ -37,7 +37,7 @@
 }
 .ot-hero__picture img {
 	object-fit: cover;
-	object-position: 50% 45%;
+	object-position: 40% 50%;
 	transform-origin: 50% 60%;
 	animation: ot-hero-drift var(--wp--custom--motion--drift) ease-in-out both alternate infinite;
 }
@@ -56,17 +56,17 @@
 	);
 }
 
-/* A second scrim, anchored left and running the full width of the band, so
-   the headline reads over the town as well as over the sky. */
+/* A second scrim, anchored to the side the copy sits on and running the full
+   width of the band. On desktop the copy is on the right, over the lake. */
 .ot-hero::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	z-index: -1;
 	background: linear-gradient(
-		90deg,
-		color-mix( in srgb, var(--navy-deep) 62%, transparent ) 0%,
-		color-mix( in srgb, var(--navy-deep) 42%, transparent ) 45%,
+		270deg,
+		color-mix( in srgb, var(--navy-deep) 55%, transparent ) 0%,
+		color-mix( in srgb, var(--navy-deep) 35%, transparent ) 45%,
 		transparent 85%
 	);
 }
@@ -85,6 +85,11 @@
 	flex-direction: column;
 	gap: var(--space-lg);
 	max-width: var(--wp--custom--measure--heading);
+}
+ (min-width: 768px) {
+	.ot-hero__inner { display: flex; justify-content: flex-end; }
+	.ot-hero__copy { max-width: min( var(--wp--custom--measure--heading), 52% ); }
+	.ot-hero__caption { right: auto; left: var(--space-page-margin); }
 }
 
 .ot-hero .ot-eyebrow { color: var(--text-on-navy); }

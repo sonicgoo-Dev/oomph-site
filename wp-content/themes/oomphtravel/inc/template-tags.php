@@ -635,14 +635,14 @@ function oomphtravel_home_hero_sources(): array {
 	return array(
 		'tall' => array(
 			'media'  => '(max-width: 767px)',
-			'src'    => $img . 'hero-orvieto-tall-720.webp',
-			'srcset' => $img . 'hero-orvieto-tall-480.webp 480w, ' . $img . 'hero-orvieto-tall-720.webp 720w, ' . $img . 'hero-orvieto-tall-900.webp 900w',
+			'src'    => $img . 'hero-varenna-tall-720.webp',
+			'srcset' => $img . 'hero-varenna-tall-480.webp 480w, ' . $img . 'hero-varenna-tall-720.webp 720w, ' . $img . 'hero-varenna-tall-900.webp 900w',
 			'sizes'  => '100vw',
 		),
 		'wide' => array(
 			'media'  => '(min-width: 768px)',
-			'src'    => $img . 'hero-orvieto-1280.webp',
-			'srcset' => $img . 'hero-orvieto-640.webp 640w, ' . $img . 'hero-orvieto-960.webp 960w, ' . $img . 'hero-orvieto-1280.webp 1280w',
+			'src'    => $img . 'hero-varenna-1280.webp',
+			'srcset' => $img . 'hero-varenna-640.webp 640w, ' . $img . 'hero-varenna-960.webp 960w, ' . $img . 'hero-varenna-1280.webp 1280w',
 			'sizes'  => '100vw',
 		),
 	);
