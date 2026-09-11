@@ -12,15 +12,14 @@ name: CI
 # The live-site suite still exists and still matters — it runs from a
 # residential self-hosted runner in e2e.yml.
 
+# Milestones only (Eric, 2026-09-11): a push to main (a release) or a run
+# started by hand from the Actions tab. Not on every pull request or every
+# develop merge — those are frequent during the rebuild and each run costs
+# minutes. Run it by hand before merging anything sizeable to develop.
 on:
   push:
     branches:
       - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
 
 concurrency:
