@@ -53,13 +53,15 @@ jobs:
 
       - name: No List
         # docs/voice-guide.md. The guide and the decisions log are allowed to
-        # name the words in order to ban them.
+        # name the words in order to ban them, and the four verified client
+        # reviews are quoted word for word (D38), so a row marked as a
+        # verbatim review is exempt.
         run: |
           WORDS='bespoke|wanderlust|magical|breathtaking|curated|jaw-dropping|paradise|bucket list|hidden gem|white-glove|unforgettable'
           if grep -rniE "\b($WORDS)\b" \
                wp-content/themes/oomphtravel wp-content/plugins/oomph-travel-core \
                --include='*.php' --include='*.json' --include='*.html' \
-             | grep -viE 'CURATED \(D40\)|No List'; then
+             | grep -viE 'CURATED \(D40\)|No List|verbatim client review \(D38\)'; then
             echo "::error::a No List word reached the theme or plugin"
             exit 1
           fi
@@ -180,7 +182,7 @@ jobs:
           echo "$OUT" | grep -q '15 created, 0 already existed' || { echo "::error::tour seed counts changed" >&2; exit 1; }
           OUT=$(npx wp-env run cli wp oomph seed pages 2>&1)
           echo "$OUT"
-          echo "$OUT" | grep -q '5 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
+          echo "$OUT" | grep -q '9 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
 
       - name: One term per destination, and re-running changes nothing
         run: |

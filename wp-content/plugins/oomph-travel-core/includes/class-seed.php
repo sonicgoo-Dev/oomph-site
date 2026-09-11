@@ -68,8 +68,9 @@ final class Seed {
 	}
 
 	/**
-	 * The four ways-to-travel pages (plan §6.4, §6.8, §6.9, §6.10) and Start
-	 * planning (§6.15). Each is a page record with an empty body: the copy
+	 * The four ways-to-travel pages (plan §6.4, §6.8, §6.9, §6.10), Start
+	 * planning (§6.15), About, Client stories, the Journal index and the
+	 * Travel Trends guide (§6.11–§6.14). Each is a page record with an empty body: the copy
 	 * lives in the theme's pattern and templates/page-{slug}.html mounts it,
 	 * so there is nothing for anyone to fill in. They are created published
 	 * (draft on production) because the header, footer and destination pages
@@ -84,6 +85,11 @@ final class Seed {
 			array( 'slug' => 'multi-generational-travel-planning', 'title' => 'Multi-generational trips' ),
 			array( 'slug' => 'cruise-planning',                    'title' => 'Cruise planning' ),
 			array( 'slug' => 'start-planning',                     'title' => 'Start planning' ),
+			// Plan §6.11–§6.14 (Stage 10): the same shape, the copy in the theme.
+			array( 'slug' => 'about',                              'title' => 'About' ),
+			array( 'slug' => 'client-stories',                     'title' => 'Client stories' ),
+			array( 'slug' => 'journal',                            'title' => 'Journal' ),
+			array( 'slug' => 'travel-trends',                      'title' => 'Travel trends' ),
 		);
 	}
 
