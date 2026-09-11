@@ -68,9 +68,27 @@ final class Seed {
 	}
 
 	/**
+	 * The four ways-to-travel pages (plan §6.4, §6.8, §6.9, §6.10). Each is a
+	 * page record with an empty body: the copy lives in the theme's pattern
+	 * and templates/page-{slug}.html mounts it, so there is nothing for
+	 * anyone to fill in. They are created published (draft on production)
+	 * because the header, footer and destination pages already link to them.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function pages(): array {
+		return array(
+			array( 'slug' => 'custom-journeys',                    'title' => 'Custom journeys' ),
+			array( 'slug' => 'resorts-and-villas',                 'title' => 'Resorts & villas' ),
+			array( 'slug' => 'multi-generational-travel-planning', 'title' => 'Multi-generational trips' ),
+			array( 'slug' => 'cruise-planning',                    'title' => 'Cruise planning' ),
+		);
+	}
+
+	/**
 	 * Seed one set. Returns one row per record: slug, title, action, id.
 	 *
-	 * @param string $what    'destinations', 'operators' or 'tours'.
+	 * @param string $what    'destinations', 'operators', 'tours' or 'pages'.
 	 * @param bool   $dry_run Report without writing.
 	 * @return array<int,array{slug:string,title:string,action:string,id:int}>
 	 */
@@ -87,6 +105,10 @@ final class Seed {
 			case 'tours':
 				$records   = self::tours();
 				$post_type = CPT_Tour::POST_TYPE;
+				break;
+			case 'pages':
+				$records   = self::pages();
+				$post_type = 'page';
 				break;
 			default:
 				throw new \InvalidArgumentException( 'Unknown seed set: ' . $what );
@@ -122,11 +144,15 @@ final class Seed {
 				case 'tours':
 					$id = self::create_tour( $record, $order );
 					break;
+				case 'pages':
+					$id = self::create_page( $record, $order );
+					break;
 				default:
 					$id = self::create_operator( $record, $order );
 			}
 
-			$rows[] = array( 'slug' => $record['slug'], 'title' => $record['title'], 'action' => $id ? 'created (draft)' : 'failed', 'id' => $id );
+			$status = $id ? (string) get_post_status( $id ) : '';
+			$rows[] = array( 'slug' => $record['slug'], 'title' => $record['title'], 'action' => $id ? 'created (' . $status . ')' : 'failed', 'id' => $id );
 		}
 
 		return $rows;
@@ -163,6 +189,28 @@ final class Seed {
 		}
 		self::fill_operator( $id, (string) $record['slug'] );
 		return $id;
+	}
+
+	/**
+	 * A ways-to-travel page: empty body, template-driven, published unless
+	 * this is production (where nothing the seed makes goes live by itself).
+	 *
+	 * @param array<string,mixed> $record
+	 */
+	private static function create_page( array $record, int $order ): int {
+		$id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => Environment::is_production() ? 'draft' : 'publish',
+				'post_title'   => $record['title'],
+				'post_name'    => $record['slug'],
+				'post_content' => '',
+				'post_author'  => self::author(),
+				'menu_order'   => $order,
+			),
+			true
+		);
+		return is_wp_error( $id ) ? 0 : (int) $id;
 	}
 
 	/** @param array<string,mixed> $record */

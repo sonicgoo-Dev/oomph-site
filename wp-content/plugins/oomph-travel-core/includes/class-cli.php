@@ -48,12 +48,15 @@ final class CLI {
 	 *
 	 * <what>
 	 * : Which set. `destinations` — the eleven (D07, D33), each with its
-	 * Destinations term. `operators` — the seven (D25).
+	 * Destinations term. `operators` — the seven (D25). `tours` — three per
+	 * escorted operator. `pages` — the four ways-to-travel pages, published
+	 * on staging (their copy is in the theme), drafts on production.
 	 * ---
 	 * options:
 	 *   - destinations
 	 *   - operators
 	 *   - tours
+	 *   - pages
 	 * ---
 	 *
 	 * [--dry-run]
@@ -65,6 +68,7 @@ final class CLI {
 	 *     wp @stage oomph seed destinations
 	 *     wp @stage oomph seed operators
 	 *     wp @stage oomph seed tours
+	 *     wp @stage oomph seed pages
 	 *
 	 * @param string[]             $args
 	 * @param array<string,string> $assoc_args
@@ -73,8 +77,8 @@ final class CLI {
 		$what    = $args[0] ?? '';
 		$dry_run = \WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
 
-		if ( ! in_array( $what, array( 'destinations', 'operators', 'tours' ), true ) ) {
-			\WP_CLI::error( 'Seed set must be "destinations", "operators" or "tours".' );
+		if ( ! in_array( $what, array( 'destinations', 'operators', 'tours', 'pages' ), true ) ) {
+			\WP_CLI::error( 'Seed set must be "destinations", "operators", "tours" or "pages".' );
 		}
 
 		if ( Environment::is_production() && ! $dry_run ) {

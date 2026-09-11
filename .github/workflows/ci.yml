@@ -167,7 +167,7 @@ jobs:
           COUNT=$(npx wp-env run cli wp post list --post_type=oomph_destination --post_status=any --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
           [ "$COUNT" = "0" ] || { echo "::error::the dry run wrote ${COUNT:-?} records" >&2; exit 1; }
 
-      - name: Seed the destinations and the operators
+      - name: Seed the destinations, the operators, the tours and the pages
         run: |
           OUT=$(npx wp-env run cli wp oomph seed destinations 2>&1)
           echo "$OUT"
@@ -178,6 +178,9 @@ jobs:
           OUT=$(npx wp-env run cli wp oomph seed tours 2>&1)
           echo "$OUT"
           echo "$OUT" | grep -q '15 created, 0 already existed' || { echo "::error::tour seed counts changed" >&2; exit 1; }
+          OUT=$(npx wp-env run cli wp oomph seed pages 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q '4 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
 
       - name: One term per destination, and re-running changes nothing
         run: |
