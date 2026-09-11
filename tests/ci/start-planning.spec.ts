@@ -98,7 +98,7 @@ test.describe( '/start-planning/', () => {
     await page.waitForTimeout( SETTLE_MS );
     await Promise.all( [
       page.waitForURL( /\/start-planning\/received\/\?r=/ ),
-      page.locator( '[data-ot-send]' ).click(),
+      page.locator( '[data-ot-send]' ).click( FORCE ),
     ] );
 
     await expect( page.locator( 'h1' ) ).toHaveText( 'Thank you, Playwright.' );
@@ -138,7 +138,7 @@ test.describe( '/start-planning/', () => {
     await page.locator( '#ot-plan-consent' ).check( FORCE );
     const [ posted ] = await Promise.all( [
       page.waitForResponse( ( r ) => r.request().method() === 'POST' ),
-      page.locator( '[data-ot-send]' ).click(),
+      page.locator( '[data-ot-send]' ).click( FORCE ),
     ] );
     await page.waitForLoadState( 'domcontentloaded' );
     expect( posted.status(), 'the plain post must redirect to the receipt' ).toBe( 303 );
@@ -153,20 +153,26 @@ test.describe( '/start-planning/', () => {
     const page = await context.newPage();
     await page.goto( '/start-planning/', { waitUntil: 'domcontentloaded' } );
 
-    // A bot fills the off-screen field.
-    await page.locator( '#ot-plan-trip_type-custom' ).check( FORCE );
-    await page.locator( '#ot-plan-budget-guide' ).check( FORCE );
-    await page.locator( '#ot-plan-name' ).fill( 'Robot' );
-    await page.locator( '#ot-plan-contact_method-email' ).check( FORCE );
-    await page.locator( '#ot-plan-contact' ).fill( 'robot@example.com' );
-    await page.locator( '#ot-plan-consent' ).check( FORCE );
-    await page.locator( '#ot-plan-website' ).fill( 'https://spam.example', FORCE );
-    const [ response ] = await Promise.all( [
-      page.waitForResponse( ( r ) => r.request().method() === 'POST' ),
-      page.locator( '[data-ot-send]' ).click(),
-    ] );
-    expect( response.status() ).toBe( 400 );
-    await expect( page.locator( '.ot-plan__alert' ) ).toContainText( 'Request rejected' );
+    // A bot fills the off-screen field. Posted straight from the request
+    // context with the page's own nonce: a real bot never scrolls to it,
+    // and a filled honeypot that is also the focused element confuses the
+    // browser's next click.
+    const nonce = await page.locator( 'input[name="oomph_inquiry_nonce"]' ).inputValue();
+    const bot = await page.request.post( '/start-planning/', {
+      maxRedirects: 0,
+      form: {
+        oomph_inquiry_nonce: nonce,
+        trip_type: 'custom',
+        budget: 'guide',
+        full_name: 'Robot',
+        contact_method: 'email',
+        contact_value: 'robot@example.com',
+        consent: '1',
+        website: 'https://spam.example',
+      },
+    } );
+    expect( bot.status(), 'a filled honeypot is refused' ).toBe( 400 );
+    expect( await bot.text() ).toContain( 'Request rejected' );
 
     // A person who forgot the consent line: the field is marked, the rest kept.
     await page.goto( '/start-planning/', { waitUntil: 'domcontentloaded' } );
@@ -177,7 +183,7 @@ test.describe( '/start-planning/', () => {
     await page.locator( '#ot-plan-contact' ).fill( 'person@example.com' );
     await Promise.all( [
       page.waitForResponse( ( r ) => r.request().method() === 'POST' ),
-      page.locator( '[data-ot-send]' ).click(),
+      page.locator( '[data-ot-send]' ).click( FORCE ),
     ] );
     await page.waitForLoadState( 'domcontentloaded' );
 
