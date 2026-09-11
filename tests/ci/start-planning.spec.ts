@@ -128,11 +128,15 @@ test.describe( '/start-planning/', () => {
     await page.locator( '#ot-plan-contact_method-text' ).check( { force: true } );
     await page.locator( '#ot-plan-contact' ).fill( '360 775 4644' );
     await page.locator( '#ot-plan-consent' ).check();
-    await Promise.all( [
-      page.waitForURL( /\/start-planning\/received\/\?r=/ ),
+    const [ posted ] = await Promise.all( [
+      page.waitForResponse( ( r ) => r.request().method() === 'POST' ),
       page.locator( '[data-ot-send]' ).click(),
     ] );
+    await page.waitForLoadState( 'domcontentloaded' );
+    console.log( 'plain post:', posted.status(), posted.headers()[ 'location' ] ?? '', '->', page.url() );
+    console.log( ( await page.locator( 'main' ).innerHTML() ).slice( 0, 1500 ) );
 
+    await expect( page ).toHaveURL( /\/start-planning\/received\/\?r=/ );
     await expect( page.locator( 'h1' ) ).toHaveText( 'Thank you, Plain.' );
     await context.close();
   } );
