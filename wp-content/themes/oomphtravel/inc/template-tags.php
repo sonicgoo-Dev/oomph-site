@@ -588,7 +588,7 @@ function oomphtravel_quotation( string $quote, string $attribution ): string {
  * `.oomph-signup` hooks newsletter.js listens for.
  *
  * @param string $key  PlainSend form key ('newsletter', 'trends-guide').
- * @param array  $args label, button, source, id.
+ * @param array  $args label, button, source, id, success.
  * @return void
  */
 function oomphtravel_signup_form( string $key = 'newsletter', array $args = array() ): void {
@@ -604,13 +604,18 @@ function oomphtravel_signup_form( string $key = 'newsletter', array $args = arra
 		array(
 			'label'  => __( 'Email address', 'oomphtravel' ),
 			'button' => __( 'Sign me up', 'oomphtravel' ),
-			'source' => $key,
-			'id'     => 'ot-signup-' . $key,
+			'source'  => $key,
+			'id'      => 'ot-signup-' . $key,
+			// The line shown after a successful post. Empty keeps newsletter.js's
+			// own; the trends guide overrides it because that list is double
+			// opt-in and the visitor must be told to expect a second email.
+			'success' => '',
 		)
 	);
-	$id   = (string) $args['id'];
+	$id      = (string) $args['id'];
+	$success = (string) $args['success'];
 	?>
-	<form class="oomph-signup ot-signup" method="post" action="<?php echo esc_url( $endpoint ); ?>" data-source="<?php echo esc_attr( (string) $args['source'] ); ?>">
+	<form class="oomph-signup ot-signup" method="post" action="<?php echo esc_url( $endpoint ); ?>" data-source="<?php echo esc_attr( (string) $args['source'] ); ?>"<?php echo '' !== $success ? ' data-success="' . esc_attr( $success ) . '"' : ''; ?>>
 		<div class="ot-signup__row">
 			<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( (string) $args['label'] ); ?></label>
 			<input class="oomph-signup__input ot-signup__input" type="email" id="<?php echo esc_attr( $id ); ?>" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>

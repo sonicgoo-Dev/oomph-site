@@ -3,7 +3,7 @@
  * Plugin Name:       Oomph Travel Core
  * Plugin URI:        https://oomphtravel.com
  * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the theme; this lives in a plugin so it survives a theme switch.
- * Version:           1.6.0
+ * Version:           1.7.0
  * Requires PHP:      8.1
  * Requires at least: 6.7
  * Tested up to:      6.8
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OOMPH_CORE_VERSION', '1.6.0' );
+define( 'OOMPH_CORE_VERSION', '1.7.0' );
 define( 'OOMPH_CORE_FILE',    __FILE__ );
 define( 'OOMPH_CORE_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
@@ -88,7 +88,7 @@ add_action( 'init', static function (): void {
 
 /**
  * Rewrite rules are flushed once per plugin version, so a deploy that adds a
- * post type (1.2.0 added operators and tours) or a rewrite rule (1.6.0 added
+ * post type (1.2.0 added operators and tours) or a rewrite rule (1.7.0 added
  * /start-planning/received/) resolves its URLs without a manual
  * re-activation. Cheap: one option read per request.
  */

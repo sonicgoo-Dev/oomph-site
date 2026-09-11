@@ -34,6 +34,10 @@
 		// correct for the no-JavaScript path.
 		var endpoint = form.getAttribute( 'action' );
 		var source = form.getAttribute( 'data-source' ) || config.source || 'footer';
+		// What to say once the post is accepted. The trends guide sets its own
+		// because that list is double opt-in and the visitor has to be told a
+		// second email is coming, or they assume it failed.
+		var success = form.getAttribute( 'data-success' ) || 'Check your inbox — there is one email to confirm.';
 
 		if ( ! endpoint ) {
 			return;
@@ -121,7 +125,7 @@
 				.then( function ( result ) {
 					if ( result && result.ok ) {
 						form.reset();
-						say( 'Check your inbox — there is one email to confirm.', false );
+						say( success, false );
 						reportLead();
 					} else {
 						button.disabled = false;

@@ -180,7 +180,7 @@ jobs:
           echo "$OUT" | grep -q '15 created, 0 already existed' || { echo "::error::tour seed counts changed" >&2; exit 1; }
           OUT=$(npx wp-env run cli wp oomph seed pages 2>&1)
           echo "$OUT"
-          echo "$OUT" | grep -q '5 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
+          echo "$OUT" | grep -q '9 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
 
       - name: One term per destination, and re-running changes nothing
         run: |

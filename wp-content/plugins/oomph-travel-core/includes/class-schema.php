@@ -106,6 +106,13 @@ final class Schema {
 		$graph[] = self::organization();
 		$graph[] = self::person();
 
+		// The second advisor (D15, D28): on About, where her bio is printed,
+		// and on a journal post she wrote, where the byline names her.
+		$second = self::second_advisor();
+		if ( $second && ( is_page( 'about' ) || ( is_singular( 'post' ) && self::post_by_second_advisor( get_post(), $second ) ) ) ) {
+			$graph[] = self::second_person( $second );
+		}
+
 		if ( is_singular() || is_front_page() ) {
 			$graph[] = self::breadcrumb();
 		}
@@ -252,6 +259,62 @@ final class Schema {
 		return $person;
 	}
 
+
+	/**
+	 * The second advisor, Amy Hempel (plan §6.11, D15, D28), as the theme
+	 * registers her through `oomph_second_advisor`: name, login, url (the
+	 * /about/#amy anchor), jobTitle, description, image. The theme owns the
+	 * data because the theme prints it, so the node never claims copy that
+	 * is not on the page. Null until the theme registers her.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	private static function second_advisor(): ?array {
+		$data = apply_filters( 'oomph_second_advisor', array() );
+		if ( ! is_array( $data ) || '' === trim( (string) ( $data['name'] ?? '' ) ) || '' === trim( (string) ( $data['url'] ?? '' ) ) ) {
+			return null;
+		}
+		return $data;
+	}
+
+	/**
+	 * @param array<string,mixed> $advisor From second_advisor().
+	 * @return array<string,mixed>
+	 */
+	private static function second_person( array $advisor ): array {
+		$node = array(
+			'@type'    => 'Person',
+			'@id'      => (string) $advisor['url'],
+			'name'     => (string) $advisor['name'],
+			'url'      => (string) $advisor['url'],
+			'worksFor' => array( '@id' => home_url( '/' ) . '#organization' ),
+		);
+		if ( '' !== trim( (string) ( $advisor['jobTitle'] ?? '' ) ) ) {
+			$node['jobTitle'] = (string) $advisor['jobTitle'];
+		}
+		if ( '' !== trim( (string) ( $advisor['description'] ?? '' ) ) ) {
+			$node['description'] = wp_strip_all_tags( (string) $advisor['description'] );
+		}
+		if ( '' !== trim( (string) ( $advisor['image'] ?? '' ) ) ) {
+			$node['image'] = (string) $advisor['image'];
+		}
+		return $node;
+	}
+
+	/**
+	 * True when the post's author is the second advisor's WordPress user.
+	 *
+	 * @param \WP_Post|null       $post
+	 * @param array<string,mixed> $advisor
+	 */
+	private static function post_by_second_advisor( $post, array $advisor ): bool {
+		$login = trim( (string) ( $advisor['login'] ?? '' ) );
+		if ( '' === $login || ! $post instanceof \WP_Post ) {
+			return false;
+		}
+		$user = get_userdata( (int) $post->post_author );
+		return $user instanceof \WP_User && $user->user_login === $login;
+	}
 
 	/**
 	 * TouristDestination for a destination record (docs/schema.md), with the
@@ -608,13 +671,21 @@ final class Schema {
 		$site = home_url( '/' );
 		$url  = (string) get_permalink( $post );
 
+		// The byline names the second advisor when she wrote the post, so the
+		// node points at her entity instead of the lead advisor's.
+		$author_id = $site . 'about/#advisor';
+		$second    = self::second_advisor();
+		if ( $second && self::post_by_second_advisor( $post, $second ) ) {
+			$author_id = (string) $second['url'];
+		}
+
 		$article = array(
 			'@type'            => 'BlogPosting',
 			'@id'              => $url . '#article',
 			'mainEntityOfPage' => $url,
 			'headline'         => get_the_title( $post ),
 			'description'      => wp_strip_all_tags( (string) get_the_excerpt( $post ) ),
-			'author'           => array( '@id' => $site . 'about/#advisor' ),
+			'author'           => array( '@id' => $author_id ),
 			'publisher'        => array( '@id' => $site . '#organization' ),
 			'datePublished'    => get_the_date( 'c', $post ),
 			'dateModified'     => get_the_modified_date( 'c', $post ),
