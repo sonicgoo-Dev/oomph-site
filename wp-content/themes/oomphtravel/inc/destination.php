@@ -273,27 +273,44 @@ function oomphtravel_destination_groups(): array {
 	foreach ( $groups as $group ) {
 		$cards = array();
 		foreach ( $group['slugs'] as $slug ) {
-			$post = get_page_by_path( $slug, OBJECT, 'oomph_destination' );
-			if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
-				continue;
+			$card = oomphtravel_destination_card( $slug );
+			if ( $card ) {
+				$cards[] = $card;
 			}
-			$card  = array(
-				'name' => (string) get_the_title( $post ),
-				'url'  => (string) get_permalink( $post ),
-			);
-			$thumb = (int) get_post_thumbnail_id( $post );
-			if ( $thumb ) {
-				$card['image_id']  = $thumb;
-				$card['image_alt'] = (string) get_post_meta( $thumb, '_wp_attachment_image_alt', true );
-			} elseif ( file_exists( OOMPHTRAVEL_THEME_DIR . 'assets/img/dest-' . $slug . '-tall-720.webp' ) ) {
-				$card['image_url'] = OOMPHTRAVEL_THEME_URI . 'assets/img/dest-' . $slug . '-tall-720.webp';
-				$card['image_alt'] = oomphtravel_destination_hero_alt( $slug );
-			}
-			$cards[] = $card;
 		}
 		if ( $cards ) {
 			$out[] = array( 'heading' => $group['heading'], 'cards' => $cards );
 		}
 	}
 	return $out;
+}
+
+/**
+ * The card array (oomphtravel_card_destination) for one destination by
+ * slug, or null when the record is missing or not published. The image is
+ * the record's featured image, else the theme's own tall rendition.
+ *
+ * @return array<string,mixed>|null
+ */
+function oomphtravel_destination_card( string $slug ): ?array {
+	if ( ! post_type_exists( 'oomph_destination' ) ) {
+		return null;
+	}
+	$post = get_page_by_path( $slug, OBJECT, 'oomph_destination' );
+	if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+		return null;
+	}
+	$card  = array(
+		'name' => (string) get_the_title( $post ),
+		'url'  => (string) get_permalink( $post ),
+	);
+	$thumb = (int) get_post_thumbnail_id( $post );
+	if ( $thumb ) {
+		$card['image_id']  = $thumb;
+		$card['image_alt'] = (string) get_post_meta( $thumb, '_wp_attachment_image_alt', true );
+	} elseif ( file_exists( OOMPHTRAVEL_THEME_DIR . 'assets/img/dest-' . $slug . '-tall-720.webp' ) ) {
+		$card['image_url'] = OOMPHTRAVEL_THEME_URI . 'assets/img/dest-' . $slug . '-tall-720.webp';
+		$card['image_alt'] = oomphtravel_destination_hero_alt( $slug );
+	}
+	return $card;
 }
