@@ -7,7 +7,8 @@
  *
  * Each step has three named nodes — Number, Title, Body — addressed by class,
  * never by sibling index (docs/02-components.md). The one-line bodies are
- * Eric's (plan §6.1.7) and are bracketed until supplied.
+ * Eric's (plan §6.1.7); these are drafts adapted from the old homepage's
+ * "How it works" block, for him to change word for word.
  *
  * @package OomphTravel
  */
@@ -15,9 +16,9 @@
 declare( strict_types = 1 );
 
 $ot_steps = array(
-	array( '01', __( 'Discover', 'oomphtravel' ), '[One line on Discover.]' ),
-	array( '02', __( 'Design', 'oomphtravel' ), '[One line on Design.]' ),
-	array( '03', __( 'Depart', 'oomphtravel' ), '[One line on Depart.]' ),
+	array( '01', __( 'Discover', 'oomphtravel' ), __( 'A free thirty-minute call about where, when, who, and what the trip needs to do.', 'oomphtravel' ) ),
+	array( '02', __( 'Design', 'oomphtravel' ), __( 'One proposal, not five, with the reasoning written in.', 'oomphtravel' ) ),
+	array( '03', __( 'Depart', 'oomphtravel' ), __( 'Eyes on it the whole time, from the first flight to the last.', 'oomphtravel' ) ),
 );
 ?>
 <section class="ot-band ot-band--mist-deep ot-process" id="ot-how-it-works">

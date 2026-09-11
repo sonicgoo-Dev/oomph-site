@@ -70,3 +70,44 @@ function oomphtravel_skip_link(): void {
 	echo '<a class="ot-skip-link" href="#ot-main">' . esc_html__( 'Skip to content', 'oomphtravel' ) . '</a>' . "\n";
 }
 add_action( 'wp_body_open', 'oomphtravel_skip_link' );
+
+/**
+ * Homepage-only stylesheet and script (plan §6.1), after the shell.
+ */
+function oomphtravel_enqueue_home_assets(): void {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$v = OOMPHTRAVEL_THEME_VERSION;
+	wp_enqueue_style( 'oomphtravel-home', OOMPHTRAVEL_THEME_URI . 'assets/css/home.css', array( 'oomphtravel-components' ), $v );
+	wp_enqueue_script(
+		'oomphtravel-home',
+		OOMPHTRAVEL_THEME_URI . 'assets/js/home.js',
+		array( 'oomphtravel-shell' ),
+		$v,
+		array( 'strategy' => 'defer' )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'oomphtravel_enqueue_home_assets', 20 );
+
+/**
+ * Preload the hero photograph on the front page (R3: never lazy, high
+ * priority). One hint per orientation with its media query, so a phone
+ * downloads only the tall crop and a desktop only the wide one. The same
+ * sources feed the <picture> in patterns/home.php.
+ */
+function oomphtravel_preload_hero(): void {
+	if ( ! is_front_page() || ! function_exists( 'oomphtravel_home_hero_sources' ) ) {
+		return;
+	}
+	foreach ( oomphtravel_home_hero_sources() as $source ) {
+		printf(
+			'<link rel="preload" as="image" media="%s" href="%s" imagesrcset="%s" imagesizes="%s" fetchpriority="high">' . "\n",
+			esc_attr( $source['media'] ),
+			esc_url( $source['src'] ),
+			esc_attr( $source['srcset'] ),
+			esc_attr( $source['sizes'] )
+		);
+	}
+}
+add_action( 'wp_head', 'oomphtravel_preload_hero', 2 );
