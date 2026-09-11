@@ -166,7 +166,7 @@ foreach ( array( 'privacy-policy' => __( 'Privacy', 'oomphtravel' ), 'accessibil
 					<li><a href="tel:+13607754644">(360) 775-4644</a></li>
 					<li><?php esc_html_e( 'Port Angeles, WA', 'oomphtravel' ); ?></li>
 				</ul>
-				<p class="ot-footer__credentials"><?php esc_html_e( 'CLIA · Silversea Ultra-Luxury Specialist · Nexion / Travel Leaders Network · BritAgent Pro', 'oomphtravel' ); ?></p>
+				<p class="ot-footer__credentials"><?php esc_html_e( 'CLIA · Nexion / Travel Leaders Network', 'oomphtravel' ); ?></p>
 				<ul class="ot-footer__social" aria-label="<?php esc_attr_e( 'Oomph Travel on social media', 'oomphtravel' ); ?>">
 					<?php foreach ( $ot_social as $ot_s ) : ?>
 						<li>
