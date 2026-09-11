@@ -114,6 +114,12 @@ final class Schema {
 			$graph[] = self::article();
 		}
 
+		if ( is_singular( CPT_Destination::POST_TYPE ) ) {
+			foreach ( self::destination_nodes() as $node ) {
+				$graph[] = $node;
+			}
+		}
+
 		if ( self::is_service_page() ) {
 			$graph[] = self::service_for_current_page();
 			$faqpage = self::faqpage_for_current_page();
@@ -242,6 +248,71 @@ final class Schema {
 		return $person;
 	}
 
+
+	/**
+	 * TouristDestination for a destination record (docs/schema.md), with the
+	 * page's FAQ as FAQPage when it has real Q&A pairs. Plan §6.3 item 9.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function destination_nodes(): array {
+		$post = get_post();
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+		$id  = (int) $post->ID;
+		$url = (string) get_permalink( $post );
+
+		$intro       = wp_strip_all_tags( Fields::value( $id, 'intro' ) );
+		$description = '' !== $intro ? wp_trim_words( $intro, 40, '…' ) : (string) get_the_excerpt( $post );
+
+		$variant = Fields::value( $id, 'variant' );
+		$types   = array( 'Couples', 'Multi-generational families' );
+		if ( 'resort' === $variant ) {
+			$types[] = 'Resort travelers';
+		}
+
+		$nodes = array(
+			array(
+				'@type'       => 'TouristDestination',
+				'@id'         => $url . '#destination',
+				'name'        => get_the_title( $post ),
+				'url'         => $url,
+				'description' => $description,
+				'touristType' => $types,
+			),
+		);
+
+		$thumb = (int) get_post_thumbnail_id( $post );
+		if ( $thumb ) {
+			$nodes[0]['image'] = (string) wp_get_attachment_image_url( $thumb, 'full' );
+		}
+
+		$main_entity = array();
+		foreach ( Fields::repeater( $id, 'faq', array( 'question', 'answer' ) ) as $row ) {
+			if ( '' === $row['question'] || '' === $row['answer'] ) {
+				continue;
+			}
+			$main_entity[] = array(
+				'@type'          => 'Question',
+				'name'           => $row['question'],
+				'acceptedAnswer' => array(
+					'@type' => 'Answer',
+					'text'  => wp_strip_all_tags( $row['answer'] ),
+				),
+			);
+		}
+		if ( $main_entity ) {
+			$nodes[] = array(
+				'@type'      => 'FAQPage',
+				'@id'        => $url . '#faq',
+				'mainEntity' => $main_entity,
+			);
+		}
+
+		return $nodes;
+	}
+
 	private static function breadcrumb(): array {
 		$items = array(
 			array(
@@ -252,12 +323,21 @@ final class Schema {
 			),
 		);
 
+		if ( is_singular( CPT_Destination::POST_TYPE ) ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => 'Destinations',
+				'item'     => (string) get_post_type_archive_link( CPT_Destination::POST_TYPE ),
+			);
+		}
+
 		if ( is_singular() && ! is_front_page() ) {
 			$post = get_post();
 			if ( $post ) {
 				$items[] = array(
 					'@type'    => 'ListItem',
-					'position' => 2,
+					'position' => count( $items ) + 1,
 					'name'     => get_the_title( $post ),
 					'item'     => (string) get_permalink( $post ),
 				);
