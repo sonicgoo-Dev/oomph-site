@@ -132,7 +132,7 @@ test.describe( 'tour page (Globus, Rome, Florence and Venice)', () => {
     await expect( page.locator( '.ot-tour-glance__included li' ) ).toHaveCount( 5 );
     await expect( page.locator( '.ot-tour-itinerary .ot-accordion__item' ) ).toHaveCount( 10 );
     await expect( page.locator( '.ot-tour-itinerary__overnight' ).first() ).toContainText( 'Rome' );
-    await expect( page.locator( '.ot-tour-note p' ).first() ).toContainText( 'This is the trip I suggest' );
+    await expect( page.locator( '.ot-tour-note__body p' ).first() ).toContainText( 'This is the trip I suggest' );
     await expect( page.locator( '.ot-tour-related .ot-card-tour' ) ).toHaveCount( 3 );
     await expect( page.locator( 'main table' ) ).toHaveCount( 0 );
     await expect( page.locator( 'main' ) ).not.toContainText( /waitlist|sold out|limited availability/i );
