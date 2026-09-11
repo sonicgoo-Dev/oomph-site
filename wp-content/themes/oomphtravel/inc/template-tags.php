@@ -647,3 +647,26 @@ function oomphtravel_home_hero_sources(): array {
 		),
 	);
 }
+
+/**
+ * Band / Closing invitation (docs/02-components.md): every page ends here.
+ * Marine navy, one question, one primary button. Pages that know where the
+ * visitor is heading pass a pre-set Start planning URL (a destination, a
+ * way to travel); the pattern oomphtravel/band-closing calls this with none.
+ *
+ * @param string $url     Start planning URL; default /start-planning/.
+ * @param string $heading The question; default "Worth a thirty-minute conversation?".
+ * @param string $note    The line under the button.
+ */
+function oomphtravel_closing_band( string $url = '', string $heading = '', string $note = '' ): string {
+	$url     = '' !== $url ? $url : home_url( '/start-planning/' );
+	$heading = '' !== $heading ? $heading : __( 'Worth a thirty-minute conversation?', 'oomphtravel' );
+	$note    = '' !== $note ? $note : __( 'Email, text or a quick call, whatever’s easiest.', 'oomphtravel' );
+
+	return sprintf(
+		'<section class="ot-band ot-band--navy ot-closing"><div class="ot-container ot-closing__inner"><h2 class="ot-closing__heading">%s</h2>%s<p class="ot-closing__note">%s</p></div></section>',
+		esc_html( $heading ),
+		oomphtravel_button( __( 'Start planning', 'oomphtravel' ), $url, 'primary', true ),
+		esc_html( $note )
+	);
+}
