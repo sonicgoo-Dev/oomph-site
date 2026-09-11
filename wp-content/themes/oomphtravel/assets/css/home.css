@@ -52,8 +52,30 @@
 		180deg,
 		color-mix( in srgb, var(--navy-deep) 8%, transparent ) 0%,
 		color-mix( in srgb, var(--navy-deep) 22%, transparent ) 45%,
-		color-mix( in srgb, var(--navy-deep) 68%, transparent ) 100%
+		color-mix( in srgb, var(--navy-deep) 78%, transparent ) 100%
 	);
+}
+
+/* A second, left-anchored scrim sits directly under the copy so the headline
+   reads over the town as well as over the water. */
+.ot-hero__inner {
+	position: relative;
+}
+.ot-hero__inner::before {
+	content: "";
+	position: absolute;
+	inset: -40% 0 0 0;
+	z-index: -1;
+	background: linear-gradient(
+		90deg,
+		color-mix( in srgb, var(--navy-deep) 72%, transparent ) 0%,
+		color-mix( in srgb, var(--navy-deep) 55%, transparent ) 40%,
+		transparent 75%
+	);
+}
+.ot-hero__title,
+.ot-hero .ot-eyebrow {
+	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
 }
 
 .ot-hero__inner {

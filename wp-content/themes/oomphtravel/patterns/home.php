@@ -145,9 +145,7 @@ $ot_quotes = array(
 
 $ot_credentials = array(
 	__( 'CLIA', 'oomphtravel' ),
-	__( 'Silversea Ultra-Luxury Specialist', 'oomphtravel' ),
 	__( 'Nexion / Travel Leaders Network', 'oomphtravel' ),
-	__( 'BritAgent Pro', 'oomphtravel' ),
 	__( 'Port Angeles, WA', 'oomphtravel' ),
 );
 ?>

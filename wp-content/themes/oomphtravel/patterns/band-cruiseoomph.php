@@ -7,6 +7,9 @@
  *
  * Copy and targets from plan §4.3 and §6.1.10. Both actions are ghost on
  * navy: the page's primary buttons belong to the hero and the closing band.
+ * The photograph (a ship on a glassy sea at dawn, from Eric's library) sits
+ * under a navy scrim and is decorative, so its alt is empty; it is below the
+ * fold on every page and loads lazily.
  *
  * @package OomphTravel
  */
@@ -14,6 +17,10 @@
 declare( strict_types = 1 );
 ?>
 <section class="ot-band ot-band--navy ot-cruiseoomph-band">
+	<img class="ot-cruiseoomph-band__photo"
+		src="<?php echo esc_url( OOMPHTRAVEL_THEME_URI . 'assets/img/cruiseoomph-dawn-1440.webp' ); ?>"
+		srcset="<?php echo esc_attr( OOMPHTRAVEL_THEME_URI . 'assets/img/cruiseoomph-dawn-960.webp 960w, ' . OOMPHTRAVEL_THEME_URI . 'assets/img/cruiseoomph-dawn-1440.webp 1440w, ' . OOMPHTRAVEL_THEME_URI . 'assets/img/cruiseoomph-dawn-1920.webp 1920w' ); ?>"
+		sizes="100vw" width="1440" height="600" loading="lazy" decoding="async" alt="">
 	<div class="ot-container ot-cruiseoomph">
 		<div>
 			<a class="ot-cruiseoomph__lockup" href="<?php echo esc_url( oomphtravel_cruiseoomph_url( '/' ) ); ?>">
