@@ -671,3 +671,21 @@ function oomphtravel_tours_filtered_robots( array $robots ): array {
 }
 add_filter( 'wp_robots', 'oomphtravel_tours_filtered_robots' );
 add_filter( 'rank_math/frontend/robots', 'oomphtravel_tours_filtered_robots' );
+
+/**
+ * Rank Math titles the archive "Tours Archive" from the post type label;
+ * the page is Escorted tours (R5), and it gets a description (R6). Core's
+ * own title goes through post_type_archive_title above.
+ */
+function oomphtravel_tours_archive_seo_title( string $title ): string {
+	return is_post_type_archive( 'oomph_tour' ) ? str_replace( 'Tours Archive', __( 'Escorted tours', 'oomphtravel' ), $title ) : $title;
+}
+add_filter( 'rank_math/frontend/title', 'oomphtravel_tours_archive_seo_title' );
+
+function oomphtravel_tours_archive_seo_description( string $description ): string {
+	if ( ! is_post_type_archive( 'oomph_tour' ) || '' !== trim( $description ) ) {
+		return $description;
+	}
+	return __( 'Escorted tours from Globus, Tauck, Insight Vacations, Abercrombie & Kent and National Geographic Expeditions, chosen for the way you travel. Same price as booking direct.', 'oomphtravel' );
+}
+add_filter( 'rank_math/frontend/description', 'oomphtravel_tours_archive_seo_description' );
