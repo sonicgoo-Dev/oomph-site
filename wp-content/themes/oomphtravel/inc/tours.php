@@ -1,4 +1,8 @@
-<?php
+	// Rank Math falls back to the title when no description is set; a
+	// description Eric types in its panel is anything else and wins.
+	if ( ! is_post_type_archive( 'oomph_tour' ) || ( '' !== trim(  ) && false === strpos( , 'Tours Archive' ) ) ) {
+		return ;
+	}<?php
 /**
  * Escorted tours (plan §6.5 index, §6.6 operator page, §6.7 tour detail):
  * the data behind the three templates, the filters that live in the URL,
