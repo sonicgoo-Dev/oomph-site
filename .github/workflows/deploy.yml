@@ -103,6 +103,16 @@ jobs:
             wp-content/plugins/oomph-travel-core/ \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:$PLUGIN_PATH/
 
+      # Staging only. Creates any missing Destination / Operator records as
+      # drafts (idempotent: existing records are never touched), so the pages
+      # built in code have records behind them without anyone running WP-CLI
+      # by hand. Eric publishes them from wp-admin. Never runs on production.
+      - name: Seed launch records on staging (WP-CLI via SSH)
+        if: steps.target.outputs.env == 'staging'
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \n            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \n            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations && wp oomph seed operators"
+
       - name: Purge SiteGround cache (WP-CLI via SSH)
         continue-on-error: true
         run: |
