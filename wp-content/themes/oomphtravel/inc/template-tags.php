@@ -616,3 +616,34 @@ function oomphtravel_signup_form( string $key = 'newsletter', array $args = arra
 	</form>
 	<?php
 }
+
+/**
+ * Homepage hero sources (plan §6.1.1), one entry per orientation.
+ *
+ * The phone gets a 3:4 crop of the same photograph, the desktop the 3:2
+ * frame; both carry their own srcset so the browser fetches one file. The
+ * largest desktop rendition stops at 1280 because the 1600 one weighed more
+ * than the 250 KB LCP budget in docs/cro-rules.md R3. Used by patterns/home.php
+ * for the <picture> and by oomphtravel_preload_hero() for the preload hints,
+ * so the two can never disagree.
+ *
+ * @return array<string, array{media: string, src: string, srcset: string, sizes: string}>
+ */
+function oomphtravel_home_hero_sources(): array {
+	$img = OOMPHTRAVEL_THEME_URI . 'assets/img/';
+
+	return array(
+		'tall' => array(
+			'media'  => '(max-width: 767px)',
+			'src'    => $img . 'hero-positano-tall-720.webp',
+			'srcset' => $img . 'hero-positano-tall-480.webp 480w, ' . $img . 'hero-positano-tall-720.webp 720w, ' . $img . 'hero-positano-tall-900.webp 900w',
+			'sizes'  => '100vw',
+		),
+		'wide' => array(
+			'media'  => '(min-width: 768px)',
+			'src'    => $img . 'hero-positano-1280.webp',
+			'srcset' => $img . 'hero-positano-640.webp 640w, ' . $img . 'hero-positano-960.webp 960w, ' . $img . 'hero-positano-1280.webp 1280w',
+			'sizes'  => '100vw',
+		),
+	);
+}
