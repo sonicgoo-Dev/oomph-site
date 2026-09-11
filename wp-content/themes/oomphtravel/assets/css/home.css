@@ -56,19 +56,22 @@
 	);
 }
 
-/* A second scrim, anchored to the side the copy sits on and running the full
-   width of the band. On desktop the copy is on the right, over the lake. */
+/* A second scrim under the copy, running the full width of the band. On the
+   phone the copy is at the foot (the floor gradient above covers it); on
+   desktop it is top right, so this one darkens the sky from the top edge. */
 .ot-hero::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	z-index: -1;
-	background: linear-gradient(
-		270deg,
-		color-mix( in srgb, var(--navy-deep) 55%, transparent ) 0%,
-		color-mix( in srgb, var(--navy-deep) 35%, transparent ) 45%,
-		transparent 85%
-	);
+	background: transparent;
+}
+@media (min-width: 768px) {
+	.ot-hero::before {
+		background:
+			linear-gradient( 180deg, color-mix( in srgb, var(--navy-deep) 58%, transparent ) 0%, color-mix( in srgb, var(--navy-deep) 30%, transparent ) 40%, transparent 65% ),
+			linear-gradient( 270deg, color-mix( in srgb, var(--navy-deep) 30%, transparent ) 0%, transparent 55% );
+	}
 }
 .ot-hero__title,
 .ot-hero .ot-eyebrow {
@@ -87,9 +90,11 @@
 	max-width: var(--wp--custom--measure--heading);
 }
  (min-width: 768px) {
-	.ot-hero__inner { display: flex; justify-content: flex-end; }
-	.ot-hero__copy { max-width: min( var(--wp--custom--measure--heading), 52% ); }
-	.ot-hero__caption { right: auto; left: var(--space-page-margin); }
+	/* Desktop: the copy sits top right, over the sky and the far shore, so the
+	   lit village stays clear. */
+	.ot-hero { justify-content: flex-start; }
+	.ot-hero__inner { display: flex; justify-content: flex-end; padding-block: var(--space-xl) var(--space-section); }
+	.ot-hero__copy { max-width: min( var(--wp--custom--measure--heading), 50% ); }
 }
 
 .ot-hero .ot-eyebrow { color: var(--text-on-navy); }
