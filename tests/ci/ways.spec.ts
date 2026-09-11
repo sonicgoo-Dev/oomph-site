@@ -68,8 +68,11 @@ for ( const p of PAGES ) {
       expect( crumbs, 'no BreadcrumbList node' ).toBeTruthy();
       expect( crumbs.itemListElement ).toHaveLength( 2 );
 
-      // Nothing the site does not hold (memory: CLIA and Nexion only).
-      for ( const text of graphs ) {
+      // The nodes this page adds claim nothing the site does not hold
+      // (CLIA and Nexion only). The sitewide Organization/Person nodes are
+      // the plugin's and are checked elsewhere.
+      for ( const node of [ service, faq, crumbs ] ) {
+        const text = JSON.stringify( node );
         expect( text ).not.toContain( 'Silversea' );
         expect( text ).not.toContain( 'BritAgent' );
       }
