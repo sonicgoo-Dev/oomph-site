@@ -13,7 +13,7 @@ declare( strict_types = 1 );
 defined( 'ABSPATH' ) || exit;
 
 /** Theme version, used to cache-bust enqueued assets. */
-define( 'OOMPHTRAVEL_THEME_VERSION', '0.2.2' );
+define( 'OOMPHTRAVEL_THEME_VERSION', '0.2.3' );
 
 /** Absolute path to the theme directory, with a trailing slash. */
 define( 'OOMPHTRAVEL_THEME_DIR', trailingslashit( get_stylesheet_directory() ) );
