@@ -1,8 +1,4 @@
-	// Rank Math falls back to the title when no description is set; a
-	// description Eric types in its panel is anything else and wins.
-	if ( ! is_post_type_archive( 'oomph_tour' ) || ( '' !== trim( $description ) && false === strpos( $description, 'Tours Archive' ) ) ) {
-		return ;
-	}<?php
+<?php
 /**
  * Escorted tours (plan §6.5 index, §6.6 operator page, §6.7 tour detail):
  * the data behind the three templates, the filters that live in the URL,
@@ -687,7 +683,9 @@ function oomphtravel_tours_archive_seo_title( string $title ): string {
 add_filter( 'rank_math/frontend/title', 'oomphtravel_tours_archive_seo_title' );
 
 function oomphtravel_tours_archive_seo_description( string $description ): string {
-	if ( ! is_post_type_archive( 'oomph_tour' ) || '' !== trim( $description ) ) {
+	// Rank Math falls back to the title when no description is set; a
+	// description Eric types in its panel is anything else and wins.
+	if ( ! is_post_type_archive( 'oomph_tour' ) || ( '' !== trim( $description ) && false === strpos( $description, 'Tours Archive' ) ) ) {
 		return $description;
 	}
 	return __( 'Escorted tours from Globus, Tauck, Insight Vacations, Abercrombie & Kent and National Geographic, chosen for the way you travel. Same price as booking direct.', 'oomphtravel' );
