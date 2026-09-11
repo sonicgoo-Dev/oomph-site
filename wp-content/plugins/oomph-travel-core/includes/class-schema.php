@@ -217,19 +217,9 @@ final class Schema {
 				array( '@type' => 'Organization', 'name' => 'Cruise Lines International Association', 'url' => 'https://cruising.org' ),
 				array( '@type' => 'Organization', 'name' => 'Nexion Travel Group', 'url' => 'https://nexion.com' ),
 			),
+			// Supplier specialist certificates (Silversea, BritAgent) were removed
+			// 2026-09-11 at Eric's request; they no longer appear anywhere on the site.
 			'hasCredential' => array(
-				array(
-					'@type'              => 'EducationalOccupationalCredential',
-					'credentialCategory' => 'certification',
-					'name'               => 'Silversea Ultra-Luxury Specialist',
-					'recognizedBy'       => array( '@type' => 'Organization', 'name' => 'Silversea Cruises' ),
-				),
-				array(
-					'@type'              => 'EducationalOccupationalCredential',
-					'credentialCategory' => 'certification',
-					'name'               => 'BritAgent Pro',
-					'recognizedBy'       => array( '@type' => 'Organization', 'name' => 'VisitBritain' ),
-				),
 				// Medical degree — visible on /about in the credentials grid,
 				// which is what earns it a place here (docs/schema.md: never
 				// mark up content that isn't on the page).

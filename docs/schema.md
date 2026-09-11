@@ -108,20 +108,7 @@ JSON-LD blocks, one per page type. Drop into the page `<head>` via Rank Math's "
       "url": "https://nexion.com"
     }
   ],
-  "hasCredential": [
-    {
-      "@type": "EducationalOccupationalCredential",
-      "credentialCategory": "certification",
-      "name": "Silversea Ultra-Luxury Specialist",
-      "recognizedBy": { "@type": "Organization", "name": "Silversea Cruises" }
-    },
-    {
-      "@type": "EducationalOccupationalCredential",
-      "credentialCategory": "certification",
-      "name": "BritAgent Pro",
-      "recognizedBy": { "@type": "Organization", "name": "VisitBritain" }
-    }
-  ],
+  "hasCredential": [],
   "knowsLanguage": "en",
   "knowsAbout": ["Silversea Cruises", "Italy travel", "United Kingdom travel", "Multi-generational travel"],
   "sameAs": [

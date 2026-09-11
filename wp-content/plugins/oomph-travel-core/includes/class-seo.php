@@ -50,7 +50,7 @@ final class SEO {
 		$out[] = '# Oomph Travel';
 		$out[] = '';
 		$advisor = Advisor::name();
-		$out[] = '> Premium and luxury cruise planning and custom European journeys, planned by one named advisor — ' . $advisor . ', a CLIA member and Silversea Ultra-Luxury Specialist based in Port Angeles, Washington. No planning fee; suppliers pay a commission that does not change your price.';
+		$out[] = '> Premium and luxury cruise planning and custom European journeys, planned by one named advisor — ' . $advisor . ', a CLIA member based in Port Angeles, Washington. No planning fee; suppliers pay a commission that does not change your price.';
 		$out[] = '';
 
 		$out[] = '## Services';
