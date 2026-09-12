@@ -26,6 +26,12 @@ $ot_story  = oomphtravel_client_stories();
 $ot_quote  = $ot_story ? $ot_story[3] : null; // Gary T.: the one about communication.
 $ot_plan   = home_url( '/start-planning/' );
 
+// The second width only exists for the portrait the theme ships. If the image
+// has been filtered to something else, that file is served on its own.
+$ot_amy_srcset = ( ( $ot_amy['image'] ?? '' ) === $ot_img . 'advisor-amy-720.webp' )
+	? $ot_img . 'advisor-amy-360.webp 360w, ' . $ot_img . 'advisor-amy-720.webp 720w'
+	: '';
+
 $ot_credentials = array(
 	array( __( 'CLIA', 'oomphtravel' ), __( 'Cruise Lines International Association, the trade body that registers advisors who sell cruises in the United States.', 'oomphtravel' ) ),
 	array( __( 'Nexion / Travel Leaders Network', 'oomphtravel' ), __( 'My host agency and its consortium: the supplier relationships, the booking tools and the hotel programmes behind the price you pay.', 'oomphtravel' ) ),
@@ -119,7 +125,12 @@ $ot_how = array(
 			<?php echo oomphtravel_section_heading( __( 'Also at Oomph Travel', 'oomphtravel' ), __( 'We are two.', 'oomphtravel' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 			<div class="ot-about-team__card">
 				<?php if ( ! empty( $ot_amy['image'] ) ) : ?>
-					<img class="ot-about-team__portrait" src="<?php echo esc_url( (string) $ot_amy['image'] ); ?>" width="360" height="360" loading="lazy" decoding="async" alt="<?php echo esc_attr( (string) $ot_amy['name'] ); ?>">
+					<img
+						class="ot-about-team__portrait"
+						src="<?php echo esc_url( (string) $ot_amy['image'] ); ?>"
+						<?php if ( '' !== $ot_amy_srcset ) : ?>srcset="<?php echo esc_attr( $ot_amy_srcset ); ?>" sizes="(min-width: 768px) 200px, 160px"<?php endif; ?>
+						width="720" height="720" loading="lazy" decoding="async"
+						alt="<?php echo esc_attr( sprintf( /* translators: %s: the second advisor's name */ __( '%s, associate travel advisor at Oomph Travel.', 'oomphtravel' ), (string) $ot_amy['name'] ) ); ?>">
 				<?php else : ?>
 					<span class="ot-about-team__monogram" aria-hidden="true"><?php echo esc_html( implode( '', array_map( static fn( string $w ): string => mb_substr( $w, 0, 1 ), preg_split( '/\s+/', (string) $ot_amy['name'] ) ?: array() ) ) ); ?></span>
 				<?php endif; ?>
