@@ -184,6 +184,16 @@ jobs:
           echo "$OUT"
           echo "$OUT" | grep -q '10 created, 0 already existed' || { echo "::error::page seed counts changed" >&2; exit 1; }
 
+      - name: The removal report runs and changes nothing
+        run: |
+          BEFORE=$(npx wp-env run cli wp post list --post_type=any --post_status=any --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
+          OUT=$(npx wp-env run cli wp oomph remove-cruise 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q 'Report only' || { echo "::error::remove-cruise did not end as a report" >&2; exit 1; }
+          echo "$OUT" | grep -q 'static file /llms.txt' || { echo "::error::remove-cruise lost a row" >&2; exit 1; }
+          AFTER=$(npx wp-env run cli wp post list --post_type=any --post_status=any --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
+          [ "$BEFORE" = "$AFTER" ] || { echo "::error::the report changed the record count (${BEFORE:-?} → ${AFTER:-?})" >&2; exit 1; }
+
       - name: One term per destination, and re-running changes nothing
         run: |
           TERMS=$(npx wp-env run cli wp term list oomph_place --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
