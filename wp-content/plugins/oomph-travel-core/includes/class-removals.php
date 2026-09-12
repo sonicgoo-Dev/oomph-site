@@ -170,6 +170,20 @@ final class Removals {
 		}
 		$rows[] = self::row( 'daily sailing sweep (cron)', $scheduled ? 1 : 0, $scheduled ? ( $apply ? 'cleared' : 'would clear' ) : 'already gone', '' );
 
+		// 4b. Rank Math keeps the XML sitemap in a cache that trashing records
+		// from WP-CLI does not clear, so the trashed pages stay listed until it
+		// is rebuilt. Clear it here so Search Console sees the new map.
+		$can_clear = class_exists( '\RankMath\Sitemap\Cache' ) && method_exists( '\RankMath\Sitemap\Cache', 'invalidate_storage' );
+		if ( $can_clear && $apply ) {
+			\RankMath\Sitemap\Cache::invalidate_storage();
+		}
+		$rows[] = self::row(
+			'Rank Math sitemap cache',
+			$can_clear ? 1 : 0,
+			$can_clear ? ( $apply ? 'cleared' : 'would clear' ) : 'not found',
+			$can_clear ? '' : 'save Rank Math → Sitemap Settings by hand to rebuild it'
+		);
+
 		// 5. Things to look at by hand. Reported, never touched.
 		$pdfs = get_posts(
 			array(
