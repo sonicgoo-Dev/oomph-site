@@ -13,7 +13,7 @@ declare( strict_types = 1 );
 defined( 'ABSPATH' ) || exit;
 
 /** Theme version, used to cache-bust enqueued assets. */
-define( 'OOMPHTRAVEL_THEME_VERSION', '0.7.1' );
+define( 'OOMPHTRAVEL_THEME_VERSION', '0.8.0' );
 
 /** Absolute path to the theme directory, with a trailing slash. */
 define( 'OOMPHTRAVEL_THEME_DIR', trailingslashit( get_stylesheet_directory() ) );
@@ -29,6 +29,7 @@ require_once OOMPHTRAVEL_THEME_DIR . 'inc/tours.php';
 require_once OOMPHTRAVEL_THEME_DIR . 'inc/ways.php';
 require_once OOMPHTRAVEL_THEME_DIR . 'inc/start-planning.php';
 require_once OOMPHTRAVEL_THEME_DIR . 'inc/editorial.php';
+require_once OOMPHTRAVEL_THEME_DIR . 'inc/utility.php';
 
 // Values the oomph-travel-core plugin reads from the active theme. These
 // moved here from kadence-oomph-child so the switch does not lose them.

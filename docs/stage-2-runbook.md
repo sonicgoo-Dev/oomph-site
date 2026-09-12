@@ -1,20 +1,30 @@
-# Stage 2 runbook — removing the cruise content (D02)
+# Removing the cruise content (D02, D43) — the runbook
 
-The Stage 2 pull request removes the *code*: templates, the Distinctive
+> **Rewritten for Stage 11 (Sep 11).** The original Stage 2 version of this
+> file was a list of `wp @stage …` / `wp @prod …` commands to type by hand.
+> Steps 3–5 and 7 are now done by code: a one-click GitHub Actions job for
+> the deletions, and the redirects served by the plugin. What is left for a
+> person is copying the nine posts to CruiseOomph first, a Fluent Forms
+> export, two Rank Math clean-ups and Search Console.
+
+The Stage 2 pull request removed the *code*: templates, the Distinctive
 Voyages importer and its cron, the ship library, the cabin quiz, the
 enrichment payloads and their skill, and the e2e specs for all of it. The
 *content* lives in the WordPress database and is removed with the steps
-below — on **staging first**, then production. Staging shares SSH
-credentials with production, so every `wp` call here is addressed
-explicitly (`wp @stage …`, `wp @prod …`); never run one without the alias.
+below — on **staging first**, then production.
 
-Nothing here is redirected (D02). The three internal redirects in step 7 are
-not cruise pages.
+Nothing here is redirected (D02) except the courtesy line D43: any old
+`/group-cruises/…` address goes to `https://cruiseoomph.com/cruises/` with
+the UTM tag. Every other deleted address lands on the 404 page (plan §6.16),
+which has a search field and the three doors.
 
 ## 0. Before anything
 
+Take a backup from Site Tools (Site Tools → Security → Backups → Create) on
+the environment you are about to run against. On production, also check the
+active plugin list has not quietly changed:
+
 ```bash
-wp @prod db export ~/backups/oomphtravel-pre-stage2-$(date +%F).sql
 wp @prod plugin list --status=active --fields=name,version
 ```
 
@@ -22,11 +32,9 @@ Expected active: `advanced-custom-fields-pro`, `fluentform`, `fluentformpro`,
 `kadence-blocks`, `oomph-travel-core`, `seo-by-rank-math`,
 `seo-by-rank-math-pro`, `google-site-kit`, `sg-cachepress`, `insert-headers-and-footers`
 (WPCode), `siteground-ai-agent`. Anything missing from that list has been
-silently deactivated — stop and ask before continuing. (Kadence Pro is *not*
-on the live list as of 10 Sep; CLAUDE.md says the site runs on it. Decide
-whether that is a lapse or a deliberate drop before Stage 4.)
+silently deactivated — stop and ask before continuing.
 
-## 1. Copy the nine cruise posts to CruiseOomph — BEFORE deleting them
+## 1. Copy the nine cruise posts to CruiseOomph — BEFORE removing them
 
 Run from the CruiseOomph install. Its importer reads the posts straight from
 oomphtravel.com's REST API, so the posts must still be published here when it
@@ -46,100 +54,103 @@ wp @co-prod cruiseoomph journal list   # all nine should now show as present
 ```
 
 Each imported story carries `co_source_url` pointing back here (rel=canonical).
-Once the Oomph copies are deleted (step 3), clear that field on each of the
-nine in CruiseOomph so the canonical points at itself.
+Once the Oomph copies are gone (step 3 with **journal** ticked), clear that
+field on each of the nine in CruiseOomph so the canonical points at itself.
 
-## 2. Deploy the Stage 2 code (merge → `develop`)
+The removal job refuses to touch these nine unless you tick **journal**, so
+forgetting this step costs nothing.
 
-Deploy runs automatically. The plugin's one-time cleanup then clears the
-orphaned `oomph_retire_unbookable_sailings` cron and flushes rewrite rules on
-the first request. Confirm:
-
-```bash
-wp @stage cron event list --fields=hook | grep -c retire_unbookable   # expect 0
-wp @stage option get oomph_core_cruise_cleanup_done                    # expect 1
-```
-
-## 3. Delete the nine cruise Journal posts
-
-```bash
-for slug in norwegian-fjords-vs-baltic virgin-voyages-rockstar-suite-worth-it silversea-vs-regent \
-  avoid-cruise-ship-crowds-in-the-mediterranean barcelona-before-your-cruise fly-the-drake-passage-or-sail \
-  japan-by-sea-summer-festivals-cruise first-premium-cruise the-slow-cruise; do
-  wp @stage post delete $(wp @stage post list --post_type=post --name=$slug --field=ID) --force
-done
-```
-
-`10-day-united-kingdom-itinerary` **stays** (retag to UK & Ireland in Stage 4).
-
-## 4. Delete the sailing and ship records
-
-The post types are no longer registered, so `wp post list --post_type=` needs
-`--post_type=any`-style raw queries:
-
-```bash
-wp @stage post list --post_type=oomph_cruise --post_status=any --format=ids | xargs -r wp @stage post delete --force
-wp @stage post list --post_type=oomph_ship   --post_status=any --format=ids | xargs -r wp @stage post delete --force
-wp @stage term list oomph_region --format=count      # regions/trip styles stay (destinations use them)
-```
-
-If `post list` refuses an unregistered type, use
-`wp @stage db query "SELECT ID FROM wp_posts WHERE post_type IN ('oomph_cruise','oomph_ship')"`
-and delete by ID. Media attached to sailings (Distinctive Voyages ship art)
-can go too: `wp @stage post list --post_type=attachment --post_parent=<id>`.
-
-## 5. Delete the two pages
-
-```bash
-wp @stage post delete $(wp @stage post list --post_type=page --name=trip-quiz --field=ID) --force
-wp @stage post delete $(wp @stage post list --post_type=page --name=cruise-travel-trends --field=ID) --force
-```
-
-Then remove the "Group Cruises" and "Cabin Quiz" items from Appearance → Menus
-(Primary Navigation). The footer and /links/ pick up the change from code.
-
-## 6. Fluent Forms — export, then delete two forms; the plugin stays for now
-
-```bash
-# Export entries first: the Trends form holds people who downloaded the guide
-# and are not in PlainSend (plan §8.3 asks whether to invite them).
-```
+## 2. Fluent Forms — export first
 
 In Fluent Forms → Entries, export **Cruise Travel Trends** and **Cabin Quiz**
-to CSV, then delete those two forms. **Do not deactivate Fluent Forms**:
-`/discovery-call/` still runs on it until Start planning ships (plan §6.15,
-P7). The theme already dequeues its assets on every other page.
+to CSV (the Trends form holds people who downloaded the guide and are not in
+PlainSend — plan §8.3 asks whether to invite them). Then delete those two
+forms. Fluent Forms itself goes with D31 once Start planning has been live a
+while; the removal report shows a line while it is still active.
 
-## 7. Redirects (Rank Math → Redirections)
+## 3. The button — GitHub → Actions → "Remove the cruise content"
 
-Only the three internal ones, and only once their targets exist — a redirect to
-a page that is not built yet is a 404 with extra steps:
+This replaces the old steps 3, 4 and 5. It runs `wp oomph remove-cruise` on
+the server over the deploy key, so nobody types a `wp` command.
 
-| From | To | Create when |
-|---|---|---|
-| `/custom-italy-travel/` | `/destinations/italy/` | Stage 4 (destination template) |
-| `/luxury-cruise-planning/` | `/cruise-planning/` | Stage 6 (Cruise planning page) |
-| `/discovery-call/` | `/start-planning/` | Stage 7 (Start planning form) |
+1. Open `github.com/sonicgoo-Dev/oomph-site` → **Actions** tab.
+2. In the left list click **Remove the cruise content**.
+3. Click the grey **Run workflow** button on the right. A small form drops down:
+   - **Where to run** — `staging` (leave it) or `production`.
+   - **mode** — `report` says what would happen and changes nothing.
+     `apply` does it.
+   - **journal** — tick only after step 1 is done on CruiseOomph.
+   - **force** — leave unticked. Unticked, the records go to the trash and
+     can be restored for thirty days from Posts → Trash. Ticked, they are
+     deleted outright along with the sailings' pictures.
+4. Click the green **Run workflow**. Wait for the green tick, click the run,
+   and read the **Summary** — it is a table of what was found and what was
+   done (or would be done).
+5. Run it once in `report`, read the table, then run it again in `apply`.
 
-While you are in there: the existing `/contact` redirect points at
-`https://oomphtravel.com/Www.oomphtravel.com` (131 hits). It should point at
-`/discovery-call/` today and `/start-planning/` after Stage 7.
+What the job removes: every `oomph_cruise` sailing and `oomph_ship` record,
+the `/trip-quiz/` and `/cruise-travel-trends/` pages, the retired
+`oomph_retire_unbookable_sailings` cron, and (with **journal**) the nine
+posts. What it only reports: the old Travel Trends PDF(s) in the media
+library (delete by hand from Media once nothing links to them) and whether
+Fluent Forms is still active.
 
-## 8. Search Console and sitemap
+On production the environment's required reviewer has to approve the run
+first, and the job adds the command's own `--production` confirmation flag —
+only after the same `apply` has been checked on staging.
+
+`10-day-united-kingdom-itinerary` is not on the list and **stays**.
+
+## 4. Menus
+
+Remove the "Group Cruises" and "Cabin Quiz" items from Appearance → Menus
+(Primary Navigation) if they are still there. The footer and /links/ come
+from code and need nothing.
+
+## 5. Redirects — in code now; delete the Rank Math duplicates
+
+The plugin serves these itself (`class-redirects.php`), so they hold on any
+environment the moment the code deploys, with nothing to configure:
+
+| From | To |
+|---|---|
+| `/custom-italy-travel/` | `/destinations/italy/` |
+| `/luxury-cruise-planning/` | `/cruise-planning/` |
+| `/discovery-call/` | `/start-planning/` |
+| `/contact/` | `/start-planning/` |
+| `/group-cruises/` and anything under it | `https://cruiseoomph.com/cruises/` + UTM (D43) |
+
+In **Rank Math → Redirections**, delete any rule for the same addresses so
+the two do not fight. In particular the existing `/contact` rule points at
+`https://oomphtravel.com/Www.oomphtravel.com` (131 hits) — delete it; the
+code sends `/contact/` to Start planning.
+
+Check from any terminal, or trust `tests/ci/redirects.spec.ts`:
 
 ```bash
-wp @prod rank-math sitemap generate   # or Rank Math → Sitemap Settings → save
+curl -sI https://staging2.oomphtravel.com/discovery-call/ | grep -i '^location'
+curl -sI https://staging2.oomphtravel.com/group-cruises/anything/ | grep -i '^location'
 ```
 
-Submit the sitemap in Search Console; keep the property and watch the 404
-report for a month (plan §8.4). Expect ~20 clicks/90 days to fall away.
+## 6. Sitemap and Search Console
 
-## 9. Repeat 3–8 on production, then verify
+Rank Math regenerates the sitemap on its own as records disappear; to force
+it, open Rank Math → Sitemap Settings and click **Save Changes**. Then in
+Search Console (the oomphtravel.com property) open **Sitemaps**, and submit
+`sitemap_index.xml` again. Keep watching the **Pages → Not indexed → Not
+found (404)** report for a month (plan §8.4). Expect ~20 clicks/90 days to
+fall away.
+
+`/category/uncategorized/` is noindex from Stage 11 and drops out on its own.
+
+## 7. Repeat on production, then verify
+
+Steps 0, 2, 3 (both runs), 4 and 6 again with **Where to run = production**.
+Then:
 
 ```bash
-wp @prod oomph status
-curl -sI https://oomphtravel.com/group-cruises/ | head -1        # 404
-curl -sI https://oomphtravel.com/trip-quiz/ | head -1            # 404
-curl -s  https://oomphtravel.com/llms.txt | grep -ci cruise       # 1 (the Cruise Planning page only)
+curl -sI https://oomphtravel.com/group-cruises/ | grep -i '^location'    # cruiseoomph.com/cruises/
+curl -sI https://oomphtravel.com/trip-quiz/ | head -1                     # 404
+curl -s  https://oomphtravel.com/llms.txt | grep -ci cruise               # the Cruise Planning line and the CruiseOomph mention only
 npm ci && OOMPH_BASE_URL=https://oomphtravel.com npx playwright test
 ```

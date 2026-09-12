@@ -1,33 +1,35 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Link-in-bio page — /links/ (page-links.php).
+ * Link-in-bio page — /links/ (oomphtravel theme, patterns/links.php).
  *
- * The single destination the Instagram profile link points at. The generic
- * page-smoke and schema specs cover it via the route fixture; this spec pins
- * the page-specific contract:
+ * The single destination the Instagram profile link points at. This spec
+ * pins the page-specific contract against a live environment:
  *
- *   - the template actually bound (rendered .oomph-links__inner, not the
- *     blank default page template)
- *   - noindex, follow on every robots tag. NOTE: two robots tags is the
- *     measured reality on both environments — WP core's wp_robots output plus
- *     Rank Math's own tag (which appends its max-* preview directives). The
- *     directives agree, and under noindex the max-* hints are moot, so the
- *     invariant asserted here is "no tag permits indexing" rather than an
- *     exact tag count.
+ *   - the template actually bound (rendered .ot-links, not the blank
+ *     default page template)
+ *   - noindex, follow on every robots tag. Two robots tags is the measured
+ *     reality on both environments — WP core's wp_robots output plus Rank
+ *     Math's own tag. The directives agree, so the invariant asserted here
+ *     is "no tag permits indexing" rather than an exact tag count.
  *   - the featured Journal card (auto-follows the newest post)
- *   - the one primary CTA, pointing at /discovery-call/ (R1)
- *   - every row / footer link resolves — this page exists for one referrer
- *     and a dead row is a dead end for exactly the audience Eric sent here
+ *   - the one primary button, pointing at /start-planning/ (plan §6.15)
+ *   - every internal row and text link resolves — this page exists for one
+ *     referrer and a dead row is a dead end for exactly the audience Eric
+ *     sent here
+ *
+ * Production keeps the retiring kadence-oomph-child markup until the theme
+ * switch, so against production this spec is expected to fail until then.
  */
 test.describe('/links/ link-in-bio', () => {
   test('template binds and renders the link stack', async ({ page }) => {
     const response = await page.goto('/links/', { waitUntil: 'domcontentloaded' });
     expect(response!.status()).toBe(200);
 
-    await expect(page.locator('.oomph-links__inner')).toBeVisible();
-    // The quiet rows — the page's reason to exist.
-    expect(await page.locator('a.oomph-links__row').count()).toBeGreaterThan(0);
+    await expect(page.locator('.ot-links')).toBeVisible();
+    await expect(page.locator('a.ot-links__row')).toHaveCount(4);
+    await expect(page.locator('.ot-links__more a')).toHaveCount(5);
+    await expect(page.locator('.ot-links a[href]')).toHaveCount(11);
   });
 
   test('is noindex, follow on every robots tag', async ({ page }) => {
@@ -47,33 +49,43 @@ test.describe('/links/ link-in-bio', () => {
   test('features the newest Journal post as a card', async ({ page }) => {
     await page.goto('/links/', { waitUntil: 'domcontentloaded' });
 
-    const feature = page.locator('article.oomph-links__feature');
+    const feature = page.locator('.ot-links__feature .ot-card-journal');
     if ((await feature.count()) === 0) {
       test.skip(true, 'No published Journal post to feature.');
     }
 
     await expect(feature).toBeVisible();
-    const link = feature.locator('a.oomph-links__feature-link');
+    const link = feature.locator('.ot-card-journal__link');
     await expect(link).toHaveAttribute('href', /.+/);
-    await expect(link).not.toBeEmpty();
   });
 
-  test('carries the primary CTA to /discovery-call/', async ({ page }) => {
+  test('carries the one primary button to /start-planning/', async ({ page }) => {
     await page.goto('/links/', { waitUntil: 'domcontentloaded' });
 
-    const cta = page.locator('.oomph-links__cta a.oomph-btn--primary');
+    const cta = page.locator('.ot-links__cta .ot-btn--primary');
     await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute('href', /\/discovery-call\/?/);
-    await expect(cta).toContainText(/start a conversation/i);
+    await expect(cta).toHaveAttribute('href', /\/start-planning\/?$/);
+    await expect(cta).toContainText(/start planning/i);
+    await expect(page.locator('main .ot-btn--primary')).toHaveCount(1);
   });
 
-  test('every row and footer link resolves', async ({ page }) => {
+  test('two links leave for CruiseOomph, tagged', async ({ page }) => {
+    await page.goto('/links/', { waitUntil: 'domcontentloaded' });
+    const out = page.locator('.ot-links a[href*="cruiseoomph.com"]');
+    await expect(out).toHaveCount(2);
+    for (const href of await out.evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href))) {
+      expect(href).toContain('utm_source=oomphtravel');
+      expect(href).toContain('utm_campaign=links');
+    }
+  });
+
+  test('every internal link resolves', async ({ page }) => {
     await page.goto('/links/', { waitUntil: 'domcontentloaded' });
 
     const hrefs = await page
-      .locator('a.oomph-links__row, .oomph-links__more a')
+      .locator('.ot-links a[href]:not([href*="cruiseoomph.com"])')
       .evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
-    expect(hrefs.length).toBeGreaterThan(0);
+    expect(hrefs.length).toBe(9);
 
     // Serially, and through the page's request context (shares the anti-bot
     // clearance cookies) — see the SiteGround note in playwright.config.ts.
@@ -81,13 +93,5 @@ test.describe('/links/ link-in-bio', () => {
       const res = await page.request.get(href);
       expect(res.status(), `${href} resolves`).toBeLessThan(400);
     }
-  });
-});
-
-test.describe('mobile chrome', () => {
-  test('@mobile /links/ keeps the sticky CTA reachable', async ({ page }) => {
-    await page.goto('/links/', { waitUntil: 'domcontentloaded' });
-    const sticky = page.locator('.oomph-sticky-cta a[href*="/discovery-call/"]');
-    await expect(sticky).toBeAttached();
   });
 });

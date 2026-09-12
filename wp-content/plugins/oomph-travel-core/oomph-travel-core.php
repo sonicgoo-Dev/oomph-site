@@ -3,7 +3,7 @@
  * Plugin Name:       Oomph Travel Core
  * Plugin URI:        https://oomphtravel.com
  * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the theme; this lives in a plugin so it survives a theme switch.
- * Version:           1.7.0
+ * Version:           1.8.0
  * Requires PHP:      8.1
  * Requires at least: 6.7
  * Tested up to:      6.8
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OOMPH_CORE_VERSION', '1.7.0' );
+define( 'OOMPH_CORE_VERSION', '1.8.0' );
 define( 'OOMPH_CORE_FILE',    __FILE__ );
 define( 'OOMPH_CORE_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
@@ -46,6 +46,8 @@ require_once OOMPH_CORE_DIR . 'includes/class-plainsend.php';
 require_once OOMPH_CORE_DIR . 'includes/class-inquiry.php'; // Start planning: the POST, the record, the emails (plan §6.15).
 require_once OOMPH_CORE_DIR . 'includes/class-acf-config.php';
 require_once OOMPH_CORE_DIR . 'includes/class-seo.php';
+require_once OOMPH_CORE_DIR . 'includes/class-redirects.php'; // The moved pages and the CruiseOomph hand-off (plan §4.2, §8.4, D43).
+require_once OOMPH_CORE_DIR . 'includes/class-removals.php';  // Taking the cruise records out of the database (plan §8.4, D02).
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once OOMPH_CORE_DIR . 'includes/class-cli.php';
@@ -67,6 +69,7 @@ add_action( 'init', array( \OomphTravel\Core\Taxonomies::class,      'register' 
 \OomphTravel\Core\Inquiry::init();
 \OomphTravel\Core\ACF_Config::init();
 \OomphTravel\Core\SEO::init();
+\OomphTravel\Core\Redirects::init();
 
 /**
  * One-time cleanup after the cruise data layer was removed (D02, 2026-09).

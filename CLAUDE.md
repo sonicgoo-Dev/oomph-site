@@ -13,7 +13,7 @@
 > - **Buttons:** rounded `radius/pill` (999px), 15×28 padding, teal fill, white label (plan §5.4). The "never pill" rule no longer applies. One primary button per section.
 > - **Type:** 22 styles in `design-handoff/tokens/type.css`, ported to `theme.json` + `assets/css/type.css`. Fraunces Display is opsz 144 for the hero only. **Arrows are never set in Fraunces** — use `.ot-arrow`.
 > - **Forms:** Fluent Forms goes once Start planning (plan §6.15) replaces `/discovery-call/` (D31). Newsletter and Travel Trends post to PlainSend (D30).
-> - **Cruise:** sells at cruiseoomph.com; every cruise route here hands off with the UTM tag in `docs/02-components.md`. The importer, sailings, quiz and nine cruise posts are deleted, not redirected (D02).
+> - **Cruise:** sells at cruiseoomph.com; every cruise route here hands off with the UTM tag in `docs/02-components.md`. The importer, sailings, quiz and nine cruise posts are deleted, not redirected (D02); the one courtesy exception is `/group-cruises/…` → cruiseoomph.com/cruises/ (D43). Redirects live in code (`class-redirects.php`), not in Rank Math's table; the content removal is the "Remove the cruise content" Actions button (`removals.yml`, `wp oomph remove-cruise`).
 > - **Plugin path** is `wp-content/plugins/oomph-travel-core/`, not `plugins/`.
 >
 > The No List gains: bespoke · wanderlust · magical · breathtaking · curated · jaw-dropping · paradise · bucket list (already there) — and the readiness doc's placeholder markers (`[…]`, `$X,XXX`) must never ship.

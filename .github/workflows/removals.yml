@@ -1,0 +1,129 @@
+name: Remove the cruise content
+
+# Eric's one-click button for plan §8.4 / D02 (see docs/stage-2-runbook.md).
+#
+# Runs `wp oomph remove-cruise` on the chosen environment over the same SSH
+# deploy key deploy.yml uses. Nothing is deleted unless `mode` is `apply`,
+# and even then the records go to the trash (restorable for thirty days)
+# unless `force` is ticked. The nine cruise Journal posts are only touched
+# when `journal` is ticked, because CruiseOomph has to have its copies
+# first. Production requires the `production` environment's reviewers and
+# the command's own --production confirmation, which this workflow adds
+# only when the run is an apply against production.
+#
+# How Eric runs it: Actions → "Remove the cruise content" → Run workflow.
+# Leave everything on the defaults for a report of what would happen; run
+# again with mode = apply to do it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to run
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+      mode:
+        description: "report says what would happen; apply does it"
+        type: choice
+        options:
+          - report
+          - apply
+        default: report
+      journal:
+        description: Also remove the nine cruise Journal posts (only after CruiseOomph has its copies)
+        type: boolean
+        default: false
+      force:
+        description: Delete outright instead of trashing (also removes the sailings' media)
+        type: boolean
+        default: false
+
+concurrency:
+  group: removals-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  remove:
+    name: ${{ inputs.mode }} on ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - name: Determine target environment
+        id: target
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "host=${{ secrets.SG_PROD_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_PROD_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_PROD_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_PROD_THEME_PATH }}" >> $GITHUB_OUTPUT
+          else
+            echo "host=${{ secrets.SG_STAGE_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_STAGE_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_STAGE_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_STAGE_THEME_PATH }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build the command
+        id: cmd
+        run: |
+          FLAGS=""
+          if [ "${{ inputs.mode }}" = "apply" ]; then
+            FLAGS="$FLAGS --apply"
+            if [ "${{ inputs.environment }}" = "production" ]; then
+              FLAGS="$FLAGS --production"
+            fi
+          fi
+          if [ "${{ inputs.journal }}" = "true" ]; then FLAGS="$FLAGS --journal"; fi
+          if [ "${{ inputs.force }}" = "true" ]; then FLAGS="$FLAGS --force"; fi
+          echo "flags=$FLAGS" >> $GITHUB_OUTPUT
+          echo "Will run: wp oomph remove-cruise$FLAGS"
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SG_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ steps.target.outputs.port }} -H ${{ steps.target.outputs.host }} >> ~/.ssh/known_hosts
+
+      - name: Run wp oomph remove-cruise (WP-CLI via SSH)
+        id: run
+        run: |
+          set -o pipefail
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph remove-cruise${{ steps.cmd.outputs.flags }}" \
+            | tee remove-cruise.log
+
+      - name: Purge the cache after an apply
+        if: inputs.mode == 'apply'
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            "cd ${{ steps.target.outputs.path }}/../../.. && ( wp sg purge || echo 'SG Optimizer not active — skipping wp sg purge' ) && ( wp cache flush || echo 'wp cache flush failed — skipping' )"
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Remove the cruise content — ${{ inputs.mode }} on ${{ inputs.environment }}"
+            echo
+            echo "Command: \`wp oomph remove-cruise${{ steps.cmd.outputs.flags }}\`"
+            echo
+            echo '```'
+            cat remove-cruise.log 2>/dev/null || echo "(no output — the SSH step failed before WP-CLI ran)"
+            echo '```'
+            if [ "${{ inputs.mode }}" = "report" ]; then
+              echo
+              echo "Nothing was changed. To do it, run the workflow again with **mode = apply**."
+            fi
+          } >> $GITHUB_STEP_SUMMARY

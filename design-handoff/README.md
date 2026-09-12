@@ -12,7 +12,7 @@ design-handoff/
 │   ├── type.css                    22 text styles
 │   └── tokens.json                 the same, machine-readable
 ├── docs/
-│   ├── 01-decisions-log.md         D01–D42
+│   ├── 01-decisions-log.md         D01–D43
 │   ├── 02-components.md            the 21 components
 │   └── 03-rules-and-readiness.md   rules, placeholders, what's missing
 └── OomphTravel-Resurfacing-Plan.docx    the full plan
