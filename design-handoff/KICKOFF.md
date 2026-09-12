@@ -23,7 +23,7 @@ Either the README is stale or the local install has drifted. **Work out which is
 Read `design-handoff/` first, in this order:
 
 1. `design-handoff/docs/03-rules-and-readiness.md` — the rules, what is placeholder, what is still missing. **Read this before anything else.**
-2. `design-handoff/docs/01-decisions-log.md` — D01 to D42, every decision and why.
+2. `design-handoff/docs/01-decisions-log.md` — D01 to D43, every decision and why.
 3. `design-handoff/docs/02-components.md` — the 21 components, with the two details that are easy to lose.
 4. `design-handoff/tokens/` — `tokens.css`, `type.css`, `tokens.json`. **These are the source of truth for colour and type.** They were exported from Figma and verified; do not re-derive them from anywhere else.
 5. `design-handoff/OomphTravel-Resurfacing-Plan.docx` — the full plan. Sections 6 (page specs), 8.1 (data model) and 8.5 (build phases) are the ones you will keep coming back to.
@@ -61,7 +61,7 @@ Port `design-handoff/tokens/tokens.css` and `type.css` into the new theme's `the
 
 ### Stage 2 — Deletions and Fluent Forms
 
-- Delete the group cruise pages and all sailing records, the cabin quiz, `/cruise-travel-trends/`, and the nine cruise journal posts. **Delete, do not redirect** (D02) — roughly 20 Google clicks in 90 days, no equity worth protecting.
+- Delete the group cruise pages and all sailing records, the cabin quiz, `/cruise-travel-trends/`, and the nine cruise journal posts. **Delete, do not redirect** (D02) — roughly 20 Google clicks in 90 days, no equity worth protecting. One courtesy exception (D43): `/group-cruises/…` redirects to cruiseoomph.com/cruises/.
 - **Copy the nine cruise posts to CruiseOomph before deleting them here.** Its build plan expects to import them.
 - Keep three internal redirects, which are not cruise pages: `/custom-italy-travel/` → `/destinations/italy/`, `/luxury-cruise-planning/` → `/cruise-planning/`, `/discovery-call/` → `/start-planning/`.
 - Once the last form is gone, **remove Fluent Forms entirely** (D31). It is 43 KB of CSS loading on every page including pages with no form, and it is the single biggest performance win available on this site.

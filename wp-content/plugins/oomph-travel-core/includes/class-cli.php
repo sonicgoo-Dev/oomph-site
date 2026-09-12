@@ -1,11 +1,14 @@
 <?php
 /**
- * WP-CLI commands: wp oomph status · wp oomph seed
+ * WP-CLI commands: wp oomph status · wp oomph seed · wp oomph remove-cruise
  *
  * `status` reports environment, active theme, plugin version. Used as a smoke
  * check after deploys ("wp @stage oomph status" should return staging).
  *
  * `seed` creates the launch records as drafts (Seed class).
+ *
+ * `remove-cruise` takes the old cruise content out of the database, as a
+ * report until --apply is given (Removals class, plan §8.4).
  *
  * @package OomphTravel\Core
  */
@@ -98,6 +101,65 @@ final class CLI {
 			\WP_CLI::success( 'Dry run — nothing written.' );
 		} else {
 			\WP_CLI::success( sprintf( '%d created, %d already existed.', $created, count( $rows ) - $created ) );
+		}
+	}
+
+	/**
+	 * Remove the cruise content from the database (plan §8.4, D02). A report unless --apply is given.
+	 *
+	 * Trashes the sailing and ship records, the cabin quiz page and the old
+	 * guide landing page, and clears the orphaned daily sweep. The nine cruise
+	 * articles go only with --journal, once they have been copied to
+	 * CruiseOomph. Media and anything else it notices are reported, not touched,
+	 * unless --force.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--apply]
+	 * : Do it. Without this flag the command only reports.
+	 *
+	 * [--journal]
+	 * : Include the nine cruise articles (Appendix B). Copy them first.
+	 *
+	 * [--force]
+	 * : Delete outright instead of trashing, and remove the media attached to sailings.
+	 *
+	 * [--production]
+	 * : Required alongside --apply when the environment is production.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp oomph remove-cruise
+	 *     wp @stage oomph remove-cruise --apply
+	 *     wp @stage oomph remove-cruise --apply --journal
+	 *     wp @prod oomph remove-cruise --apply --journal --production
+	 *
+	 * @subcommand remove-cruise
+	 *
+	 * @param string[]             $args
+	 * @param array<string,string> $assoc_args
+	 */
+	public function remove_cruise( array $args, array $assoc_args ): void {
+		$apply   = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'apply', false );
+		$journal = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'journal', false );
+		$force   = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'force', false );
+		$prod_ok = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'production', false );
+
+		\WP_CLI::log( sprintf( 'Environment: %s · %s', Environment::type(), $apply ? ( $force ? 'deleting' : 'moving to the trash' ) : 'report only, nothing changes' ) );
+
+		if ( $apply && Environment::is_production() && ! $prod_ok ) {
+			\WP_CLI::error( 'This is production. Add --production to confirm, after the same run has been checked on staging.' );
+		}
+
+		$rows = Removals::run( $apply, $journal, $force );
+		\WP_CLI\Utils\format_items( 'table', $rows, array( 'what', 'found', 'action', 'detail' ) );
+
+		if ( ! $apply ) {
+			\WP_CLI::success( 'Report only — nothing was changed. Run again with --apply to do it.' );
+		} elseif ( $force ) {
+			\WP_CLI::success( 'Done. The records are deleted.' );
+		} else {
+			\WP_CLI::success( 'Done. The records are in the trash and can be restored for thirty days.' );
 		}
 	}
 }

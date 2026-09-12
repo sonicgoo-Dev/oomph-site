@@ -90,6 +90,10 @@ final class Seed {
 			array( 'slug' => 'client-stories',                     'title' => 'Client stories' ),
 			array( 'slug' => 'journal',                            'title' => 'Journal' ),
 			array( 'slug' => 'travel-trends',                      'title' => 'Travel trends' ),
+			// Plan §6.16 (Stage 11): the link-in-bio page the Instagram profile
+			// points at. It already exists on staging and production (Stage 2 of
+			// the old build), so there it is found, not created.
+			array( 'slug' => 'links',                              'title' => 'Links' ),
 		);
 	}
 

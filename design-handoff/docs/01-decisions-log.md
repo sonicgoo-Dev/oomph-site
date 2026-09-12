@@ -1,4 +1,4 @@
-# Decisions log — D01 to D42
+# Decisions log — D01 to D43
 
 Exported from Figma page `01 Decisions log` on 10 September 2026.
 
@@ -48,3 +48,4 @@ Every approval and change has a row. If one of these has to change, change it on
 | **D40** | SELECT confirmed live on Eric's account. Travel Leaders runs four hotel programmes — SELECT, SELECT Villas, CURATED, WORLDWIDE — and only the first two carry guest amenities, so perk copy is valid only for a property badged SELECT or CURATED. | Verified, Sep 10 |
 | **D41** | Theme approach: fork the CruiseOomph theme into a new OomphTravel theme and reskin it. kadence-oomph-child is retired at the end of the rebuild. | Eric, Sep 10 |
 | **D42** | First Claude Code session is scoped to stages 1-3 only, with a pull request per stage and a stop for review before any page is rebuilt. | Eric, Sep 10 |
+| **D43** | Old `/group-cruises/…` addresses redirect to `https://cruiseoomph.com/cruises/` with the UTM tag — the courtesy line plan §8.4 left open. Narrows D02: the archive is still deleted here, not kept; the visitor is sent to the site that sells it instead of a 404. Everything else in D02 (cabin quiz, cruise guide, nine posts, sailings) still lands on the 404. | Eric, Sep 11 |

@@ -98,7 +98,7 @@ final class Inquiry {
 		add_filter( 'redirect_canonical', array( self::class, 'keep_receipt_url' ), 10, 2 );
 		add_action( 'rest_api_init', array( self::class, 'routes' ) );
 		add_action( 'template_redirect', array( self::class, 'handle_post' ), 1 );
-		add_action( 'template_redirect', array( self::class, 'redirect_discovery_call' ), 2 );
+		// /discovery-call/ → /start-planning/ lives in Redirects::moved() (Stage 11).
 		add_filter( 'allowed_redirect_hosts', array( self::class, 'allow_cruiseoomph' ) );
 	}
 
@@ -176,20 +176,6 @@ final class Inquiry {
 			),
 			'https://cruiseoomph.com/plan/'
 		);
-	}
-
-	/**
-	 * /discovery-call/ became /start-planning/ (plan §8.4 internal redirects).
-	 * A permanent redirect, only once the new page is there to receive it,
-	 * matched on the address so it holds after the old page is deleted.
-	 */
-	public static function redirect_discovery_call(): void {
-		$path = (string) wp_parse_url( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH );
-		if ( 'discovery-call' !== trim( $path, '/' ) || ! get_page_by_path( self::PAGE_SLUG ) ) {
-			return;
-		}
-		wp_safe_redirect( self::form_url(), 301 );
-		exit;
 	}
 
 	/* ------------------------------------------------------------------ */
