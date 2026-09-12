@@ -123,9 +123,9 @@ function oomphtravel_story_attribution( array $story ): string {
  * `oomph_second_advisor` for her Person node, and for the author of any
  * journal post her WordPress user wrote (login `amy`).
  *
- * The bio is adapted from her CruiseOomph profile (plan §6.11). No portrait
- * yet: the CruiseOomph one is 280 × 245 and would look soft at this size, so
- * the page shows a monogram until a larger original arrives.
+ * The bio is adapted from her CruiseOomph profile (plan §6.11). The portrait
+ * is a square crop of the original Eric supplied, at two widths; the monogram
+ * in the pattern is what shows if the image is ever filtered away.
  *
  * @return array{name:string,first:string,login:string,url:string,jobTitle:string,description:string,credentials:string[],focus:string,image:string}
  */
@@ -139,7 +139,7 @@ function oomphtravel_second_advisor(): array {
 		'description' => __( 'Amy has been on every cruise I have taken, which makes her the second opinion I trust most on a ship, a cabin or a port day. By day she is a real estate agent, and she brings the same patience for a big decision to a trip: nobody is hurried, and nothing is booked until it is right. She works alongside me on the planning, and on cruise bookings through CruiseOomph.', 'oomphtravel' ),
 		'credentials' => array( 'Nexion', 'Travel Leaders Network' ),
 		'focus'       => __( 'Cruise bookings, resort stays, and the second read on every plan.', 'oomphtravel' ),
-		'image'       => '',
+		'image'       => OOMPHTRAVEL_THEME_URI . 'assets/img/advisor-amy-720.webp',
 	);
 
 	/**

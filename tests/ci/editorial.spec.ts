@@ -46,6 +46,12 @@ test.describe( '/about/', () => {
     await expect( amy ).toContainText( 'Amy Hempel' );
     await expect( amy ).toContainText( 'Travel Leaders Network' );
 
+    // Her portrait is below the fold, so it loads late, unlike the hero's.
+    const portraitAmy = amy.locator( '.ot-about-team__portrait' );
+    await expect( portraitAmy ).toHaveAttribute( 'loading', 'lazy' );
+    await expect( portraitAmy ).toHaveAttribute( 'width', '720' );
+    await expect( amy.locator( '.ot-about-team__monogram' ) ).toHaveCount( 0 );
+
     await expect( page.locator( 'main .ot-btn--primary' ) ).toHaveCount( 2 );
     await onePrimaryPerSection( page );
     await expect( page.locator( 'link[rel="stylesheet"][href*="editorial.css"]' ) ).toHaveCount( 1 );
@@ -65,7 +71,7 @@ test.describe( '/about/', () => {
     expect( amy.name ).toBe( 'Amy Hempel' );
     expect( amy.description ).toContain( 'real estate agent' );
     expect( amy.worksFor[ '@id' ] ).toMatch( /#organization$/ );
-    expect( amy.image ).toBeUndefined();
+    expect( amy.image ).toContain( 'advisor-amy-720.webp' );
 
     expect( nodes.find( ( n ) => n[ '@type' ] === 'FAQPage' ) ).toBeUndefined();
     expect( nodes.find( ( n ) => n[ '@type' ] === 'Service' ) ).toBeUndefined();
