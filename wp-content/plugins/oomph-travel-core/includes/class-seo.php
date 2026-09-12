@@ -28,9 +28,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class SEO {
 
 	public static function init(): void {
-		// Served early — before WordPress's canonical trailing-slash redirect
-		// would fire on the .txt request.
-		add_action( 'init', array( __CLASS__, 'serve_llms' ), 0 );
+		// Served on init, after the post types register at priority 10 (their
+		// permalinks and archive links need that), and long before the
+		// canonical trailing-slash redirect at template_redirect would fire
+		// on the .txt request.
+		add_action( 'init', array( __CLASS__, 'serve_llms' ), 20 );
 		add_filter( 'wp_robots', array( __CLASS__, 'uncategorized_robots' ) );
 		add_filter( 'rank_math/frontend/robots', array( __CLASS__, 'uncategorized_robots_rank_math' ) );
 	}

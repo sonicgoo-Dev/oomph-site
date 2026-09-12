@@ -191,6 +191,7 @@ jobs:
           echo "$OUT"
           echo "$OUT" | grep -q 'Report only' || { echo "::error::remove-cruise did not end as a report" >&2; exit 1; }
           echo "$OUT" | grep -q 'static file /llms.txt' || { echo "::error::remove-cruise lost a row" >&2; exit 1; }
+          echo "$OUT" | grep -q 'Rank Math sitemap cache' || { echo "::error::remove-cruise lost the sitemap row" >&2; exit 1; }
           AFTER=$(npx wp-env run cli wp post list --post_type=any --post_status=any --format=count 2>/dev/null | tr -d '\r' | grep -oE '^[0-9]+$' | tail -1)
           [ "$BEFORE" = "$AFTER" ] || { echo "::error::the report changed the record count (${BEFORE:-?} → ${AFTER:-?})" >&2; exit 1; }
 
