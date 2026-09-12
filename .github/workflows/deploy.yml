@@ -9,6 +9,10 @@ on:
     branches:
       - main
       - develop
+    # A change to the workflows alone is not a release: nothing under
+    # .github reaches the server, so nothing needs deploying.
+    paths-ignore:
+      - '.github/**'
   workflow_dispatch:    # allow manual trigger from Actions tab
 
 concurrency:
