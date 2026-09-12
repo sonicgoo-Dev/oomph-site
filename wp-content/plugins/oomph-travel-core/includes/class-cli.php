@@ -107,11 +107,12 @@ final class CLI {
 	/**
 	 * Remove the cruise content from the database (plan §8.4, D02). A report unless --apply is given.
 	 *
-	 * Trashes the sailing and ship records, the cabin quiz page and the old
-	 * guide landing page, and clears the orphaned daily sweep. The nine cruise
-	 * articles go only with --journal, once they have been copied to
-	 * CruiseOomph. Media and anything else it notices are reported, not touched,
-	 * unless --force.
+	 * Trashes the sailing and ship records, the cabin quiz page, the old
+	 * guide landing page and the four moved pages whose addresses redirect in
+	 * code, deletes the static llms.txt the old build left in the web root,
+	 * and clears the orphaned daily sweep. The nine cruise articles go only
+	 * with --journal, once they have been copied to CruiseOomph. Media and
+	 * anything else it notices are reported, not touched, unless --force.
 	 *
 	 * ## OPTIONS
 	 *

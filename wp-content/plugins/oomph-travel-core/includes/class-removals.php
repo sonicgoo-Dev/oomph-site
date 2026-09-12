@@ -36,6 +36,20 @@ final class Removals {
 	/** The two pages (plan §4.2): the cabin quiz and the old guide landing. */
 	public const PAGES = array( 'trip-quiz', 'cruise-travel-trends' );
 
+	/**
+	 * The pages that moved (Redirects::moved()). Their addresses are served
+	 * by code now, so the old records only add redirecting URLs to the
+	 * sitemap and site search. Trashed on apply, if they are still there.
+	 */
+	public const MOVED_PAGES = array( 'custom-italy-travel', 'luxury-cruise-planning', 'discovery-call', 'contact' );
+
+	/**
+	 * A physical llms.txt left in the web root by the old build (May 2026)
+	 * shadows the one SEO::serve_llms() generates: nginx serves the file
+	 * before WordPress sees the request. Relative to ABSPATH.
+	 */
+	public const STATIC_FILES = array( 'llms.txt' );
+
 	/** Appendix B. `10-day-united-kingdom-itinerary` is not here: it stays. */
 	public const JOURNAL = array(
 		'norwegian-fjords-vs-baltic',
@@ -102,6 +116,30 @@ final class Removals {
 				self::remove_post( (int) $page->ID, $force );
 			}
 			$rows[] = self::row( "page /$slug/", $live ? 1 : 0, $live ? ( $apply ? $did : "would $verb" ) : 'already gone', '' );
+		}
+
+		// 2b. The moved pages: redirected in code, so the records can go.
+		foreach ( self::MOVED_PAGES as $slug ) {
+			$page = get_page_by_path( $slug, OBJECT, 'page' );
+			$live = $page instanceof \WP_Post && 'trash' !== $page->post_status;
+			if ( $live && $apply ) {
+				self::remove_post( (int) $page->ID, $force );
+			}
+			$rows[] = self::row( "moved page /$slug/", $live ? 1 : 0, $live ? ( $apply ? $did : "would $verb" ) : 'already gone', $live ? 'its address redirects in code' : '' );
+		}
+
+		// 2c. Static files in the web root that shadow what the plugin serves.
+		foreach ( self::STATIC_FILES as $file ) {
+			$path   = ABSPATH . $file;
+			$exists = is_file( $path );
+			$detail = $exists ? sprintf( '%s, %s — shadows the generated /%s', size_format( (int) filesize( $path ) ), gmdate( 'Y-m-d', (int) filemtime( $path ) ), $file ) : '';
+			if ( $exists && $apply ) {
+				wp_delete_file( $path );
+				$exists = is_file( $path );
+				$rows[] = self::row( "static file /$file", 1, $exists ? 'could not delete' : 'deleted', $exists ? 'check file permissions' : '' );
+			} else {
+				$rows[] = self::row( "static file /$file", $exists ? 1 : 0, $exists ? 'would delete' : 'not there', $detail );
+			}
 		}
 
 		// 3. The nine cruise articles, only when asked.

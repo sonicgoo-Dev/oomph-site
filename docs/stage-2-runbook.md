@@ -89,11 +89,15 @@ the server over the deploy key, so nobody types a `wp` command.
 5. Run it once in `report`, read the table, then run it again in `apply`.
 
 What the job removes: every `oomph_cruise` sailing and `oomph_ship` record,
-the `/trip-quiz/` and `/cruise-travel-trends/` pages, the retired
-`oomph_retire_unbookable_sailings` cron, and (with **journal**) the nine
-posts. What it only reports: the old Travel Trends PDF(s) in the media
-library (delete by hand from Media once nothing links to them) and whether
-Fluent Forms is still active.
+the `/trip-quiz/` and `/cruise-travel-trends/` pages, the four moved pages
+(`/custom-italy-travel/`, `/luxury-cruise-planning/`, `/discovery-call/`,
+`/contact/` — their addresses redirect in code, so the records only put
+redirecting URLs in the sitemap), the static `llms.txt` file the old build
+left in the web root (it shadows the generated one — found on staging
+dated 28 May 2026), the retired `oomph_retire_unbookable_sailings` cron,
+and (with **journal**) the nine posts. What it only reports: the old Travel
+Trends PDF(s) in the media library (delete by hand from Media once nothing
+links to them) and whether Fluent Forms is still active.
 
 On production the environment's required reviewer has to approve the run
 first, and the job adds the command's own `--production` confirmation flag —
