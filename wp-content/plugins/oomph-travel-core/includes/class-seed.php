@@ -142,6 +142,12 @@ final class Seed {
 					if ( $filled ) {
 						$action .= sprintf( ', %d empty field(s) filled', $filled );
 					}
+					if ( 'destinations' === $what ) {
+						$corrected = self::correct_destination( (int) $existing->ID );
+						if ( $corrected ) {
+							$action .= sprintf( ', %d sentence(s) corrected', $corrected );
+						}
+					}
 				}
 				$rows[] = array( 'slug' => $record['slug'], 'title' => $record['title'], 'action' => $action, 'id' => (int) $existing->ID );
 				continue;
@@ -349,6 +355,53 @@ final class Seed {
 			),
 			array( 'question' => 'field_oomph_dest_faq_q', 'answer' => 'field_oomph_dest_faq_a' )
 		);
+	}
+
+	/**
+	 * Sentences the seed once wrote and later had to take back.
+	 *
+	 * The seed never overwrites a box that holds anything, which is right for
+	 * Eric's edits and wrong for its own mistakes: the Italy FAQ shipped with
+	 * "the best villas and guides" before "the best" joined the No List
+	 * (Stage 12), and the corrected seed copy could not reach a record that
+	 * already existed. Each entry here replaces one exact sentence in one
+	 * repeater sub-field; a row Eric has already changed no longer matches
+	 * and is left alone. Add to this list, never edit an entry, so a record
+	 * seeded at any version ends up the same.
+	 *
+	 * @return array<int,array{field:string,sub:string,sub_key:string,from:string,to:string}>
+	 */
+	private static function destination_corrections(): array {
+		return array(
+			array(
+				'field'   => 'faq',
+				'sub'     => 'answer',
+				'sub_key' => 'field_oomph_dest_faq_a',
+				'from'    => 'For spring and fall in the popular regions, six to nine months is comfortable; the best villas and guides book early. I’ve turned around shorter timelines, but the runway buys you the good options.',
+				'to'      => 'For spring and fall in the popular regions, six to nine months is comfortable; the villas and guides worth having book early. I’ve turned around shorter timelines, but the runway buys you the good options.',
+			),
+		);
+	}
+
+	/**
+	 * Apply destination_corrections() to one record: every repeater row whose
+	 * sub-field equals a retracted sentence exactly gets the replacement.
+	 *
+	 * @return int Sentences replaced.
+	 */
+	private static function correct_destination( int $id ): int {
+		$done = 0;
+		foreach ( self::destination_corrections() as $c ) {
+			$rows = (int) get_post_meta( $id, $c['field'], true );
+			for ( $i = 0; $i < $rows; $i++ ) {
+				$name = "{$c['field']}_{$i}_{$c['sub']}";
+				if ( (string) get_post_meta( $id, $name, true ) === $c['from'] ) {
+					Fields::write( $id, $name, $c['sub_key'], $c['to'] );
+					++$done;
+				}
+			}
+		}
+		return $done;
 	}
 
 	/**
