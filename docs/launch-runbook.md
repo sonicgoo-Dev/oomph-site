@@ -45,9 +45,8 @@ already there because step 1 put them there.
 
 Content on staging, all **Eric**:
 
-- [ ] **Homepage "How to travel" cards have their four photos.** Today they are
-      grey placeholders and the content guard fails on them. Plan §6.1 says
-      "photo above" each card.
+- [x] **Homepage "How to travel" cards have their four photos.** Done by Eric
+      (confirmed on staging 2026-09-13).
 - [ ] **Operators and the three launch tours are published** (Globus, Tauck,
       Insight, plus their operator pages). Today every tour and operator is a
       draft, so `/escorted-tours/` opens with no tours in it.
@@ -61,12 +60,10 @@ Content on staging, all **Eric**:
 
 Before production loses anything, all **Eric** unless noted:
 
-- [ ] **The nine cruise posts are imported into CruiseOomph while production
-      still serves them.** Staging no longer has them; after the push neither
-      will production. As of today none of the nine exist on cruiseoomph.com.
-      The import reads them from oomphtravel.com's REST API — see
-      `docs/stage-2-runbook.md` step 1 (Claude can run the CruiseOomph side once
-      its command or button exists there).
+- [x] **The nine cruise posts are on CruiseOomph.** Done by Eric; all nine
+      answer 200 at `https://cruiseoomph.com/<slug>/` (root level, not under
+      `/journal/`, which is why an earlier check missed them). Nothing is lost
+      when the push removes them here.
 - [ ] **Export Fluent Forms entries from production** (`docs/stage-2-runbook.md`
       step 2). The push replaces production's database, Discovery Call entries
       included.
@@ -83,7 +80,7 @@ Decisions that are not blockers but are easiest before the push:
 - [ ] Rank Math → Redirections on staging: delete rows that repeat the code's four moves (`docs/stage-2-runbook.md` step 5).
 
 Code, **Claude**: the live suite green against staging with the content guard
-clean, once the three content items above are done.
+clean, once the two open content items above are done.
 
 ## 1. The day before
 
