@@ -56,6 +56,47 @@ function oomphtravel_single_title_tag(): void {
 add_action( 'wp_head', 'oomphtravel_single_title_tag', 0 );
 
 /**
+ * The tab icon: the luggage symbol (D22), shipped with the theme.
+ *
+ * The SVG serves every modern browser at any size; the 32 and 192 PNGs cover
+ * the rest and Android's home screen; the Apple touch icon sits on white
+ * because iOS squares it off with no transparency. Because the theme owns
+ * this, core's Site Icon output (Customizer → Site Identity) is dropped from
+ * the front end so the two never print side by side — the Customizer value
+ * still serves wp-admin and the login screen.
+ */
+function oomphtravel_icon_tags(): void {
+	$img = OOMPHTRAVEL_THEME_DIR . 'assets/img/';
+	$uri = OOMPHTRAVEL_THEME_URI . 'assets/img/';
+	$ver = (string) wp_get_theme()->get( 'Version' );
+
+	$tags = array(
+		array( 'icon', 'favicon.svg', 'image/svg+xml', 'any' ),
+		array( 'icon', 'favicon-32.png', 'image/png', '32x32' ),
+		array( 'icon', 'favicon-192.png', 'image/png', '192x192' ),
+		array( 'apple-touch-icon', 'apple-touch-icon.png', '', '180x180' ),
+	);
+	foreach ( $tags as list( $rel, $file, $type, $sizes ) ) {
+		if ( ! file_exists( $img . $file ) ) {
+			continue;
+		}
+		printf(
+			'<link rel="%s" href="%s"%s sizes="%s">' . "\n",
+			esc_attr( $rel ),
+			esc_url( add_query_arg( 'v', $ver, $uri . $file ) ),
+			'' !== $type ? ' type="' . esc_attr( $type ) . '"' : '',
+			esc_attr( $sizes )
+		);
+	}
+}
+add_action( 'wp_head', 'oomphtravel_icon_tags', 3 );
+
+function oomphtravel_own_site_icon(): void {
+	remove_action( 'wp_head', 'wp_site_icon', 99 );
+}
+add_action( 'wp_head', 'oomphtravel_own_site_icon', 0 );
+
+/**
  * One pattern category for the Stage 3 components, so they sit together in
  * the inserter. Header and footer are `Inserter: no` and never appear there.
  */
