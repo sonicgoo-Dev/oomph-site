@@ -401,7 +401,11 @@
 	text-decoration: none;
 	color: var(--surface-white);
 }
-.ot-card-dest__media { position: absolute; inset: 0; border-radius: 0; }
+/* Two classes deep on purpose: the shared `.ot-card [class$="__media"]` rule
+   above sets position: relative at the same weight, and it must lose here
+   or the photo sits in flow at its own proportions instead of filling the
+   4:5 card, with the white name lost against the white card below it. */
+.ot-card-dest .ot-card-dest__media { position: absolute; inset: 0; border-radius: 0; }
 .ot-card-dest__media::after {
 	content: "";
 	position: absolute;
