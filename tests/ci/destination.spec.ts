@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
  * Destination pages (plan §6.2 index, §6.3 template).
  *
  * The seed creates every destination as a draft: Italy with its hand-written
- * content, the six other European destinations with the draft copy from
+ * content, the ten other destinations with the draft copy from
  * Seed::destination_copy(). The fixture publishes Italy and Greece. So Italy
  * proves the full template, Greece proves a filled draft renders every
  * section, and the index proves that drafts are never listed.

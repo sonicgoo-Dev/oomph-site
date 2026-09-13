@@ -372,9 +372,13 @@ final class Seed {
 			}
 		}
 
-		if ( ! empty( $copy['best_months'] ) && ! Fields::choices( $id, 'best_months' ) ) {
-			Fields::write( $id, 'best_months', 'field_oomph_dest_best_months', array_map( 'strval', $copy['best_months'] ) );
-			++$filled;
+		// Possible months only mean anything on the guided variant; the copy
+		// only carries them for Africa.
+		foreach ( array( 'best_months' => 'field_oomph_dest_best_months', 'shoulder_months' => 'field_oomph_dest_shoulder_months' ) as $name => $key ) {
+			if ( ! empty( $copy[ $name ] ) && ! Fields::choices( $id, $name ) ) {
+				Fields::write( $id, $name, $key, array_map( 'strval', $copy[ $name ] ) );
+				++$filled;
+			}
 		}
 
 		$repeaters = array(
@@ -658,6 +662,171 @@ final class Seed {
 					array( 'question' => 'Should we sail instead?', 'answer' => 'If you want the islands without the ferries, a crewed boat for a week does the whole coast with your luggage unpacked once. Bareboat only if you already sail. I can plan either, or a week ashore and a few days afloat.' ),
 					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Split and Dubrovnik connect through Frankfurt, Munich, Zurich or Vienna, with direct flights from the east coast in summer; I’ll tell you when it’s worth using miles and when it isn’t.' ),
 					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. The walled towns are steps and cobbles and Dubrovnik’s walls are a climb, so I choose hotels with lifts, a driver rather than a bus, a boat rather than a hill, and the islands with flat harbours.' ),
+				),
+			),
+
+			/* Resort-first destinations: one base, well chosen, a week planned from it. */
+
+			'hawaii' => array(
+				'headline'    => 'Hawaii, planned one island at a time.',
+				'intro'       => '<p>Hawaii is six islands and no two are alike: Oahu has the city and the North Shore, Maui the resort coasts and the volcano, Kauai the cliffs and the canyon, Hawaii Island the lava and the Kohala beaches. The week that works picks one island, sometimes two, and a resort that fits the way you spend a day.</p>'
+					. '<p>I plan Hawaii from the base outward. The resort or the house first, chosen for the beach in front of it and the distance to what you want to do; then the days: a sunrise on Haleakalā with the permit already in hand, a boat to Molokini before the swell builds, a helicopter over the Nā Pali coast, a table at the restaurant everyone tries to get into, and enough empty afternoons to make it a holiday.</p>'
+					. '<p>It suits families with children of every age, couples marking an anniversary or a honeymoon, three generations who need one big house, and anyone on the west coast who wants a week away without a passport. If you want four islands in seven days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Maui', 'blurb' => 'Wailea for the resort beaches, Kapalua for the greener north-west coast. Haleakalā at sunrise, the Road to Hāna once, a boat to Molokini.' ),
+					array( 'name' => 'Kauai', 'blurb' => 'The Nā Pali cliffs by boat or helicopter, Waimea Canyon, Hanalei Bay. The quietest of the big four, and the wettest.' ),
+					array( 'name' => 'Oahu', 'blurb' => 'Honolulu, Pearl Harbor with a guide, the North Shore in winter. A resort on the leeward coast keeps the city at arm’s length.' ),
+					array( 'name' => 'Hawaii Island: the Kohala coast', 'blurb' => 'The dry, sunny side: black lava, white-sand resort beaches, the manta rays at night off Kona.' ),
+					array( 'name' => 'Hawaii Island: Volcano and Hilo', 'blurb' => 'Kīlauea in Hawaiʻi Volcanoes National Park, rainforest, waterfalls. A night or two on the wet side is worth the drive.' ),
+					array( 'name' => 'Lānaʻi', 'blurb' => 'One small island with two resorts and almost nothing else. A ferry ride from Maui for a day, or the week itself.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Land on Maui', 'text' => 'A direct flight from the west coast, a car or a driver waiting, a resort in Wailea for the week. The beach before dinner.' ),
+					array( 'day' => '2', 'title' => 'The beach', 'text' => 'No plan. The pool, the sand, a snorkel off the point in the morning when the water is glass.' ),
+					array( 'day' => '3', 'title' => 'Molokini', 'text' => 'A small boat out to the crater early, before the wind, then a slow afternoon back at the resort.' ),
+					array( 'day' => '4', 'title' => 'Haleakalā', 'text' => 'Up before dawn with the sunrise permit already held, a long breakfast in Kula on the way down, the pool for the rest.' ),
+					array( 'day' => '5', 'title' => 'The Road to Hāna', 'text' => 'A driver, so nobody counts the curves: waterfalls, the black-sand beach, a stop for banana bread. Or skip it for another beach day.' ),
+					array( 'day' => '6', 'title' => 'Lānaʻi', 'text' => 'The morning ferry across, a day at Hulopoʻe Bay, back by the afternoon boat. Dinner booked for the last night.' ),
+					array( 'day' => '7', 'title' => 'Home', 'text' => 'A late checkout, a last swim, an evening flight east. Seven days, one way to do it; Kauai makes another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A resort on Wailea beach', 'type' => 'resort', 'note' => 'The grand version: a beach with calm water, several pools, a spa, and children’s programmes that make the parents’ afternoons possible.', 'perks' => '' ),
+					array( 'name' => 'A house in Kapalua or on the North Shore of Kauai', 'type' => 'villa', 'note' => 'A kitchen, a pool and room to spread out. The one for three generations.', 'perks' => '' ),
+					array( 'name' => 'A resort on the Kohala coast', 'type' => 'resort', 'note' => 'Sun almost every day of the year, a swimmable beach among the lava, golf if it is the point.', 'perks' => '' ),
+					array( 'name' => 'A small hotel in Hanalei or on the Kona coast', 'type' => 'hotel', 'note' => 'Fewer rooms, a shorter walk to the water, and a town at the door.', 'perks' => '' ),
+				),
+				'best_months' => array( 4, 5, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Which island?', 'answer' => 'Maui for a first visit and for families, Kauai for scenery and quiet, Hawaii Island for space and the volcano, Oahu if you want a city in the mix. Two islands fit in ten days; one is right for a week. I’ll tell you on the call which fits your group.' ),
+					array( 'question' => 'When should we go?', 'answer' => 'April, May, September and October: warm, drier, and without the winter and summer crowds, with rates to match. Whales are off Maui from December to March. Christmas week and spring break need a year’s notice at the resorts people ask for by name.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for spring and autumn, longer for the holidays. The oceanfront rooms and the big houses go first, and the Haleakalā sunrise permits are released only sixty days out, so I set a reminder for that one.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Maui, Kauai, Kona and Honolulu all have direct flights from the west coast; from further east it is one stop, and I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Resorts here are large and spread out, so I choose the building nearest the beach and the pool, a ground-floor room, a driver for the volcano and Hāna days, and a boat with an easy step aboard.' ),
+				),
+			),
+
+			'mexico' => array(
+				'headline'    => 'Mexico, planned from one good base.',
+				'intro'       => '<p>Mexico is several countries in one: the Caribbean coast of the Riviera Maya, the desert-meets-Pacific of Los Cabos, the green bay of Puerto Vallarta and Punta Mita, and the colonial cities inland, Oaxaca, San Miguel de Allende, Mexico City itself. The trip that works picks one coast and a resort or a house on it, and adds the inland city only when there is time to give it.</p>'
+					. '<p>I plan Mexico from the base outward: the property first, chosen for its beach, its kitchen and how it treats children, then the days. Tulum before the buses, a cenote swim with a guide who knows which one is empty at nine, a boat to Isla Mujeres, a cooking morning in Oaxaca, a driver for the long days and the airport, and the ruins seen early, in the cool.</p>'
+					. '<p>It suits families with young children, couples who want sun and a real table in February, three generations who need one big house and a pool, and anyone who has done the all-inclusive version and wants the other one. If you want both coasts and Mexico City in a week, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'The Riviera Maya & Tulum', 'blurb' => 'Turquoise water, cenotes, Mayan ruins and the resorts between Playa del Carmen and Tulum. The easiest week in the country.' ),
+					array( 'name' => 'Los Cabos', 'blurb' => 'Desert light, whale season, a marina and the East Cape’s quieter resorts. Two and a half hours from the west coast.' ),
+					array( 'name' => 'Puerto Vallarta & Punta Mita', 'blurb' => 'A green bay, a walkable old town, and a gated peninsula of resorts and houses forty minutes north.' ),
+					array( 'name' => 'Oaxaca', 'blurb' => 'Markets, mezcal, moles and the craft villages in the valley. Three nights inland at the start or the end of a beach week.' ),
+					array( 'name' => 'Mexico City', 'blurb' => 'Museums, Roma and Condesa on foot, the tables people fly in for, Teotihuacán at dawn. Two or three nights on the way to the coast.' ),
+					array( 'name' => 'San Miguel de Allende & the Bajío', 'blurb' => 'Cobbles, rooftops, a small hotel in a colonial house. Slower than the capital and an easy pairing with it.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Land in Cancún', 'text' => 'A driver through the airport crowd and south to a resort or a house between Playa del Carmen and Tulum for the week. The sea before dinner.' ),
+					array( 'day' => '2', 'title' => 'The beach', 'text' => 'No plan. The pool, the sand, lunch under a palapa.' ),
+					array( 'day' => '3', 'title' => 'Tulum early', 'text' => 'The clifftop ruins at opening with a guide, a cenote swim on the way back, the afternoon free.' ),
+					array( 'day' => '4', 'title' => 'The water', 'text' => 'A boat to Isla Mujeres or Cozumel for the reef, or a catamaran along the coast, lunch on board.' ),
+					array( 'day' => '5', 'title' => 'Chichén Itzá or Cobá', 'text' => 'A driver for the long day west, or Cobá’s quieter pyramids and a cenote nearby if the children have had enough of ruins.' ),
+					array( 'day' => '6', 'title' => 'A day with no plan', 'text' => 'The beach, a massage, a long lunch in Tulum town, dinner booked for the last night.' ),
+					array( 'day' => '7', 'title' => 'Home', 'text' => 'A late checkout and a driver to Cancún with time in hand. Seven days, one way to do it; Los Cabos makes another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A resort on the Riviera Maya', 'type' => 'resort', 'note' => 'A beach with calm water, several restaurants, a children’s club that is more than a room, and Tulum half an hour away.', 'perks' => '' ),
+					array( 'name' => 'A house in Punta Mita or on the East Cape', 'type' => 'villa', 'note' => 'A pool, a cook, a view, and staff who set the table before you are up. The one for a family gathering.', 'perks' => '' ),
+					array( 'name' => 'A resort in Los Cabos', 'type' => 'resort', 'note' => 'Desert and sea, a swimmable beach (not all are), whales from the terrace in winter.', 'perks' => '' ),
+					array( 'name' => 'A small hotel in Oaxaca or San Miguel', 'type' => 'hotel', 'note' => 'A colonial house with a courtyard, a rooftop, a dozen rooms, the market ten minutes on foot.', 'perks' => '' ),
+				),
+				'best_months' => array( 11, 12, 1, 2, 3, 4 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'All-inclusive or not?', 'answer' => 'Either can be done well and both can be done badly. A good all-inclusive suits a family that wants zero decisions; a good resort with restaurants worth paying for suits a couple who wants dinner to be an event. I know which is which, and I’ll steer you by how you like to spend a day.' ),
+					array( 'question' => 'When should we go?', 'answer' => 'November to April is the dry season on both coasts. Late August to October is hurricane season on the Caribbean side, and the summer is hot and humid everywhere but the highlands. Christmas week, Presidents’ Day week and spring break are the weeks that need a year’s notice.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for the winter, longer for the holidays. The houses with staff and the oceanfront suites go first, and the Tulum tables that matter open their books a month out, so I set a reminder.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Cancún, Los Cabos, Puerto Vallarta and Mexico City all have direct flights from most of the US; I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Ruins are uneven ground and the colonial towns are cobbles and hills, so I plan those as short mornings with a driver who waits, and I choose the resort building nearest the beach with step-free paths to the pool and the restaurants.' ),
+				),
+			),
+
+			'caribbean' => array(
+				'headline'    => 'The Caribbean, planned island by island.',
+				'intro'       => '<p>Every Caribbean island has a different character and a different flight. Turks and Caicos is the long white beach and the calm water; St Lucia is green peaks and a rainforest; Anguilla is thirty-three beaches and the tables; Barbados is British habits and a west coast of old houses. The week that works picks the island that matches how you rest, then the resort or the villa on it.</p>'
+					. '<p>I plan the Caribbean from the base outward: the property first, chosen for the beach in front of it and the way it treats children or the way it leaves couples alone, then the days. A boat to the cays with a skipper who knows the sandbar, the reef snorkelled in the morning calm, a rum shop lunch, the restaurant booked before it fills, and a driver on the days you leave the property.</p>'
+					. '<p>It suits couples who want a week of sun and quiet in February, families who want one beach and one pool, three generations in one villa with staff, and anyone marking an anniversary somewhere warm. If you want three islands in a week, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Turks & Caicos', 'blurb' => 'Grace Bay’s long beach and shallow, calm water. Direct flights from the east coast, resorts and villas both. The easiest week in the region.' ),
+					array( 'name' => 'St Lucia', 'blurb' => 'The Pitons, a rainforest, a drive-in volcano and resorts built into the hillside. Greener and hillier than most.' ),
+					array( 'name' => 'Anguilla', 'blurb' => 'Flat, quiet, and eaten well: beaches by the dozen and restaurants from beach shacks to the serious kind. Reached by boat or a short hop from St Maarten.' ),
+					array( 'name' => 'Barbados', 'blurb' => 'The west coast’s old houses and hotels, rum, cricket, and a Friday fish fry at Oistins. Direct flights and an easy rhythm.' ),
+					array( 'name' => 'St Barth', 'blurb' => 'French, small, expensive and worth it for the right couple: villas, boutiques, the harbour at Gustavia.' ),
+					array( 'name' => 'Antigua & the Virgin Islands', 'blurb' => 'Antigua for a beach a day and Nelson’s Dockyard; the BVI for a crewed boat through the islands, with the villa week on either end.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Land on Providenciales', 'text' => 'A direct flight from the east coast, a driver waiting, a resort or a villa on Grace Bay for the week. The water before dinner.' ),
+					array( 'day' => '2', 'title' => 'The beach', 'text' => 'No plan. The sand, the sea at bath temperature, a snorkel off Smith’s Reef.' ),
+					array( 'day' => '3', 'title' => 'The boat day', 'text' => 'A private boat to the cays: iguanas on Little Water Cay, conch fresh from the water, a sandbar lunch.' ),
+					array( 'day' => '4', 'title' => 'Another beach', 'text' => 'A driver to Long Bay or Sapodilla Bay, or Taylor Bay for the shallowest water on the island, then back for the pool.' ),
+					array( 'day' => '5', 'title' => 'North and Middle Caicos', 'text' => 'The ferry and a car for the day: the Conch Bar caves, Mudjin Harbour, an island with almost nobody on it.' ),
+					array( 'day' => '6', 'title' => 'A day with no plan', 'text' => 'A massage, a paddleboard in the morning calm, dinner booked for the last night.' ),
+					array( 'day' => '7', 'title' => 'Home', 'text' => 'A last swim and a driver to the airport with time in hand. Seven days, one way to do it; St Lucia makes another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A resort on Grace Bay', 'type' => 'resort', 'note' => 'Calm, shallow water, a beach that goes on, a children’s programme for the families and a quiet pool for the couples.', 'perks' => '' ),
+					array( 'name' => 'A villa with staff, in Turks and Caicos or Anguilla', 'type' => 'villa', 'note' => 'A pool, a cook, a beach at the end of the garden. The one for three generations.', 'perks' => '' ),
+					array( 'name' => 'A resort under the Pitons', 'type' => 'resort', 'note' => 'St Lucia’s hillside rooms with the two peaks in the window, a beach below, the rainforest behind.', 'perks' => '' ),
+					array( 'name' => 'A small hotel on the west coast of Barbados or in Antigua', 'type' => 'hotel', 'note' => 'Fewer rooms, an old house, a beach at the door and dinner on the terrace.', 'perks' => '' ),
+				),
+				'best_months' => array( 12, 1, 2, 3, 4 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Which island?', 'answer' => 'Turks and Caicos for the beach and calm water, St Lucia for scenery, Anguilla or St Barth for the tables and the quiet, Barbados for an easy week with plenty to do. One island for a week; a second only if a boat or a short flight joins them. I’ll tell you on the call which fits.' ),
+					array( 'question' => 'When should we go?', 'answer' => 'December to April: dry, warm, and out of the hurricane season, which runs June to November and peaks in September. May and early June are quieter and still good. Christmas week and Presidents’ Day week need a year’s notice at the resorts people ask for by name.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for the winter, a year for the holidays. The villas with staff and the oceanfront rooms are held by families who return every year, and the small hotels have twenty rooms to give.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Providenciales, Barbados, St Lucia and Antigua have direct flights from the east coast; Anguilla and St Barth are reached through St Maarten, and I plan the connection so it is part of the day, not the whole of it.' ),
+					array( 'question' => 'Should we cruise it instead?', 'answer' => 'If you want several islands in a week without unpacking, yes, and that is a CruiseOomph conversation; the link is just below. If you want one beach to become yours for a week, a resort or a villa does it better.' ),
+				),
+			),
+
+			/* Guided-first destination: the escorted operator does the driving; custom for those who have been before. */
+
+			'africa' => array(
+				'headline'    => 'Africa, planned with the right guide.',
+				'intro'       => '<p>A first safari is the trip people talk about for the rest of their lives, and it is also the one with the most moving parts: light aircraft between camps, park fees, the season the animals move, yellow-fever certificates, a different currency every border. That is why I plan Africa guided first. An operator whose camps, vehicles and guides are its own takes the logistics off you, and the guide is the difference between seeing an animal and understanding it.</p>'
+					. '<p>I plan Africa in two shapes. For most people, an escorted departure with Abercrombie &amp; Kent or National Geographic Expeditions: a small group, a set route through the Masai Mara and the Serengeti or Cape Town, Kruger and Victoria Falls, everything included, the dates fixed. For those who have been before or want to be alone at the camp, a custom safari built the same way with private guides, timed to the migration or the gorillas, with beach days on Zanzibar or a few nights in Cape Town at the end.</p>'
+					. '<p>It suits couples marking a big birthday, parents with teenagers old enough to sit still in a vehicle at dawn, three generations who want the family in one camp, and anyone for whom this has been on the shortlist for years. If you want Kenya, Botswana and the Cape in ten days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Kenya: the Masai Mara', 'blurb' => 'Open plains, big cats, the wildebeest river crossings from July to October, and the Maasai communities that own much of the land the conservancies sit on.' ),
+					array( 'name' => 'Tanzania: the Serengeti & Ngorongoro', 'blurb' => 'The migration year-round somewhere on the plains, calving in the south in January and February, and the crater floor for a day. Zanzibar for the beach after.' ),
+					array( 'name' => 'South Africa: Cape Town, the Winelands & Sabi Sand', 'blurb' => 'A city, a wine valley and a private reserve beside Kruger where the leopards are used to vehicles. The easiest first Africa trip.' ),
+					array( 'name' => 'Botswana: the Okavango & Chobe', 'blurb' => 'Water safaris by mokoro and boat, small camps, few vehicles, elephants by the thousand along the Chobe. Costs more and gives more.' ),
+					array( 'name' => 'Victoria Falls', 'blurb' => 'The Zambezi from either bank, a helicopter over the gorge, sundowners on the river. Two nights between Botswana and South Africa.' ),
+					array( 'name' => 'Rwanda & Uganda: the gorillas', 'blurb' => 'An hour with a mountain gorilla family after a trek that can be steep. Permits are few and booked far ahead; three nights added to an East Africa safari.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Nairobi', 'text' => 'Land, met at the aircraft, a hotel in the leafy suburbs for a night. The group meets over dinner; on a custom trip, your guide does.' ),
+					array( 'day' => '2', 'title' => 'Fly to the Masai Mara', 'text' => 'A light aircraft to the conservancy airstrip, lunch at camp, the first game drive at four o’clock when the light softens.' ),
+					array( 'day' => '3', 'title' => 'The Mara', 'text' => 'Out at dawn, breakfast in the bush, a rest through the heat, out again until dark. This is the rhythm for the next week.' ),
+					array( 'day' => '4', 'title' => 'The Mara', 'text' => 'The river crossings if it is the season, a visit to the Maasai village that partners the camp, a sundowner on a hill.' ),
+					array( 'day' => '5', 'title' => 'Across to the Serengeti', 'text' => 'Fly to the border, cross on foot, fly on into the northern Serengeti. A different country and the same plain.' ),
+					array( 'day' => '6', 'title' => 'The Serengeti', 'text' => 'Dawn drive, a bush walk with an armed ranger where it is permitted, the herds wherever the grass is green this month.' ),
+					array( 'day' => '7', 'title' => 'The Serengeti', 'text' => 'A day chosen by the guide, which is the point of having one. A balloon at sunrise for those who want it.' ),
+					array( 'day' => '8', 'title' => 'Ngorongoro', 'text' => 'Fly south, drive up onto the crater rim, a lodge on the edge with the whole caldera below.' ),
+					array( 'day' => '9', 'title' => 'The crater floor', 'text' => 'Down at first light, before the day vehicles: rhino, lion, flamingos on the soda lake, lunch by the hippo pool.' ),
+					array( 'day' => '10', 'title' => 'Home from Kilimanjaro', 'text' => 'A drive to Arusha, a day room, an evening flight north. Ten days, one way to do it; Cape Town, Sabi Sand and Victoria Falls make another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A tented camp in the Mara or the Serengeti', 'type' => 'hotel', 'note' => 'Canvas with a proper bed, a bathroom, a deck over the plain, and a dozen tents at most. Moves with the migration in the mobile version.', 'perks' => '' ),
+					array( 'name' => 'A lodge in Sabi Sand or on the Ngorongoro rim', 'type' => 'hotel', 'note' => 'Stone and thatch, a pool, a fire at night, and guides who have worked the same ground for years.', 'perks' => '' ),
+					array( 'name' => 'A private safari house', 'type' => 'villa', 'note' => 'Your own vehicle, guide, chef and pool, with the family under one roof. The one for three generations.', 'perks' => '' ),
+					array( 'name' => 'A hotel in Cape Town or a resort on Zanzibar', 'type' => 'hotel', 'note' => 'The bookend: a city hotel under Table Mountain before, or a beach on the Indian Ocean after.', 'perks' => '' ),
+				),
+				'best_months'     => array( 6, 7, 8, 9, 10 ),
+				'shoulder_months' => array( 1, 2, 3, 11, 12 ),
+				'faq'             => array(
+					$fee,
+					array( 'question' => 'Guided or custom?', 'answer' => 'Guided for a first safari, almost always. The operator owns the camps and the vehicles, the dates and the price are fixed, and a small group at dinner is company most people are glad of. Custom for a second trip, for a family that wants its own vehicle, or when the dates or the gorilla permits do not fit a departure.' ),
+					array( 'question' => 'When should we go?', 'answer' => 'June to October is the dry season in East and Southern Africa: short grass, animals at the water, the river crossings in the Mara from July. November to March works too, for the Serengeti calving in January and February and for Cape Town’s summer, with some afternoon rain. April and May are the long rains in the east and some camps close.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Nine to twelve months, and longer for the peak weeks. The good camps have eight to twelve tents, the escorted departures sell out by the winter before, and gorilla permits are released a year ahead in limited numbers.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Nairobi, Kilimanjaro and Johannesburg are one connection from the US through Europe or the Gulf; Cape Town has a direct flight from the east coast in season. The light aircraft between camps come with the safari and carry a strict soft-bag weight limit that I brief you on early.' ),
+					array( 'question' => 'What about vaccinations and visas?', 'answer' => 'Your travel clinic sets the vaccination list for the countries you visit; I tell you which countries are on the route and where a yellow-fever certificate is checked at the border, so that conversation happens before anything is paid. Kenya, Tanzania, Rwanda and Uganda visas are applied for online in advance and I walk you through each one.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes, with care. Safari vehicles are a high step, camp paths are sand and uneven, and the light aircraft are small. I choose camps with level ground and a vehicle with a step, skip the bush walks and the gorilla trek, and tell the operator exactly what you need before you go.' ),
 				),
 			),
 		);
