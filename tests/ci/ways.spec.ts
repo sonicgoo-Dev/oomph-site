@@ -93,10 +93,12 @@ test.describe( 'custom journeys', () => {
   test( 'every published destination is a card, and the two suppliers are named (D25)', async ( { page } ) => {
     await page.goto( '/custom-journeys/', { waitUntil: 'domcontentloaded' } );
 
-    // The fixture publishes Italy only; the other nine stay drafts and must not appear.
+    // The fixture publishes Italy and Greece; the other nine stay drafts and must not appear.
     const cards = page.locator( '.ot-way-destinations .ot-card-dest' );
-    await expect( cards ).toHaveCount( 1 );
-    await expect( cards.first() ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
+    await expect( cards ).toHaveCount( 2 );
+    await expect( page.locator( '.ot-way-destinations .ot-card-dest[href$="/destinations/italy/"]' ) ).toHaveCount( 1 );
+    await expect( page.locator( '.ot-way-destinations .ot-card-dest[href$="/destinations/greece/"]' ) ).toHaveCount( 1 );
+    await expect( page.locator( '.ot-way-destinations .ot-card-dest[href$="/destinations/france/"]' ) ).toHaveCount( 0 );
 
     const suppliers = page.locator( '.ot-way-suppliers' );
     await expect( suppliers ).toContainText( 'Avanti Destinations' );

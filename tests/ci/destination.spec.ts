@@ -93,7 +93,8 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
     const response = await page.goto( '/destinations/greece/', { waitUntil: 'domcontentloaded' } );
     expect( response?.status() ).toBe( 200 );
 
-    await expect( page.locator( 'h1' ) ).toHaveText( 'Greece' );
+    // The H1 is the record's headline, as on Italy.
+    await expect( page.locator( 'h1' ) ).toHaveText( 'Greece, planned from Athens to the islands.' );
     await expect( page.locator( '.ot-dest-region' ) ).toHaveCount( 6 );
     await expect( page.locator( '.ot-dest-itinerary .ot-accordion__item' ) ).toHaveCount( 10 );
     await expect( page.locator( '.ot-dest-stay' ) ).toHaveCount( 4 );
