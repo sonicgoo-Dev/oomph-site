@@ -158,14 +158,16 @@ appear there and that is expected (D02).
 Instagram app → Edit profile → Links → set the website to
 `https://oomphtravel.com/links/`.
 
-**H. CruiseOomph points back — Claude, separate PR in `luxury-cruise-companion`**
+**H. CruiseOomph points back — done on its `develop`, release with Eric's approval**
 
-Its header falls back to four links (Find a cruise, Cruise styles, Journal,
-Meet Eric) in `patterns/header.php`, and uses the `primary` menu when one is
-saved in wp-admin. Add one item linking to `https://oomphtravel.com/` with the
-label Eric chooses ("Land trips" / "Beyond cruises" / "Oomph Travel"), then
-the same item in the saved menu on CruiseOomph if one exists. This is the
-reverse of its plan's step 11.5.
+Its header nav now carries a fifth item, **Land trips** →
+`https://oomphtravel.com/?utm_source=cruiseoomph&utm_medium=site&utm_campaign=nav`
+(label chosen by Eric 2026-09-12; `luxury-cruise-companion` PR #140, theme
+0.34.1, on staging2.cruiseoomph.com). It reaches cruiseoomph.com with that
+repo's next `develop` → `main` release, which Eric approves in GitHub. No
+`primary` menu is saved there, so the pattern's list is what renders; if one
+is ever saved, `tests/e2e/header.spec.ts` on that repo fails until the item is
+added to the menu too. This is the reverse of its plan's step 11.5.
 
 ## 3. If something is wrong
 
