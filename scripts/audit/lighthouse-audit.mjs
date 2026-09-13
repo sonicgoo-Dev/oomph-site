@@ -56,11 +56,15 @@ const results = [];
 
 const median = (xs) => xs.slice().sort((a, b) => a - b)[Math.floor(xs.length / 2)];
 
+// The CLI entry point, run with this same Node binary — `npx` is a shell
+// shim on Windows and execFileSync cannot spawn it there (ENOENT).
+const LH_CLI = path.join(REPO, 'node_modules', 'lighthouse', 'cli', 'index.js');
+
 function runOnce(url) {
   const raw = execFileSync(
-    'npx',
+    process.execPath,
     [
-      'lighthouse',
+      LH_CLI,
       url,
       '--output=json',
       '--output-path=stdout',

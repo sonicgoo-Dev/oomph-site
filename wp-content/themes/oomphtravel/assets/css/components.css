@@ -344,7 +344,8 @@
 	line-height: 2;
 	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
 	text-transform: uppercase;
-	color: var(--text-muted);
+	/* Slate, not muted: muted on mist-deep is 4.3:1 and fails AA (axe, Stage 12). */
+	color: var(--text-slate);
 }
 
 .ot-credentials__list li { display: inline-flex; align-items: center; gap: var(--space-lg); }
@@ -1104,7 +1105,7 @@ header:has( > .ot-header ),
 	border: 0;
 	font-family: var(--font-body);
 	font-size: var(--wp--custom--type--desktop--meta--size);
-	color: var(--text-muted);
+	color: var(--text-slate); /* muted on mist-deep fails AA contrast (axe, Stage 12) */
 	cursor: pointer;
 }
 .ot-ticker__toggle:hover { color: var(--text-ink); }

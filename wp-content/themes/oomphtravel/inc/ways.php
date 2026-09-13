@@ -196,7 +196,7 @@ function oomphtravel_way_faqs( string $key ): array {
 				),
 				array(
 					'q' => __( 'How far ahead should I start?', 'oomphtravel' ),
-					'a' => __( 'For spring and autumn in the popular regions, six to nine months is comfortable; the best small hotels and guides book early. I have turned around shorter timelines, but the runway buys you the good options.', 'oomphtravel' ),
+					'a' => __( 'For spring and autumn in the popular regions, six to nine months is comfortable; the small hotels and guides worth having book early. I have turned around shorter timelines, but the runway buys you the good options.', 'oomphtravel' ),
 				),
 				array(
 					'q' => __( 'Is a custom journey more expensive than an escorted tour?', 'oomphtravel' ),
@@ -223,7 +223,7 @@ function oomphtravel_way_faqs( string $key ): array {
 				),
 				array(
 					'q' => __( 'Do you book adults-only properties?', 'oomphtravel' ),
-					'a' => __( 'Yes. Mexico and the Caribbean have some of the best adults-only resorts anywhere, and I keep a short list I would send my own friends to.', 'oomphtravel' ),
+					'a' => __( 'Yes. Mexico and the Caribbean do adults-only resorts well, and I keep a short list I would send my own friends to.', 'oomphtravel' ),
 				),
 				array(
 					'q' => __( 'Are the villas staffed?', 'oomphtravel' ),
@@ -231,7 +231,7 @@ function oomphtravel_way_faqs( string $key ): array {
 				),
 				array(
 					'q' => __( 'Can a villa be part of a longer trip?', 'oomphtravel' ),
-					'a' => __( 'Often the best version of one: a week of moving around, then a week in one house. I plan the two together so the transfers land on the right day.', 'oomphtravel' ),
+					'a' => __( 'Often the right version of one: a week of moving around, then a week in one house. I plan the two together so the transfers land on the right day.', 'oomphtravel' ),
 				),
 			);
 		case 'multigen':

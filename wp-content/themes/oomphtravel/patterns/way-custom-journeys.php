@@ -154,7 +154,7 @@ $ot_steps = array(
 					</li>
 				<?php endforeach; ?>
 			</ol>
-			<p class="ot-way-note"><?php esc_html_e( 'One honest note on timing. Peak seasons, which means spring and autumn in Italy and France and summer in Greece and Croatia, need six to nine months. The best guides and the smaller hotels are taken by the people who started early.', 'oomphtravel' ); ?></p>
+			<p class="ot-way-note"><?php esc_html_e( 'One honest note on timing. Peak seasons, which means spring and autumn in Italy and France and summer in Greece and Croatia, need six to nine months. The guides worth having and the smaller hotels are taken by the people who started early.', 'oomphtravel' ); ?></p>
 		</div>
 	</section>
 

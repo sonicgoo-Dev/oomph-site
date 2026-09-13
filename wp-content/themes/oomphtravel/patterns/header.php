@@ -31,36 +31,64 @@ $ot_start_url = home_url( '/start-planning/' );
  * replace via the menu item description once Eric assigns a Primary menu.
  * Africa (D33) sits after the two groups; the plan's mega-menu predates it.
  */
+/*
+ * Only published destinations get a link (Stage 12). A record that is still
+ * a draft, or has been unpublished, leaves the drawer instead of linking to
+ * a 404; a group with nothing left in it goes too.
+ */
+$ot_dest_link = static function ( string $slug, string $label ): ?array {
+	if ( function_exists( 'oomphtravel_destination_is_live' ) && ! oomphtravel_destination_is_live( $slug ) ) {
+		return null;
+	}
+	return array( $label, home_url( '/destinations/' . $slug . '/' ) );
+};
+$ot_dest_groups = static function ( array $groups ) use ( $ot_dest_link ): array {
+	$out = array();
+	foreach ( $groups as $title => $links ) {
+		$rows = array();
+		foreach ( $links as $slug => $label ) {
+			$row = $ot_dest_link( (string) $slug, (string) $label );
+			if ( $row ) {
+				$rows[] = $row;
+			}
+		}
+		if ( $rows ) {
+			$out[] = array( 'title' => (string) $title, 'links' => $rows );
+		}
+	}
+	return $out;
+};
+
 $ot_nav = array(
 	array(
 		'label'    => __( 'Destinations', 'oomphtravel' ),
 		'url'      => home_url( '/destinations/' ),
 		'subtitle' => __( 'Europe, sun & sea, and Africa', 'oomphtravel' ),
-		'groups'   => array(
+		'groups'   => $ot_dest_groups(
 			array(
-				'title' => __( 'Europe', 'oomphtravel' ),
-				'links' => array(
-					array( __( 'Italy', 'oomphtravel' ), home_url( '/destinations/italy/' ) ),
-					array( __( 'UK & Ireland', 'oomphtravel' ), home_url( '/destinations/uk-ireland/' ) ),
-					array( __( 'France', 'oomphtravel' ), home_url( '/destinations/france/' ) ),
-					array( __( 'Spain', 'oomphtravel' ), home_url( '/destinations/spain/' ) ),
-					array( __( 'Portugal', 'oomphtravel' ), home_url( '/destinations/portugal/' ) ),
-					array( __( 'Greece', 'oomphtravel' ), home_url( '/destinations/greece/' ) ),
-					array( __( 'Croatia & the Adriatic', 'oomphtravel' ), home_url( '/destinations/croatia/' ) ),
+				__( 'Europe', 'oomphtravel' )    => array(
+					'italy'      => __( 'Italy', 'oomphtravel' ),
+					'uk-ireland' => __( 'UK & Ireland', 'oomphtravel' ),
+					'france'     => __( 'France', 'oomphtravel' ),
+					'spain'      => __( 'Spain', 'oomphtravel' ),
+					'portugal'   => __( 'Portugal', 'oomphtravel' ),
+					'greece'     => __( 'Greece', 'oomphtravel' ),
+					'croatia'    => __( 'Croatia & the Adriatic', 'oomphtravel' ),
 				),
-			),
-			array(
-				'title' => __( 'Sun & sea', 'oomphtravel' ),
-				'links' => array(
-					array( __( 'Hawaii', 'oomphtravel' ), home_url( '/destinations/hawaii/' ) ),
-					array( __( 'Mexico', 'oomphtravel' ), home_url( '/destinations/mexico/' ) ),
-					array( __( 'Caribbean', 'oomphtravel' ), home_url( '/destinations/caribbean/' ) ),
+				__( 'Sun & sea', 'oomphtravel' ) => array(
+					'hawaii'    => __( 'Hawaii', 'oomphtravel' ),
+					'mexico'    => __( 'Mexico', 'oomphtravel' ),
+					'caribbean' => __( 'Caribbean', 'oomphtravel' ),
 				),
-			),
+			)
 		),
-		'foot'     => array(
-			array( __( 'Africa', 'oomphtravel' ), home_url( '/destinations/africa/' ) ),
-			array( __( 'All destinations', 'oomphtravel' ), home_url( '/destinations/' ), true ),
+		'foot'     => array_values(
+			array_filter(
+				array(
+					$ot_dest_link( 'africa', __( 'Africa', 'oomphtravel' ) ),
+					array( __( 'All destinations', 'oomphtravel' ), home_url( '/destinations/' ), true ),
+				)
+			)
 		),
 	),
 	array(

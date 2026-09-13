@@ -293,11 +293,8 @@ function oomphtravel_destination_groups(): array {
  * @return array<string,mixed>|null
  */
 function oomphtravel_destination_card( string $slug ): ?array {
-	if ( ! post_type_exists( 'oomph_destination' ) ) {
-		return null;
-	}
-	$post = get_page_by_path( $slug, OBJECT, 'oomph_destination' );
-	if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+	$post = oomphtravel_destination_live_post( $slug );
+	if ( ! $post ) {
 		return null;
 	}
 	$card  = array(
@@ -314,3 +311,79 @@ function oomphtravel_destination_card( string $slug ): ?array {
 	}
 	return $card;
 }
+
+/**
+ * The published destination record for a slug, or null. Every list of
+ * destination links in the theme (the header drawer, the homepage cards, the
+ * index, the "Where" rows on the ways pages) goes through here, so a record
+ * that is still a draft, or has been unpublished, never gets a link that
+ * 404s (Stage 12 quality gate). Cached per request: the header alone asks
+ * eleven times.
+ */
+function oomphtravel_destination_live_post( string $slug ): ?WP_Post {
+	static $cache = array();
+	if ( ! array_key_exists( $slug, $cache ) ) {
+		$post           = post_type_exists( 'oomph_destination' ) ? get_page_by_path( $slug, OBJECT, 'oomph_destination' ) : null;
+		$cache[ $slug ] = $post instanceof WP_Post && 'publish' === $post->post_status ? $post : null;
+	}
+	return $cache[ $slug ];
+}
+
+/**
+ * Is this destination published? The header and the homepage ask before
+ * printing a link to it.
+ */
+function oomphtravel_destination_is_live( string $slug ): bool {
+	return null !== oomphtravel_destination_live_post( $slug );
+}
+
+/**
+ * Meta description for destination pages (plan 8.6: every page has a unique
+ * description). The record has no post content for Rank Math to fall back
+ * on, so without this the tag is empty. Nothing is set in Rank Math's own
+ * field, so a description Eric writes there still wins.
+ *
+ * A single destination uses the first sentence or two of its intro, cut at
+ * a word boundary under 155 characters. The index gets a fixed line.
+ */
+function oomphtravel_destination_seo_description( string $description ): string {
+	$current = trim( $description );
+
+	if ( is_post_type_archive( 'oomph_destination' ) ) {
+		// Rank Math's archive default is the archive title itself, which is not a description.
+		if ( '' !== $current && false === stripos( $current, 'archive' ) ) {
+			return $description;
+		}
+		return __( 'The destinations I plan, from Italy and the UK to Hawaii, Mexico, the Caribbean and Africa: the ways to travel each one, the months that suit it, and where to stay.', 'oomphtravel' );
+	}
+
+	if ( ! is_singular( 'oomph_destination' ) || '' !== $current ) {
+		return $description;
+	}
+
+	$post_id = (int) get_queried_object_id();
+	$intro   = class_exists( '\OomphTravel\Core\Fields' ) ? \OomphTravel\Core\Fields::value( $post_id, 'intro' ) : (string) get_post_meta( $post_id, 'intro', true );
+	$intro   = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $intro ) ) ?? '' );
+	if ( '' === $intro ) {
+		return $description;
+	}
+	if ( mb_strlen( $intro ) <= 155 ) {
+		return $intro;
+	}
+	// Whole sentences first; otherwise cut at the last space before the limit.
+	$out = '';
+	foreach ( preg_split( '/(?<=[.!?])\s+/', $intro ) ?: array() as $sentence ) {
+		$candidate = '' === $out ? $sentence : $out . ' ' . $sentence;
+		if ( mb_strlen( $candidate ) > 155 ) {
+			break;
+		}
+		$out = $candidate;
+	}
+	if ( '' === $out ) {
+		$out = mb_substr( $intro, 0, 152 );
+		$cut = mb_strrpos( $out, ' ' );
+		$out = rtrim( mb_substr( $out, 0, $cut ?: 152 ), ' ,;:' ) . '…';
+	}
+	return $out;
+}
+add_filter( 'rank_math/frontend/description', 'oomphtravel_destination_seo_description' );
