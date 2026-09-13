@@ -3,9 +3,11 @@ import { test, expect } from '@playwright/test';
 /**
  * Destination pages (plan §6.2 index, §6.3 template).
  *
- * The seed creates every destination as a draft with Italy's content; the
- * fixture publishes Italy. So Italy proves the full template and the index
- * proves that drafts are never listed.
+ * The seed creates every destination as a draft: Italy with its hand-written
+ * content, the six other European destinations with the draft copy from
+ * Seed::destination_copy(). The fixture publishes Italy and Greece. So Italy
+ * proves the full template, Greece proves a filled draft renders every
+ * section, and the index proves that drafts are never listed.
  */
 
 test.describe( 'destination template (Italy)', () => {
@@ -83,6 +85,37 @@ test.describe( 'destination template (Italy)', () => {
 
     const crumbs = nodes.find( ( n ) => n[ '@type' ] === 'BreadcrumbList' );
     expect( crumbs?.itemListElement.map( ( i: { name: string } ) => i.name ) ).toEqual( [ 'Home', 'Destinations', 'Italy' ] );
+  } );
+} );
+
+test.describe( 'destination template (Greece, seeded draft copy)', () => {
+  test( 'every section the seed fills is on the page, with no placeholder or No List word', async ( { page } ) => {
+    const response = await page.goto( '/destinations/greece/', { waitUntil: 'domcontentloaded' } );
+    expect( response?.status() ).toBe( 200 );
+
+    // The H1 is the record's headline, as on Italy.
+    await expect( page.locator( 'h1' ) ).toHaveText( 'Greece, planned from Athens to the islands.' );
+    await expect( page.locator( '.ot-dest-region' ) ).toHaveCount( 6 );
+    await expect( page.locator( '.ot-dest-itinerary .ot-accordion__item' ) ).toHaveCount( 10 );
+    await expect( page.locator( '.ot-dest-stay' ) ).toHaveCount( 4 );
+    await expect( page.locator( '.ot-months__month.is-best' ) ).toHaveCount( 4 );
+    await expect( page.locator( '.ot-faq__item' ) ).toHaveCount( 6 );
+    await expect( page.locator( '.ot-dest-ship a[href*="cruiseoomph.com"]' ) ).toHaveAttribute( 'href', /region=Mediterranean/ );
+
+    const text = await page.locator( 'main' ).innerText();
+    expect( text ).not.toMatch( /\[[A-Z]|\$X,XXX/ );
+    expect( text ).not.toMatch( /\b(bespoke|wanderlust|magical|breathtaking|curated|jaw-dropping|paradise|bucket list|hidden gem|white-glove|unforgettable|iconic|stunning|ultimate)\b/i );
+    // Perk lines are written per property once it is SELECT or CURATED (D40);
+    // the drafts leave them empty.
+    await expect( page.locator( '.ot-dest-stay__perks' ) ).toHaveCount( 0 );
+  } );
+
+  test( 'schema: FAQPage carries the six seeded questions', async ( { page } ) => {
+    await page.goto( '/destinations/greece/', { waitUntil: 'domcontentloaded' } );
+    const graphs = await page.locator( 'script[type="application/ld+json"]' ).allInnerTexts();
+    const nodes = graphs.flatMap( ( g ) => JSON.parse( g )[ '@graph' ] ?? [] );
+    expect( nodes.find( ( n ) => n[ '@type' ] === 'TouristDestination' )?.name ).toBe( 'Greece' );
+    expect( nodes.find( ( n ) => n[ '@type' ] === 'FAQPage' )?.mainEntity ).toHaveLength( 6 );
   } );
 } );
 

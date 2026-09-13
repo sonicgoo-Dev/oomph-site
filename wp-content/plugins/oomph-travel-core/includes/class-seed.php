@@ -133,10 +133,12 @@ final class Seed {
 			$existing = get_page_by_path( $record['slug'], OBJECT, $post_type );
 			if ( $existing instanceof \WP_Post ) {
 				$action = 'exists (' . $existing->post_status . ')';
-				// Operators seeded before the draft copy existed get their
-				// empty fields filled; anything Eric has typed is left alone.
-				if ( 'operators' === $what && ! $dry_run ) {
-					$filled = self::fill_operator( (int) $existing->ID, $record['slug'] );
+				// Records seeded before the draft copy existed get their empty
+				// fields filled; anything Eric has typed is left alone.
+				if ( ! $dry_run && in_array( $what, array( 'operators', 'destinations' ), true ) ) {
+					$filled = 'operators' === $what
+						? self::fill_operator( (int) $existing->ID, $record['slug'] )
+						: self::fill_destination( (int) $existing->ID, $record['slug'] );
 					if ( $filled ) {
 						$action .= sprintf( ', %d empty field(s) filled', $filled );
 					}
@@ -183,6 +185,8 @@ final class Seed {
 		}
 		if ( 'italy' === $record['slug'] ) {
 			self::write_italy( $id );
+		} else {
+			self::fill_destination( $id, (string) $record['slug'] );
 		}
 		// wp_insert_post already fired save_post, which made the taxonomy term.
 		return $id;
@@ -344,6 +348,318 @@ final class Seed {
 				array( 'question' => 'Can you plan an Italy trip for three generations?', 'answer' => 'Yes. Multi-generational Italy is one of the things I plan most. Pace, mobility and dietary needs change the plan; mention them on the call and I’ll build around them.' ),
 			),
 			array( 'question' => 'field_oomph_dest_faq_q', 'answer' => 'field_oomph_dest_faq_a' )
+		);
+	}
+
+	/**
+	 * Fill a destination's empty boxes from destination_copy(). A box that
+	 * already holds anything, typed or seeded, is left alone, so running the
+	 * seed again after Eric has edited a page changes nothing he wrote.
+	 *
+	 * @return int Fields written.
+	 */
+	private static function fill_destination( int $id, string $slug ): int {
+		$copy = self::destination_copy()[ $slug ] ?? array();
+		if ( ! $copy ) {
+			return 0;
+		}
+		$filled = 0;
+
+		foreach ( array( 'headline' => 'field_oomph_dest_headline', 'intro' => 'field_oomph_dest_intro' ) as $name => $key ) {
+			if ( '' !== (string) ( $copy[ $name ] ?? '' ) && '' === Fields::value( $id, $name ) ) {
+				Fields::write( $id, $name, $key, $copy[ $name ] );
+				++$filled;
+			}
+		}
+
+		if ( ! empty( $copy['best_months'] ) && ! Fields::choices( $id, 'best_months' ) ) {
+			Fields::write( $id, 'best_months', 'field_oomph_dest_best_months', array_map( 'strval', $copy['best_months'] ) );
+			++$filled;
+		}
+
+		$repeaters = array(
+			'regions'          => array( 'field_oomph_dest_regions', array( 'name' => 'field_oomph_dest_region_name', 'blurb' => 'field_oomph_dest_region_blurb' ) ),
+			'sample_itinerary' => array( 'field_oomph_dest_itinerary', array( 'day' => 'field_oomph_dest_itin_day', 'title' => 'field_oomph_dest_itin_title', 'text' => 'field_oomph_dest_itin_text' ) ),
+			'stays'            => array( 'field_oomph_dest_stays', array( 'name' => 'field_oomph_dest_stay_name', 'type' => 'field_oomph_dest_stay_type', 'note' => 'field_oomph_dest_stay_note', 'perks' => 'field_oomph_dest_stay_perks' ) ),
+			'faq'              => array( 'field_oomph_dest_faq', array( 'question' => 'field_oomph_dest_faq_q', 'answer' => 'field_oomph_dest_faq_a' ) ),
+		);
+		foreach ( $repeaters as $name => list( $key, $sub_keys ) ) {
+			if ( empty( $copy[ $name ] ) || 0 !== (int) get_post_meta( $id, $name, true ) ) {
+				continue;
+			}
+			Fields::write_repeater( $id, $name, $key, $copy[ $name ], $sub_keys );
+			++$filled;
+		}
+
+		return $filled;
+	}
+
+	/**
+	 * Draft page copy for the destinations after Italy, in Eric's voice, for
+	 * him to correct in the admin form (plan §6.3: why this place, how I plan
+	 * it, who it suits; regions; ten days one way to do it; four stays; best
+	 * months; four to six questions). No prices, no placeholders, no perk
+	 * lines: perks are written per property once it is confirmed SELECT or
+	 * CURATED (D40). Hero photos come from Eric.
+	 *
+	 * @return array<string,array<string,mixed>>
+	 */
+	private static function destination_copy(): array {
+		$fee = array( 'question' => 'Do you charge a planning fee?', 'answer' => 'No. Suppliers pay a commission on what you book, and that commission doesn’t change your price. You get itinerary design, the stays and guides worth booking, and the logistics handled, at no added cost to you.' );
+
+		return array(
+
+			'uk-ireland' => array(
+				'headline'    => 'Britain and Ireland, planned a county at a time.',
+				'intro'       => '<p>Distances look small on the map and long on the road. A Cotswolds village to the Lake District is a full day; Dublin to the Dingle Peninsula is another. The trips that work choose two or three regions and give each of them nights, and I plan them so the driving happens in daylight and the arrivals happen before the kitchen closes.</p>'
+					. '<p>I plan Britain and Ireland with the car and the train doing different jobs: rail between the cities, a driver or a well-chosen rental for the country. Country-house hotels and castle stays where they earn their keep, a guide for Edinburgh or the Ring of Kerry who knows the back road, tables booked, tee times held, and the ferry and left-hand-drive questions answered before you land.</p>'
+					. '<p>It suits couples with roots to trace, families with teenagers who need castles and coast, golfers, and anyone who wants London and Edinburgh but also the quiet in between. If you want the whole of both islands in a week, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'London & the South', 'blurb' => 'Three or four nights as the anchor: theatre, the museums with a guide, a day to Windsor or Bath. Then the train out.' ),
+					array( 'name' => 'The Cotswolds', 'blurb' => 'Honey-stone villages an hour and a half from London. Two nights in a country-house hotel, walks between pubs, a driver for the day.' ),
+					array( 'name' => 'Edinburgh & the Highlands', 'blurb' => 'Edinburgh as the second city, then north: Glencoe, Skye, a distillery that pours what it makes. Single-track roads reward a driver.' ),
+					array( 'name' => 'The Lake District & Yorkshire', 'blurb' => 'Fells, lakes and stone walls. A base near Ambleside or Grasmere and a walk chosen for the day’s weather.' ),
+					array( 'name' => 'Dublin & the East', 'blurb' => 'Dublin for two nights, the Georgian squares and a proper pub, then Wicklow or Kilkenny on the way west.' ),
+					array( 'name' => 'The Wild Atlantic Way', 'blurb' => 'Kerry, Dingle, Clare and Connemara. Castle and country-house stays, a boat to the Skelligs when the sea allows, and the cliffs at your pace.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'London', 'text' => 'Land, a driver waiting, a hotel in Marylebone or Mayfair. A walk to reset the clock, dinner near the hotel.' ),
+					array( 'day' => '2', 'title' => 'London', 'text' => 'A guide for Westminster and the Tower in the morning, an afternoon in the museum of your choosing, theatre tickets held for the evening.' ),
+					array( 'day' => '3', 'title' => 'London to the Cotswolds', 'text' => 'A driver west with a long lunch in Oxford, then a country-house hotel for two nights.' ),
+					array( 'day' => '4', 'title' => 'The Cotswolds', 'text' => 'A walk between two villages, lunch at the pub at the far end, a driver back. The garden before dinner.' ),
+					array( 'day' => '5', 'title' => 'North to Edinburgh', 'text' => 'A driver to the station, the train up the east coast, an evening on the Royal Mile after the day visitors leave.' ),
+					array( 'day' => '6', 'title' => 'Edinburgh', 'text' => 'A guide for the Old Town and the castle, then Leith for dinner by the water.' ),
+					array( 'day' => '7', 'title' => 'Into the Highlands', 'text' => 'A driver north through Glencoe to a lodge or country hotel for two nights, with the road to Skye or Speyside ahead.' ),
+					array( 'day' => '8', 'title' => 'Skye or Speyside', 'text' => 'A distillery that pours what it makes, a walk chosen for the weather, a long dinner.' ),
+					array( 'day' => '9', 'title' => 'A day with no plan', 'text' => 'A loch, a book, a second breakfast. The one day every good Highlands trip needs.' ),
+					array( 'day' => '10', 'title' => 'Home from Edinburgh or Inverness', 'text' => 'A driver to the airport with time in hand. Ten days, one way to do it; Ireland deserves its own ten.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A country-house hotel in the Cotswolds', 'type' => 'hotel', 'note' => 'Twenty rooms, log fires, a walled garden and a kitchen worth staying in for.', 'perks' => '' ),
+					array( 'name' => 'A townhouse hotel in London or Edinburgh', 'type' => 'hotel', 'note' => 'Marylebone or the New Town: quiet streets, a walk to everything, breakfast done properly.', 'perks' => '' ),
+					array( 'name' => 'A Highland lodge or estate house', 'type' => 'private-home', 'note' => 'A whole house for a family or a group, with a cook and a ghillie by arrangement.', 'perks' => '' ),
+					array( 'name' => 'A castle or country house in Ireland', 'type' => 'hotel', 'note' => 'Kerry, Mayo or the Midlands: long drives in, big fires, and a pub within walking distance.', 'perks' => '' ),
+				),
+				'best_months' => array( 5, 6, 9 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Should we drive?', 'answer' => 'In the countryside, often yes, and I’ll book an automatic and route you around the motorways. In London, Edinburgh and Dublin, no: the train and a driver are faster and calmer. For the Highlands and the west of Ireland, a driver-guide for two or three days is the upgrade people are gladdest they made.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for May, June and September, when the country-house hotels with a dozen rooms fill first. Golf on the famous links and Edinburgh in August need longer.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. An open-jaw ticket, into London and home from Edinburgh or Dublin, saves a day of backtracking, and Dublin’s US pre-clearance means you land at home as a domestic arrival.' ),
+					array( 'question' => 'What about the weather?', 'answer' => 'Plan for it rather than around it. I choose bases where a wet morning has a gallery, a distillery or a long lunch in it, and I book the outdoor days with a fallback. Layers and a good coat solve most of the rest.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Cobbles, stairs in old inns and long castle approaches are the things to design around. Tell me on the call and I’ll choose ground-floor rooms, shorter walking days and a driver who waits.' ),
+				),
+			),
+
+			'france' => array(
+				'headline'    => 'France, planned beyond Paris.',
+				'intro'       => '<p>Paris earns its four nights, and then the country begins. Provence and the Loire, Burgundy and Bordeaux, the Dordogne, Normandy’s coast, the Alps: each is a different trip, and the mistake is trying to string three of them together in a week. I plan France as Paris plus one region, sometimes two, with real nights in each.</p>'
+					. '<p>The TGV does the long distances in two hours; a driver or a good rental does the rest. I book the small hotels and châteaux that live up to their photographs, a guide who makes the Louvre or a Burgundy cellar a conversation instead of a queue, tables reserved in the places that need reserving, and the market days, the Monday closures and the August rhythm accounted for before you land.</p>'
+					. '<p>It suits couples marking an anniversary, families with a house and a pool in mind, wine people who want the cellar door rather than the tasting room, and anyone who has done Paris and wants to see what the French do on their own holidays. If you want Paris, Nice and Normandy in six days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Paris', 'blurb' => 'Four nights, a neighbourhood hotel, a guide for one museum and one morning of markets. The rest on foot.' ),
+					array( 'name' => 'The Loire', 'blurb' => 'Châteaux and gardens an hour from Paris by TGV. Two nights in a château hotel, a bicycle for an afternoon, a Vouvray tasting.' ),
+					array( 'name' => 'Provence & the coast', 'blurb' => 'Hill villages, markets by the day of the week, a house with a pool; then Cassis or Nice for the sea. Lavender in late June and early July; the light all year.' ),
+					array( 'name' => 'Burgundy & Lyon', 'blurb' => 'Beaune, the Côte d’Or by bicycle or car, cellar visits arranged with the growers. Lyon for the tables.' ),
+					array( 'name' => 'Bordeaux & the Dordogne', 'blurb' => 'Saint-Émilion and the Médoc châteaux, then east to the river, the caves and the market towns of the Périgord.' ),
+					array( 'name' => 'Normandy & Brittany', 'blurb' => 'The D-Day beaches with a guide who knows the names, Mont-Saint-Michel at dawn, Honfleur, and oysters in Cancale.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Paris', 'text' => 'Land, a driver waiting, a hotel in Saint-Germain or the Marais. A walk along the river, dinner near the hotel.' ),
+					array( 'day' => '2', 'title' => 'Paris', 'text' => 'A guide for the Louvre or the Orsay before it fills, the afternoon in the Marais, a table booked for eight.' ),
+					array( 'day' => '3', 'title' => 'Paris', 'text' => 'A morning market with a guide who cooks, then Versailles by car with the gardens quiet after four, or a day with no plan at all.' ),
+					array( 'day' => '4', 'title' => 'TGV to Provence', 'text' => 'Two hours and forty minutes to Avignon, a driver waiting, a house or a hotel in the Luberon for four nights.' ),
+					array( 'day' => '5', 'title' => 'The Luberon', 'text' => 'Market day in whichever village has it, lunch under a plane tree, the pool.' ),
+					array( 'day' => '6', 'title' => 'Aix or Arles', 'text' => 'A driver for the day: Cézanne’s Aix or Roman Arles, back for dinner at the house.' ),
+					array( 'day' => '7', 'title' => 'The Rhône', 'text' => 'A cellar visit arranged with the grower in Châteauneuf-du-Pape, the Pont du Gard on the way home.' ),
+					array( 'day' => '8', 'title' => 'A day with no plan', 'text' => 'A walk to the next village, a long lunch, nothing else. Every good France trip needs one.' ),
+					array( 'day' => '9', 'title' => 'To the coast', 'text' => 'A driver east to Cassis or Nice: a boat along the calanques, or a seafront hotel for the last night.' ),
+					array( 'day' => '10', 'title' => 'Home from Marseille or Nice', 'text' => 'A driver to the airport with time in hand. Ten days, one way to do it; Burgundy and the Loire make another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A château hotel in the Loire or Bordeaux', 'type' => 'hotel', 'note' => 'A dozen rooms in a house with a history, dinner in the old dining room, a park to walk before breakfast.', 'perks' => '' ),
+					array( 'name' => 'A neighbourhood hotel in Paris', 'type' => 'hotel', 'note' => 'Saint-Germain or the Marais: forty rooms, a courtyard, a bar the street uses, a walk to everything.', 'perks' => '' ),
+					array( 'name' => 'A house with a pool in the Luberon', 'type' => 'villa', 'note' => 'Stone, shutters, a pool and a market ten minutes away. The one a family remembers.', 'perks' => '' ),
+					array( 'name' => 'A palace hotel on the coast or in the Alps', 'type' => 'resort', 'note' => 'Cap d’Antibes in June, Courchevel in February: the grand version, chosen for the season.', 'perks' => '' ),
+				),
+				'best_months' => array( 4, 5, 6, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Paris and where else?', 'answer' => 'One region, two if the TGV connects them. Paris and Provence is the classic pairing; Paris and the Loire suits a shorter trip; Paris, Burgundy and Lyon suits people who travel to eat. I’ll tell you on the call which fits your dates.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for May, June, September and October; the châteaux with twelve rooms and the houses with pools go first. Paris during fashion week and the big trade fairs needs longer, or a different week.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Into Paris and home from Nice or Marseille saves a day of backtracking; I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Do we need French?', 'answer' => 'No. A bonjour opens every door, and courtesy does the rest. Where it matters I book guides and drivers who work in English, and I brief the hotels on what you need before you arrive.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Hill villages and old hotels with stairs are the things to design around. I choose bases with lifts and flat centres, a driver who waits, and museum visits timed for the quiet hours.' ),
+				),
+			),
+
+			'spain' => array(
+				'headline'    => 'Spain, planned to the rhythm of its day.',
+				'intro'       => '<p>Spain runs on a different clock: lunch at two, dinner at nine, a city that fills its streets at eleven. Trips that fight it are exhausting; trips built around it are some of the easiest in Europe. I plan Spain so the guide arrives when the museum opens, the long lunch is the day’s centrepiece, and the evening walk is the point.</p>'
+					. '<p>The AVE trains join Madrid, Barcelona, Seville and Córdoba in a few hours, so the driving is saved for Andalusia’s white villages and the green north. I book the paradores and the palace hotels that live up to their reputations, a guide who makes the Alhambra or the Prado a conversation, tables in the places that fill, and the tickets that sell out weeks ahead held in your name.</p>'
+					. '<p>It suits couples marking something, families across three generations who want a base with a pool, people who travel to eat, and anyone who has seen Barcelona once and wants the rest. If you want Madrid, Barcelona, Seville and Mallorca in eight days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Madrid & Castile', 'blurb' => 'The Prado and the Reina Sofía with a guide, tapas by neighbourhood, Toledo or Segovia for a day. Three nights.' ),
+					array( 'name' => 'Barcelona & Catalonia', 'blurb' => 'Gaudí with the tickets held, the Gothic Quarter early, the Costa Brava or the Penedès cellars by driver.' ),
+					array( 'name' => 'Andalusia', 'blurb' => 'Seville, Córdoba and Granada by AVE and driver, the Alhambra timed right, a white village or a hacienda for the slow days.' ),
+					array( 'name' => 'The Basque Country & Rioja', 'blurb' => 'San Sebastián’s tables, Bilbao’s museum, Rioja’s cellars an hour inland. Four nights, well spent.' ),
+					array( 'name' => 'Mallorca & the islands', 'blurb' => 'The Tramuntana villages, a finca with a pool, a boat day. June and September rather than August.' ),
+					array( 'name' => 'Galicia & the north coast', 'blurb' => 'Santiago, the rías, Asturias’ green coast. Cooler, greener and quieter: the Spain most visitors miss.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Madrid', 'text' => 'Land, a driver waiting, a hotel between the Prado and the Retiro. A late walk, a first plate of jamón.' ),
+					array( 'day' => '2', 'title' => 'Madrid', 'text' => 'A guide for the Prado in the morning, a siesta, tapas in La Latina by night.' ),
+					array( 'day' => '3', 'title' => 'Toledo', 'text' => 'A driver for the day, back for a late dinner or a flamenco tablao worth the name.' ),
+					array( 'day' => '4', 'title' => 'AVE to Seville', 'text' => 'Two and a half hours south, a hotel in Santa Cruz, the cathedral and the Alcázar with a guide before they fill.' ),
+					array( 'day' => '5', 'title' => 'Seville', 'text' => 'A morning in Triana’s market, the afternoon free, dinner late and outdoors.' ),
+					array( 'day' => '6', 'title' => 'Córdoba to Granada', 'text' => 'A driver by way of Córdoba’s Mezquita and a lunch in a patio, on to Granada by evening.' ),
+					array( 'day' => '7', 'title' => 'Granada', 'text' => 'The Alhambra at the hour on the ticket, the Albaicín at dusk with the palace lit across the valley.' ),
+					array( 'day' => '8', 'title' => 'Into the white villages', 'text' => 'A driver west to Ronda, then a hacienda or a hotel with a pool for two nights.' ),
+					array( 'day' => '9', 'title' => 'A day with no plan', 'text' => 'The pool, a walk into the village, a long lunch. The one day every good Spain trip needs.' ),
+					array( 'day' => '10', 'title' => 'Home from Málaga', 'text' => 'A driver down to the coast with time in hand. Ten days, one way to do it; the Basque Country makes another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A parador in a convent or a castle', 'type' => 'hotel', 'note' => 'The state-run historic hotels, often in the building the town grew up around. Granada’s sits inside the Alhambra walls.', 'perks' => '' ),
+					array( 'name' => 'A palace hotel in Madrid or Seville', 'type' => 'hotel', 'note' => 'Grand rooms, a rooftop, and a location that makes the evening walk the day’s simplest decision.', 'perks' => '' ),
+					array( 'name' => 'A hacienda or finca with a pool', 'type' => 'villa', 'note' => 'Andalusia or Mallorca: whitewashed walls, olive trees, and the slow days a family needs between the cities.', 'perks' => '' ),
+					array( 'name' => 'A small hotel in San Sebastián or Barcelona', 'type' => 'hotel', 'note' => 'Thirty rooms, well run, a short walk to the tables you came for.', 'perks' => '' ),
+				),
+				'best_months' => array( 4, 5, 6, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'When should we not go?', 'answer' => 'July and August in Andalusia, when Seville passes 40°C, and Holy Week and the Feria in Seville unless you are going for them. Spring and autumn are the answer for most of the country; the north coast is the summer exception.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months. Alhambra tickets are released ahead and sell out, the paradores’ good rooms go first, and the tables people fly for are booked when their diaries open.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Into Madrid and home from Málaga or Barcelona saves a day of backtracking; I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Is the late dinner a problem?', 'answer' => 'Only if you fight it. I book the early sittings where they exist, choose hotels with a good bar for a proper eight o’clock plate, and plan the big meal at lunch. Most clients are on Spanish time by day three and miss it when they get home.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Cobbles, the Alhambra’s slopes and old hotels with stairs are the things to design around. I choose ground-floor rooms, a driver who waits, and the guide who knows the step-free routes.' ),
+				),
+			),
+
+			'portugal' => array(
+				'headline'    => 'Portugal, planned from Lisbon to the Douro.',
+				'intro'       => '<p>Portugal is small enough to see properly and varied enough to fill two weeks: Lisbon on its seven hills, Porto and the Douro’s terraced river, the Alentejo’s cork plains, the Algarve’s cliffs and beaches. The trips that work give Lisbon and Porto three nights each and put real days in the country between them.</p>'
+					. '<p>I plan Portugal with the train doing Lisbon to Porto and a driver doing the rest, because the Douro’s roads and the Alentejo’s distances are better from the back seat. Quintas in the vineyards, pousadas in old convents, a guide who knows Lisbon’s tiles and Porto’s cellars, the fado house worth the evening, and the tables booked in a country where the good rooms have twelve of them.</p>'
+					. '<p>It suits couples who want Europe without the crush, families with a coast in mind, wine people who want to sit on the terrace where the port is made, and anyone doing Portugal for the first time who wants it done properly. If you want Lisbon, Porto and the Algarve in five days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Lisbon & Sintra', 'blurb' => 'Three nights: the hills by tram and on foot with a guide, Belém’s pastries, Sintra’s palaces by driver before the coaches arrive.' ),
+					array( 'name' => 'Porto & the Douro', 'blurb' => 'Porto for two nights and the lodges across the river, then the train or a boat up the Douro to a quinta among the terraces.' ),
+					array( 'name' => 'The Alentejo', 'blurb' => 'Cork oaks, whitewashed towns, Évora’s Roman temple and a pace that slows everything down. One or two nights break the drive south.' ),
+					array( 'name' => 'The Algarve', 'blurb' => 'The western cliffs and the quieter beaches near Lagos and Sagres; the resorts around Vilamoura if golf is the point.' ),
+					array( 'name' => 'The Minho', 'blurb' => 'Green, Atlantic and old: Guimarães, Braga, the vinho verde estates. An easy day or two north of Porto.' ),
+					array( 'name' => 'Madeira & the Azores', 'blurb' => 'The islands: levada walks and a mild winter on Madeira; crater lakes and whales in the Azores. Both are direct flights from the east coast in season.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Lisbon', 'text' => 'Land, a driver waiting, a hotel in Chiado or Príncipe Real. A miradouro at sunset, grilled fish for dinner.' ),
+					array( 'day' => '2', 'title' => 'Lisbon', 'text' => 'A guide for Alfama and the tiles, the afternoon in Belém, a fado house worth the evening.' ),
+					array( 'day' => '3', 'title' => 'Sintra', 'text' => 'A driver up before the coaches, the palaces and the gardens, lunch by the sea in Cascais on the way back.' ),
+					array( 'day' => '4', 'title' => 'Train to Porto', 'text' => 'Three hours north, a hotel in the Ribeira or the Baixa, a port lodge across the river before dinner.' ),
+					array( 'day' => '5', 'title' => 'Porto', 'text' => 'A guide for the Baixa and the bookshop everyone asks about, the Serralves museum after lunch, a francesinha if you dare.' ),
+					array( 'day' => '6', 'title' => 'Up the Douro', 'text' => 'The riverside train to Pinhão, or a boat, then a quinta among the terraces for two nights.' ),
+					array( 'day' => '7', 'title' => 'The Douro', 'text' => 'A morning in the vineyard with the family who makes the wine, a swim, the terrace at dusk.' ),
+					array( 'day' => '8', 'title' => 'South to the coast', 'text' => 'A driver back down the country with lunch in Coimbra, then a house or a hotel near Comporta for two nights.' ),
+					array( 'day' => '9', 'title' => 'A day with no plan', 'text' => 'The beach, the rice fields, a long lunch in the village. The one day every good Portugal trip needs.' ),
+					array( 'day' => '10', 'title' => 'Home from Lisbon', 'text' => 'An hour to the airport with time in hand. Ten days, one way to do it; the Alentejo and the Algarve make another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A quinta in the Douro', 'type' => 'hotel', 'note' => 'A wine estate with rooms, a pool above the river, and dinner from what the valley grows.', 'perks' => '' ),
+					array( 'name' => 'A pousada in a former convent or castle', 'type' => 'hotel', 'note' => 'The national historic hotels: Évora, Óbidos, Guimarães. Thick walls, cloisters, and the town at the door.', 'perks' => '' ),
+					array( 'name' => 'A house near Comporta or in the Alentejo', 'type' => 'villa', 'note' => 'Whitewashed, low, a pool, and a pine forest between you and the beach.', 'perks' => '' ),
+					array( 'name' => 'A palace hotel in Lisbon or Sintra', 'type' => 'hotel', 'note' => 'The grand version: a tiled staircase, gardens, and a driver at the door for the day.', 'perks' => '' ),
+				),
+				'best_months' => array( 4, 5, 6, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Lisbon first, or Porto?', 'answer' => 'Either. Fly into one and home from the other and the country runs north to south or the reverse without backtracking. I usually start in Lisbon and finish on the coast, so the last days are the slowest.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for May, June, September and October. The Douro quintas have a handful of rooms each, and the houses near Comporta are booked by the families who return every year.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Lisbon and Porto both have direct flights from the east coast; I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Is Portugal a good first trip back to Europe?', 'answer' => 'Yes. English is widely spoken, distances are short, prices are gentler than France or Italy, and the food is simple and very good. It is one of the first countries I suggest to people returning after a long gap.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Lisbon’s hills and cobbles are the thing to design around: a hotel with a lift on flatter ground, a driver rather than the tram, and Porto’s riverside reached from above rather than climbed to. The Douro and the coast are easy.' ),
+				),
+			),
+
+			'greece' => array(
+				'headline'    => 'Greece, planned from Athens to the islands.',
+				'intro'       => '<p>Greece is Athens, and then a choice: which islands, how many, and how you get between them. Two islands is the right number for ten days; three is the number people regret. I plan Greece around the ferry and flight timetables that actually exist, so the days are spent on a terrace or in the water rather than at a port.</p>'
+					. '<p>Athens gets two proper nights and a guide who makes the Acropolis and its museum a story. Then the islands: Santorini and Mykonos when they fit, Naxos, Paros, Milos, Crete, Hydra or the Ionian when they fit better. Hotels chosen for the view that matters at breakfast, a boat day with a skipper who knows the coves, tavernas booked where booking is possible, and a driver on the mainland for Delphi, Nafplio and the Peloponnese.</p>'
+					. '<p>It suits couples marking an anniversary, families who want one villa and a boat, first-timers who want the famous islands done well, and second-timers ready for the quieter ones. If you want Santorini, Mykonos, Crete and Rhodes in a week, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Athens', 'blurb' => 'Two or three nights: the Acropolis at opening with a guide, the museum, Plaka and Koukaki on foot, a rooftop for the view at dusk.' ),
+					array( 'name' => 'Santorini', 'blurb' => 'The caldera view, the cave hotels of Oia and Imerovigli, a catamaran at sunset. May, June, September and October suit it.' ),
+					array( 'name' => 'The Cyclades beyond', 'blurb' => 'Naxos, Paros, Milos, Sifnos: beaches, whitewashed villages and tavernas with a table free. Where I send people the second time.' ),
+					array( 'name' => 'Crete', 'blurb' => 'A country of its own: Chania’s harbour, the gorges, the south-coast beaches, a villa in the olive groves. A week on its own.' ),
+					array( 'name' => 'The Peloponnese', 'blurb' => 'Nafplio, Epidaurus, Mycenae, Monemvasia and the Mani, by driver from Athens. The mainland most visitors miss.' ),
+					array( 'name' => 'The Ionian', 'blurb' => 'Corfu, Paxos, Kefalonia: greener, Venetian, calmer seas. A villa with a boat at the jetty.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Athens', 'text' => 'Land, a driver waiting, a hotel in Plaka or Koukaki with a rooftop. A walk under the Acropolis at dusk, dinner outdoors.' ),
+					array( 'day' => '2', 'title' => 'Athens', 'text' => 'A guide for the Acropolis at opening and the museum after, the afternoon free, the rooftop for the evening.' ),
+					array( 'day' => '3', 'title' => 'Fly to Santorini', 'text' => 'Forty minutes, a driver waiting, a cave hotel on the caldera in Imerovigli or Oia for three nights.' ),
+					array( 'day' => '4', 'title' => 'Santorini', 'text' => 'A morning walk on the caldera path, a winery in the afternoon, the sunset from your own terrace rather than the crowd’s.' ),
+					array( 'day' => '5', 'title' => 'The boat day', 'text' => 'A private catamaran around the caldera, a swim off the volcanic beaches, lunch on board.' ),
+					array( 'day' => '6', 'title' => 'Ferry to Naxos', 'text' => 'Two hours by fast ferry, a hotel on the beach or in the old town for three nights.' ),
+					array( 'day' => '7', 'title' => 'Naxos', 'text' => 'A driver into the mountain villages, lunch in Halki, a swim at Plaka beach on the way back.' ),
+					array( 'day' => '8', 'title' => 'A day with no plan', 'text' => 'The beach, a taverna at lunch, nothing else. The one day every good Greece trip needs.' ),
+					array( 'day' => '9', 'title' => 'Back to Athens', 'text' => 'A short flight or the ferry, then a last night by the sea on the Athens Riviera.' ),
+					array( 'day' => '10', 'title' => 'Home from Athens', 'text' => 'Thirty minutes to the airport with time in hand. Ten days, one way to do it; Crete or the Peloponnese make another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A cave hotel on the Santorini caldera', 'type' => 'hotel', 'note' => 'Imerovigli rather than Oia for the quiet, with the same view. A private plunge pool if it matters to you.', 'perks' => '' ),
+					array( 'name' => 'A villa with a boat, in the Ionian or on Crete', 'type' => 'villa', 'note' => 'Stone, olive trees, a pool and a skipper on call. The one for a family week.', 'perks' => '' ),
+					array( 'name' => 'A beach hotel on a quieter Cycladic island', 'type' => 'hotel', 'note' => 'Naxos, Paros or Milos: whitewashed rooms, a taverna on the sand, and a table free at eight.', 'perks' => '' ),
+					array( 'name' => 'A neoclassical hotel in Athens or Nafplio', 'type' => 'hotel', 'note' => 'High ceilings, a rooftop, and the old town at the door.', 'perks' => '' ),
+				),
+				'best_months' => array( 5, 6, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'How many islands?', 'answer' => 'Two, for ten days. Each move costs most of a day, and the point of an island is the day you don’t move. Athens plus two islands is the shape that works; a third means a longer trip, not a faster one.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months. The caldera hotels fill by winter for June and September, the ferry timetables publish in spring and the good sailings sell out in high season, and the villas with a boat are held by returning families.' ),
+					array( 'question' => 'Ferry or fly?', 'answer' => 'Fly from Athens to Santorini, Mykonos or Crete; take the fast ferry between neighbouring islands. I book both, and on a windy day I hold a plan B, because the ferries answer to the weather and the flights mostly don’t.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Athens has direct flights from the east coast in season; otherwise one connection in Europe, and I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. Santorini’s steps are the thing to design around: a hotel with level access rather than a hundred stairs down the cliff, a driver who waits, and a second island chosen for flat harbours and beaches. Naxos and Crete are easier than they look.' ),
+				),
+			),
+
+			'croatia' => array(
+				'headline'    => 'Croatia, planned along the coast and out to the islands.',
+				'intro'       => '<p>The Dalmatian coast is one road, a string of walled towns and a scatter of islands close enough to see from the shore. The trip that works runs one direction along it, Split to Dubrovnik or the reverse, with a few nights on an island in between and the car and the boat sharing the driving.</p>'
+					. '<p>I plan Croatia so the walled towns are seen early, before the day visitors, and the islands are given real nights, not a lunch stop. A driver on the coast road, a skipper for the day, a guide in Split’s palace and on Dubrovnik’s walls, a stone house or a small hotel on Hvar, Korčula or Vis, and the ferry timetable checked against the season. Slovenia, Montenegro and the Bay of Kotor fit at either end.</p>'
+					. '<p>It suits couples who want a coast without the Italian prices, families who want a boat and a pool, sailors who would rather have a crewed boat than a bareboat, and anyone who has done Italy and Greece and wants what comes next. If you want Zagreb, Plitvice, Split, Hvar and Dubrovnik in six days, I plan slower trips than that.</p>',
+				'regions'     => array(
+					array( 'name' => 'Dubrovnik', 'blurb' => 'The walls at eight in the morning with a guide, then out: Cavtat, Lokrum, the Elaphiti islands by boat. Two or three nights in the old town or on Ploče.' ),
+					array( 'name' => 'Split & the central coast', 'blurb' => 'Diocletian’s palace as a living town, Trogir, and the ferries to the islands. A good first or last stop.' ),
+					array( 'name' => 'Hvar, Vis & Korčula', 'blurb' => 'Hvar for the harbour and the lavender hills, Vis for the quiet and the Blue Cave, Korčula for the walled town and the wine. Two or three nights each.' ),
+					array( 'name' => 'Istria', 'blurb' => 'Truffles, hill towns and Venetian harbours in the north: Rovinj, Motovun, a farmhouse stay. Italy across the water.' ),
+					array( 'name' => 'Plitvice & the interior', 'blurb' => 'The lakes and their walkways, early, between the coast and Zagreb. One night nearby does it.' ),
+					array( 'name' => 'Montenegro & the Bay of Kotor', 'blurb' => 'An hour and a half south of Dubrovnik: the mountain-walled bay, Kotor’s ramparts, Perast. A day, or two nights.' ),
+				),
+				'sample_itinerary' => array(
+					array( 'day' => '1', 'title' => 'Split', 'text' => 'Land, a driver waiting, a hotel inside or beside Diocletian’s palace. A walk on the Riva, dinner in a courtyard.' ),
+					array( 'day' => '2', 'title' => 'Split & Trogir', 'text' => 'A guide for the palace in the morning, Trogir by driver in the afternoon, back for the evening.' ),
+					array( 'day' => '3', 'title' => 'Ferry to Hvar', 'text' => 'An hour by catamaran, then a hotel in Hvar town or a stone house in Stari Grad for three nights.' ),
+					array( 'day' => '4', 'title' => 'Hvar', 'text' => 'A morning on the lavender roads by driver, a swim at a cove the skipper suggests, dinner in the harbour.' ),
+					array( 'day' => '5', 'title' => 'The boat day', 'text' => 'A private boat to the Pakleni islands, or across to Vis and the Blue Cave, lunch in a konoba on the water.' ),
+					array( 'day' => '6', 'title' => 'Ferry to Korčula', 'text' => 'The catamaran down the coast, a hotel in the walled town for two nights, a tasting at Lumbarda before dinner.' ),
+					array( 'day' => '7', 'title' => 'A day with no plan', 'text' => 'A swim, a walk on the walls, a long lunch. The one day every good Croatia trip needs.' ),
+					array( 'day' => '8', 'title' => 'To Dubrovnik', 'text' => 'The catamaran, or a driver down the Pelješac peninsula with an oyster lunch at Ston, then a hotel on Ploče for two nights.' ),
+					array( 'day' => '9', 'title' => 'Dubrovnik', 'text' => 'The walls at opening with a guide, then a boat to Lokrum or an afternoon in Cavtat, away from the crowds.' ),
+					array( 'day' => '10', 'title' => 'Home from Dubrovnik', 'text' => 'Twenty minutes to the airport with time in hand. Ten days, one way to do it; Istria and Montenegro make another.' ),
+				),
+				'stays'       => array(
+					array( 'name' => 'A hotel in Dubrovnik’s old town or on Ploče', 'type' => 'hotel', 'note' => 'Old-town rooms for the walls at your door; Ploče for the sea view and a pool, ten minutes’ walk away.', 'perks' => '' ),
+					array( 'name' => 'A stone house on Hvar, Vis or Korčula', 'type' => 'villa', 'note' => 'Old walls, a pool and a boat at the jetty. The one for a family week.', 'perks' => '' ),
+					array( 'name' => 'A small hotel inside Split’s palace', 'type' => 'hotel', 'note' => 'A dozen rooms inside Roman walls, breakfast in a courtyard, the ferries a short walk away.', 'perks' => '' ),
+					array( 'name' => 'An Istrian farmhouse among the vines', 'type' => 'villa', 'note' => 'Stone, a pool, truffle country at the door and Rovinj half an hour away.', 'perks' => '' ),
+				),
+				'best_months' => array( 5, 6, 9, 10 ),
+				'faq'         => array(
+					$fee,
+					array( 'question' => 'Split to Dubrovnik, or the reverse?', 'answer' => 'Either. Fly into one and home from the other and the coast runs in one direction without backtracking. I usually finish in Dubrovnik so the walls are the last thing you see, and I put the calmest island nights in the middle.' ),
+					array( 'question' => 'How far ahead should I start?', 'answer' => 'Six to nine months for May, June, September and October. The island hotels are small, the stone houses with a pool are held by returning families, and the catamarans between islands sell out in July and August.' ),
+					array( 'question' => 'Should we sail instead?', 'answer' => 'If you want the islands without the ferries, a crewed boat for a week does the whole coast with your luggage unpacked once. Bareboat only if you already sail. I can plan either, or a week ashore and a few days afloat.' ),
+					array( 'question' => 'Do you book flights?', 'answer' => 'I advise on routing and timing and coordinate flights with the rest of the trip. Split and Dubrovnik connect through Frankfurt, Munich, Zurich or Vienna, with direct flights from the east coast in summer; I’ll tell you when it’s worth using miles and when it isn’t.' ),
+					array( 'question' => 'Can you plan this for someone who walks slowly?', 'answer' => 'Yes. The walled towns are steps and cobbles and Dubrovnik’s walls are a climb, so I choose hotels with lifts, a driver rather than a bus, a boat rather than a hill, and the islands with flat harbours.' ),
+				),
+			),
 		);
 	}
 

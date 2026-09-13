@@ -18,21 +18,25 @@
  * Idempotent: re-running changes nothing.
  */
 
-// 1. Publish Italy only.
-$italy = get_page_by_path( 'italy', OBJECT, 'oomph_destination' );
+// 1. Publish Italy (hand-written content) and Greece (one of the drafts the
+//    seed fills from destination_copy()); every other destination stays a
+//    draft so the index proves drafts are never listed.
+foreach ( array( 'italy', 'greece' ) as $ci_slug ) {
+	$ci_dest = get_page_by_path( $ci_slug, OBJECT, 'oomph_destination' );
 
-if ( ! $italy instanceof WP_Post ) {
-	WP_CLI::error( 'ci-seed: the italy destination is missing — did the seed command run?' );
-}
+	if ( ! $ci_dest instanceof WP_Post ) {
+		WP_CLI::error( 'ci-seed: the ' . $ci_slug . ' destination is missing — did the seed command run?' );
+	}
 
-if ( 'publish' !== $italy->post_status ) {
-	wp_update_post(
-		array(
-			'ID'          => $italy->ID,
-			'post_status' => 'publish',
-		)
-	);
-	WP_CLI::log( 'ci-seed: published destination italy (#' . $italy->ID . ')' );
+	if ( 'publish' !== $ci_dest->post_status ) {
+		wp_update_post(
+			array(
+				'ID'          => $ci_dest->ID,
+				'post_status' => 'publish',
+			)
+		);
+		WP_CLI::log( 'ci-seed: published destination ' . $ci_slug . ' (#' . $ci_dest->ID . ')' );
+	}
 }
 
 // 1b. Publish every operator and every tour but one, so the escorted tours
