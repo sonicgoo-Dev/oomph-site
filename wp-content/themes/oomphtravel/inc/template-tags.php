@@ -325,6 +325,10 @@ function oomphtravel_card_image( int $attachment_id, string $alt, string $sizes 
  * case a Mist placeholder keeps the aspect box (the handoff's "grey
  * rectangle" marker for missing imagery).
  *
+ * A URL card may also carry image_srcset, image_sizes, image_width and
+ * image_height (the theme's own renditions under assets/img); with the
+ * dimensions the box is reserved before the file arrives, as for attachments.
+ *
  * @param array  $card  Card array (image_id | image_url, image_alt).
  * @param string $class Class on the wrapper.
  * @param bool   $eager First card on the page.
@@ -336,12 +340,28 @@ function oomphtravel_card_media( array $card, string $class, bool $eager = false
 	if ( ! empty( $card['image_id'] ) ) {
 		$img = oomphtravel_card_image( (int) $card['image_id'], $alt, '(min-width: 1024px) 400px, 100vw', $eager );
 	} elseif ( ! empty( $card['image_url'] ) ) {
-		$img = sprintf(
-			'<img src="%s" alt="%s" loading="%s" decoding="async">',
-			esc_url( (string) $card['image_url'] ),
-			esc_attr( $alt ),
-			$eager ? 'eager' : 'lazy'
+		$attrs = array(
+			'src'      => esc_url( (string) $card['image_url'] ),
+			'alt'      => esc_attr( $alt ),
+			'loading'  => $eager ? 'eager' : 'lazy',
+			'decoding' => 'async',
 		);
+		if ( ! empty( $card['image_srcset'] ) ) {
+			$attrs['srcset'] = esc_attr( (string) $card['image_srcset'] );
+			$attrs['sizes']  = esc_attr( (string) ( $card['image_sizes'] ?? '100vw' ) );
+		}
+		if ( ! empty( $card['image_width'] ) && ! empty( $card['image_height'] ) ) {
+			$attrs['width']  = (int) $card['image_width'];
+			$attrs['height'] = (int) $card['image_height'];
+		}
+		$img = '<img';
+		foreach ( $attrs as $name => $value ) {
+			$img .= ' ' . $name . '="' . $value . '"';
+		}
+		$img .= '>';
+		if ( ! $eager ) {
+			$img = oomphtravel_defer_image( $img );
+		}
 	}
 
 	return sprintf(
