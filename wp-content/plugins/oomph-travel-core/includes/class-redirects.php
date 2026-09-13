@@ -120,6 +120,14 @@ final class Redirects {
 		if ( is_admin() || is_preview() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return;
 		}
+		// Every target here is a page of the new theme. On launch day the
+		// plugin files reach production minutes before the database does
+		// (docs/launch-runbook.md), and in that window the old theme is still
+		// serving /discovery-call/ to real visitors. So the rules wait for
+		// the theme whose pages they point at; until then nothing moves.
+		if ( 'oomphtravel' !== get_stylesheet() ) {
+			return;
+		}
 		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read, compared, never echoed.
 		if ( '' === $uri ) {
 			return;
