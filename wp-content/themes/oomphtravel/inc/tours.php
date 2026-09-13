@@ -566,10 +566,11 @@ function oomphtravel_tours_hero_sources(): array {
 		'alt'    => __( 'Dubrovnik’s old town from above: the walls, the harbour and the red roofs against the Adriatic.', 'oomphtravel' ),
 		'width'  => 1280,
 		'height' => 720,
+		// Phones stop at 720w; see oomphtravel_way_hero_sources() for why.
 		'tall'   => array(
 			'media'  => '(max-width: 767px)',
 			'src'    => $img . '-tall-720.webp',
-			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w, ' . $img . '-tall-900.webp 900w',
+			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w',
 			'sizes'  => '100vw',
 		),
 		'wide'   => array(

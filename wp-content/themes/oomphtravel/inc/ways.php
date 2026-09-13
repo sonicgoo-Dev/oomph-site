@@ -87,10 +87,14 @@ function oomphtravel_way_hero_sources( string $key ): array {
 		'alt'    => $alts[ $key ] ?? '',
 		'width'  => 1280,
 		'height' => 853,
+		// Phones stop at 720w (about 1.75x on a 412px screen). The 900w cut
+		// was what a 2.6x phone picked, and at 100–200 KB it alone held LCP
+		// above 2.5 s on these pages (Lighthouse, Stage 12). Under a scrim
+		// and type the softer upscale is invisible; the 400 ms is not.
 		'tall'   => array(
 			'media'  => '(max-width: 767px)',
 			'src'    => $img . '-tall-720.webp',
-			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w, ' . $img . '-tall-900.webp 900w',
+			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w',
 			'sizes'  => '100vw',
 		),
 		'wide'   => array(
