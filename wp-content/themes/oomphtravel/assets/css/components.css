@@ -1075,6 +1075,12 @@ header:has( > .ot-header ),
 	white-space: nowrap;
 }
 .ot-ticker__track a {
+	/* A one-line link is 22px tall; WCAG 2.2 target size (Lighthouse's
+	   target-size audit) wants 24. The band is 60px, so the extra height
+	   sits inside it and moves nothing. */
+	display: inline-flex;
+	align-items: center;
+	min-height: 24px;
 	font-family: var(--font-body);
 	font-size: var(--type-body-small-size);
 	font-weight: 500;
