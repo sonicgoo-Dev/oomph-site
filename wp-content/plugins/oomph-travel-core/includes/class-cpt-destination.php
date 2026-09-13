@@ -66,7 +66,13 @@ final class CPT_Destination {
 				'has_archive'         => true,
 				'menu_position'       => 21,
 				'menu_icon'           => 'dashicons-location',
-				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'revisions', 'page-attributes' ),
+				// No 'editor': the page is rendered from the field group, never
+				// from post content, so the edit screen is the classic form —
+				// title, hero photo, the labelled boxes — with no block canvas
+				// in the way. No 'excerpt' or 'custom-fields' for the same
+				// reason: neither is read anywhere, and the raw Custom Fields
+				// box would list every field a second time, unlabelled.
+				'supports'            => array( 'title', 'thumbnail', 'revisions', 'page-attributes' ),
 				'rewrite'             => array(
 					'slug'       => 'destinations',
 					'with_front' => false,
