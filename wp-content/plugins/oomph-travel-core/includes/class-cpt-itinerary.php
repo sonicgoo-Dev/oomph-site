@@ -27,17 +27,21 @@ final class CPT_Itinerary {
 					'name'          => __( 'Itineraries', 'oomph-travel-core' ),
 					'singular_name' => __( 'Itinerary', 'oomph-travel-core' ),
 				),
-				'public'        => true,
-				'show_in_rest'  => true,
-				'has_archive'   => true,
-				'menu_position' => 22,
-				'menu_icon'     => 'dashicons-list-view',
-				'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'revisions' ),
-				'rewrite'       => array(
-					'slug'       => 'itineraries',
-					'with_front' => false,
-				),
-				'capability_type' => 'post',
+				// Cruise-era records (Stage 12): off the public site, kept in
+				// the admin. Destination pages replaced them (plan §6.3); the
+				// /itineraries/ archive was an empty page in the sitemap.
+				'public'              => false,
+				'publicly_queryable'  => false,
+				'exclude_from_search' => true,
+				'show_ui'             => true,
+				'show_in_nav_menus'   => false,
+				'show_in_rest'        => false,
+				'has_archive'         => false,
+				'menu_position'       => 22,
+				'menu_icon'           => 'dashicons-list-view',
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'revisions' ),
+				'rewrite'             => false,
+				'capability_type'     => 'post',
 			)
 		);
 	}

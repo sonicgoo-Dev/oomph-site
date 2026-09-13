@@ -53,7 +53,7 @@ $ot_faq = array(
 	),
 	array(
 		'q' => __( 'I travel on my own. Is a tour a good idea?', 'oomphtravel' ),
-		'a' => __( 'Often the best one. A tour hands you company at dinner and someone driving. Single supplements vary a lot between operators and departures, and some waive them; ask and I will tell you where.', 'oomphtravel' ),
+		'a' => __( 'Often the right one. A tour hands you company at dinner and someone driving. Single supplements vary a lot between operators and departures, and some waive them; ask and I will tell you where.', 'oomphtravel' ),
 	),
 	array(
 		'q' => __( 'How much walking, and how early are the mornings?', 'oomphtravel' ),

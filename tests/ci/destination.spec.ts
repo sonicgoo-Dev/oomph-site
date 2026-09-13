@@ -104,7 +104,7 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
 
     const text = await page.locator( 'main' ).innerText();
     expect( text ).not.toMatch( /\[[A-Z]|\$X,XXX/ );
-    expect( text ).not.toMatch( /\b(bespoke|wanderlust|magical|breathtaking|curated|jaw-dropping|paradise|bucket list|hidden gem|white-glove|unforgettable|iconic|stunning|ultimate)\b/i );
+    expect( text ).not.toMatch( /\b(bespoke|wanderlust|magical|breathtaking|curated|jaw-dropping|paradise|bucket list|hidden gem|white-glove|unforgettable|iconic|stunning|ultimate|epic|escape|getaway|luxe|5-star|world-class|indulge|pampered|transformative|foodie|vibes|once in a lifetime|dream destination|the best)\b/i );
     // Perk lines are written per property once it is SELECT or CURATED (D40);
     // the drafts leave them empty.
     await expect( page.locator( '.ot-dest-stay__perks' ) ).toHaveCount( 0 );

@@ -33,35 +33,19 @@ $ot_img  = OOMPHTRAVEL_THEME_URI . 'assets/img/';
 $ot_hero = oomphtravel_home_hero_sources();
 
 /*
- * Destination cards (§6.1.4, tab 1): the six the plan names. When the
- * destination record exists and is published the card links to it and uses
- * its featured image; otherwise the link still points where the record will
- * live, and the picture slot is the grey rectangle.
+ * Destination cards (§6.1.4, tab 1): the six the plan names, published ones
+ * only (Stage 12). A record that is still a draft, or has been unpublished,
+ * gets no card rather than a card that 404s. The picture is the record's
+ * featured image, else the theme's own rendition, else the grey rectangle.
  */
-$ot_destinations = array();
-foreach ( array(
-	'italy'      => __( 'Italy', 'oomphtravel' ),
-	'uk-ireland' => __( 'UK & Ireland', 'oomphtravel' ),
-	'france'     => __( 'France', 'oomphtravel' ),
-	'greece'     => __( 'Greece', 'oomphtravel' ),
-	'croatia'    => __( 'Croatia & the Adriatic', 'oomphtravel' ),
-	'hawaii'     => __( 'Hawaii', 'oomphtravel' ),
-) as $ot_slug => $ot_name ) {
-	$ot_card = array(
-		'name' => $ot_name,
-		'url'  => home_url( '/destinations/' . $ot_slug . '/' ),
-	);
-	$ot_post = post_type_exists( 'oomph_destination' ) ? get_page_by_path( $ot_slug, OBJECT, 'oomph_destination' ) : null;
-	if ( $ot_post instanceof WP_Post && 'publish' === $ot_post->post_status ) {
-		$ot_card['url'] = (string) get_permalink( $ot_post );
-		$ot_thumb       = (int) get_post_thumbnail_id( $ot_post );
-		if ( $ot_thumb ) {
-			$ot_card['image_id']  = $ot_thumb;
-			$ot_card['image_alt'] = (string) get_post_meta( $ot_thumb, '_wp_attachment_image_alt', true );
-		}
-	}
-	$ot_destinations[] = $ot_card;
-}
+$ot_destinations = array_values(
+	array_filter(
+		array_map(
+			'oomphtravel_destination_card',
+			array( 'italy', 'uk-ireland', 'france', 'greece', 'croatia', 'hawaii' )
+		)
+	)
+);
 
 /*
  * Featured tours (§6.1.6): Tour records flagged "featured", newest first.

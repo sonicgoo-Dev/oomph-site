@@ -56,7 +56,7 @@ $ot_criteria = array(
 	<section class="ot-band ot-band--mist ot-way-statement">
 		<div class="ot-container">
 			<div class="ot-prose">
-				<p><?php esc_html_e( 'Not every trip needs a route. Some of the best weeks I plan are one property, unpacked once: a resort on Maui with the children, a house in the Tuscan hills with three generations, an all-inclusive on the Riviera Maya for the honeymoon that kept getting postponed.', 'oomphtravel' ); ?></p>
+				<p><?php esc_html_e( 'Not every trip needs a route. Some of the weeks I am happiest to plan are one property, unpacked once: a resort on Maui with the children, a house in the Tuscan hills with three generations, an all-inclusive on the Riviera Maya for the honeymoon that kept getting postponed.', 'oomphtravel' ); ?></p>
 				<p><?php esc_html_e( 'Staying put is a choice, and choosing the right place to stay put is most of the work. The strongest claim I will make is this: I have relationships with the suppliers, I can speak to the property before you arrive, and when a booking goes wrong someone answers the phone.', 'oomphtravel' ); ?></p>
 			</div>
 		</div>

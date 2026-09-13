@@ -1,98 +1,77 @@
-# Testing — end-to-end smoke tests
+# Testing — the quality gate
 
-Plain-language guide to the automated tests that watch over the site.
+Plain-language guide to the automated checks that watch over the site
+(plan P10 / 8.6). Two suites and two audits; none of them ever sends a form.
 
-## What these tests do
+## 1. The CI suite (`npm run test:ci`)
 
-They're **smoke tests** — quick checks that the important pages load and the key
-paths still work, run automatically against **staging** (`staging2.oomphtravel.com`).
-They catch the kind of breakage that a template edit or plugin update can cause:
-a page 500-ing, a missing "Start a conversation" button, a form not
-advancing, or the structured data (SEO schema) disappearing from a page.
+Runs against a throwaway WordPress in a container (`wp-env`), seeded from the
+plugin's own seed command, so it can walk the Start planning form all the way
+to the receipt and still touch nothing real. It is the "does the code work"
+suite: every template, the destination fields, the tour filters, the redirects,
+the 404 page, the placeholder and No List guards on seeded copy. Runs on GitHub
+Actions (`ci.yml`) when dispatched at a milestone.
 
-They cover:
+## 2. The live suite (`npm run test:e2e`)
 
-- **Every page type loads** (Home, About, the three service pages, Discovery Call,
-  Journal, Client Stories) — returns a
-  real page, shows its headline, and shows the "Start a conversation" button.
-- **SEO schema is present** on each page type (TravelAgency + Person everywhere;
-  Service on service pages; BlogPosting on a journal post).
-- **Discovery Call** page — the intake form and the Calendly booking area render.
+Runs against a deployed site — **staging** (`staging2.oomphtravel.com`) by
+default; set `OOMPH_BASE_URL` to retarget. It is the "is the site up and
+right" suite, and it is meant to be green on staging before every merge to
+`main`.
+
+- **Every page type loads** (`pages.smoke.spec.ts`, routes in
+  `fixtures/routes.ts`): 200, exactly one H1, a title, a self-canonical when
+  the site is indexable, and the one header *Start planning* button. On a
+  phone: the header text link and the menu.
+- **Schema is present** (`schema.spec.ts`): TravelAgency + Person everywhere;
+  Service + FAQPage on the four ways pages; TouristDestination + FAQPage on a
+  destination; Review + AggregateRating on Client stories; BlogPosting on the
+  newest Journal post.
+- **Start planning validates but never submits** (`start-planning.spec.ts`):
+  step 1 refuses to continue without a trip type and budget, the cruise choice
+  hands off to CruiseOomph with the UTM tag, step 2 reaches the Send button
+  and stops.
+- **Tour filters work** (`tours.spec.ts`): a destination filter narrows the
+  grid and the filtered view is noindex. Skips while no tour is published.
+- **Published-content guard** (`content-guard.spec.ts`): walks every URL in
+  the live sitemap and fails on a square-bracket placeholder, a `$X,XXX`, a
+  No List word outside a client quotation, or a grey placeholder image. This
+  is the readiness doc's "build a check" line.
+- **Link-in-bio** (`links.spec.ts`): the `/links/` page contract.
+
+## 3. Accessibility audit (`npm run audit:a11y`)
+
+axe-core, WCAG 2.1 A/AA, on every route in the fixture. Results land in
+`scripts/audit/out/a11y/`. The bar is zero serious or critical violations.
+
+## 4. Lighthouse (`npm run audit:lh`)
+
+Mobile profile, every route in the fixture plus the newest Journal post.
+`LH_RUNS=3` for a median. Bars: LCP under 2.5 s, CLS under 0.1, Accessibility
+100. Lab numbers are a tie-breaker; the real measure is Core Web Vitals in
+Search Console for four weeks after launch.
 
 ## What they deliberately DON'T do
 
-**No form is ever actually submitted.** The tests stop right before hitting
-"send," so they never create a fake lead, never email you, and never book a real
-Calendly slot. They check that the forms *render and behave*, not that a
-submission goes through.
+**No form is ever actually submitted on a live site.** The live suite stops at
+the Send button. Only the CI suite, against the disposable container, walks to
+the receipt.
 
-## When they run (automatically)
-
-- **After each update to staging** — whenever code is pushed to `develop` and
-  deploys, the tests run against the freshly-deployed staging site.
-- **Every night against production** — a scheduled run checks the live site
-  (still submitting nothing).
-
-### Known limitation: SiteGround's anti-bot protection (confirmed with SG support, 2026-07-21)
+## Known limitation: SiteGround's anti-bot protection
 
 Both sites sit behind SiteGround's Anti-Bot system, which sometimes challenges
-GitHub's shared datacenter IPs with an HTTP 202 CAPTCHA page — especially after
-rapid repeated runs. SiteGround investigated (ticket, Jul 2026) and confirmed:
-they won't exempt whole sites or whitelist GitHub's rotating IP pool, but they
-**will whitelist up to 5 static IPs or 5 /24 ranges** if we ever route the test
-runner through a static address (small VPS/proxy, ~$5–20/mo — decided against
-for now). Practical upshot: CI runs are best-effort — at the normal cadence
-(two slow, serialized runs/day) they pass; if a run fails with every page
-"not loading" (202s), it hit the bot wall — **just re-run it**. A local
-`npx playwright test` from a home IP is always reliable and is the
-authoritative check.
-- **On demand** — anyone can trigger a run from the repo's **Actions** tab →
-  "E2E smoke (staging)" → **Run workflow** → choose staging or production.
+datacenter IPs with an HTTP 202 challenge page. The live suite warms up once
+(`global-setup.ts`) and runs one worker at a time in CI; from a home
+connection it runs in parallel. The e2e workflow (`e2e.yml`) therefore runs on
+the self-hosted runner on Eric's PC, not on GitHub's machines.
 
-They are **non-blocking**: a failing test reports a problem but never stops a
-deploy or a release. If something fails, the run uploads a **Playwright report**
-(in the Actions run's artifacts) with screenshots of what went wrong.
-
-## Running them yourself (optional, on your Mac)
-
-You need [Node.js](https://nodejs.org) installed (version 20+). In the Terminal:
+## Running locally
 
 ```bash
-cd ~/code/oomph-site
-npm ci                              # one-time: install the test tool
-npx playwright install chromium     # one-time: install the browser it drives
-npx playwright test                 # run the tests (against staging)
-npx playwright show-report          # open the results in your browser
+npm ci
+npx playwright install chromium
+npm run test:e2e                     # live suite against staging
+npm run audit:a11y                   # axe against staging
+LH_RUNS=3 npm run audit:lh           # Lighthouse mobile against staging
+OOMPH_BASE_URL=https://oomphtravel.com npm run test:e2e   # against production (read-only)
 ```
-
-To point the tests at a different site, set `OOMPH_BASE_URL` first:
-
-```bash
-OOMPH_BASE_URL=https://oomphtravel.com npx playwright test   # production
-OOMPH_BASE_URL=http://oomph-local.local npx playwright test  # your Local site
-```
-
-## One-time / periodic audits
-
-Beyond the smoke tests, three deeper audit commands exist (run from a home IP;
-they default to production):
-
-```bash
-npm run audit:links   # every sitemap URL + internal link + redirect behavior
-npm run audit:a11y    # WCAG A/AA accessibility (axe-core), all page types
-npm run audit:lh      # Lighthouse mobile scores per page type (~15 min)
-```
-
-Results land in `scripts/audit/out/` (not committed). The dated findings live
-in `docs/audits/` — first one: `2026-07-21-site-health-audit.md`.
-
-## Where the tests live
-
-- `playwright.config.ts` — configuration (default target, browsers, retries).
-- `tests/e2e/` — the tests themselves, one file per area
-  (`pages.smoke`, `schema`, `discovery`).
-- `tests/e2e/fixtures/routes.ts` — the list of pages and expected schema; the
-  place to add a new page.
-- `.github/workflows/e2e.yml` — the automation that runs them.
-
-All of this is **repo-root tooling** and is never deployed to the live theme.

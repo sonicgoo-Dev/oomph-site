@@ -24,8 +24,8 @@ test.describe('JSON-LD schema', () => {
 
   test('newest journal post carries BlogPosting', async ({ page }) => {
     await page.goto('/journal/', { waitUntil: 'domcontentloaded' });
-    // Journal post cards are clickable media cards linking to each post.
-    const firstPost = page.locator('main a.oomph-card--clickable').first();
+    // Journal cards link to each post (template-tags.php, oomphtravel_card_journal).
+    const firstPost = page.locator('main .ot-card-journal__link').first();
 
     if ((await firstPost.count()) === 0) {
       test.skip(true, 'No journal posts published to assert against.');

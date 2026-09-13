@@ -29,7 +29,11 @@ test.describe('/links/ link-in-bio', () => {
     await expect(page.locator('.ot-links')).toBeVisible();
     await expect(page.locator('a.ot-links__row')).toHaveCount(4);
     await expect(page.locator('.ot-links__more a')).toHaveCount(5);
-    await expect(page.locator('.ot-links a[href]')).toHaveCount(11);
+    // 4 rows + 5 "more" + the primary button, plus the featured Journal card
+    // when a post is published on this environment.
+    const feature = await page.locator('.ot-links__feature a[href]').count();
+    expect(feature).toBeLessThanOrEqual(1);
+    await expect(page.locator('.ot-links a[href]')).toHaveCount(10 + feature);
   });
 
   test('is noindex, follow on every robots tag', async ({ page }) => {
@@ -85,7 +89,9 @@ test.describe('/links/ link-in-bio', () => {
     const hrefs = await page
       .locator('.ot-links a[href]:not([href*="cruiseoomph.com"])')
       .evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
-    expect(hrefs.length).toBe(9);
+    // 8 internal links, plus the featured Journal card when a post is published.
+    const feature = await page.locator('.ot-links__feature a[href]').count();
+    expect(hrefs.length).toBe(8 + feature);
 
     // Serially, and through the page's request context (shares the anti-bot
     // clearance cookies) — see the SiteGround note in playwright.config.ts.

@@ -68,8 +68,17 @@ final class Taxonomies {
 			)
 		);
 
+		/*
+		 * The cruise-era taxonomies (Stage 12). Nothing in the theme reads
+		 * them and the site no longer sells cruises (D01, D02), so they are
+		 * off the public site: no /regions/ or /trip-styles/ archives (each
+		 * was a page with no H1 and no description, and the sitemap listed
+		 * twenty-eight of them), no sitemap entry, no box on the destination
+		 * edit screen. They stay registered, admin-only, on the legacy
+		 * itinerary records so the terms are still there to look at or
+		 * delete on purpose.
+		 */
 		$legacy_types = array(
-			CPT_Destination::POST_TYPE,
 			CPT_Itinerary::POST_TYPE,
 		);
 
@@ -81,13 +90,13 @@ final class Taxonomies {
 					'name'          => __( 'Regions', 'oomph-travel-core' ),
 					'singular_name' => __( 'Region', 'oomph-travel-core' ),
 				),
-				'hierarchical' => true,
-				'public'       => true,
-				'show_in_rest' => true,
-				'rewrite'      => array(
-					'slug'       => 'regions',
-					'with_front' => false,
-				),
+				'hierarchical'       => true,
+				'public'             => false,
+				'publicly_queryable' => false,
+				'show_ui'            => true,
+				'show_in_nav_menus'  => false,
+				'show_in_rest'       => false,
+				'rewrite'            => false,
 			)
 		);
 
@@ -99,13 +108,13 @@ final class Taxonomies {
 					'name'          => __( 'Trip Styles', 'oomph-travel-core' ),
 					'singular_name' => __( 'Trip Style', 'oomph-travel-core' ),
 				),
-				'hierarchical' => false,
-				'public'       => true,
-				'show_in_rest' => true,
-				'rewrite'      => array(
-					'slug'       => 'trip-styles',
-					'with_front' => false,
-				),
+				'hierarchical'       => false,
+				'public'             => false,
+				'publicly_queryable' => false,
+				'show_ui'            => true,
+				'show_in_nav_menus'  => false,
+				'show_in_rest'       => false,
+				'rewrite'            => false,
 			)
 		);
 	}
