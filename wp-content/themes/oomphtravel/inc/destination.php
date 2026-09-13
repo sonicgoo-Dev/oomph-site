@@ -183,10 +183,11 @@ function oomphtravel_destination_hero_sources( int $post_id ): ?array {
 		),
 	);
 	if ( file_exists( $dir . 'dest-' . $slug . '-tall-720.webp' ) ) {
+		// Phones stop at 720w; see oomphtravel_way_hero_sources() for why.
 		$sources['tall'] = array(
 			'media'  => '(max-width: 767px)',
 			'src'    => $img . '-tall-720.webp',
-			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w, ' . $img . '-tall-900.webp 900w',
+			'srcset' => $img . '-tall-480.webp 480w, ' . $img . '-tall-720.webp 720w',
 			'sizes'  => '100vw',
 		);
 	}

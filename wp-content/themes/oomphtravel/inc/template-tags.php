@@ -648,10 +648,11 @@ function oomphtravel_home_hero_sources(): array {
 	$img = OOMPHTRAVEL_THEME_URI . 'assets/img/';
 
 	return array(
+		// Phones stop at 720w; see oomphtravel_way_hero_sources() for why.
 		'tall' => array(
 			'media'  => '(max-width: 767px)',
 			'src'    => $img . 'hero-varenna-tall-720.webp',
-			'srcset' => $img . 'hero-varenna-tall-480.webp 480w, ' . $img . 'hero-varenna-tall-720.webp 720w, ' . $img . 'hero-varenna-tall-900.webp 900w',
+			'srcset' => $img . 'hero-varenna-tall-480.webp 480w, ' . $img . 'hero-varenna-tall-720.webp 720w',
 			'sizes'  => '100vw',
 		),
 		'wide' => array(
