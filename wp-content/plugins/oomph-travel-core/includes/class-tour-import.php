@@ -59,13 +59,13 @@ final class Tour_Import {
 	 * spells it. A hyphen or a space between words matches either.
 	 */
 	private const NO_LIST = array(
-		'bespoke', 'wanderlust', 'magical', 'breathtaking', 'curated', 'jaw-dropping',
-		'paradise', 'bucket list', 'hidden gem', 'iconic', 'stunning', 'ultimate',
-		'epic', 'unforgettable', 'escape', 'getaway', 'luxe', '5-star', 'world-class',
-		'indulge', 'pampered', 'transformative', 'white-glove', 'foodie', 'vibes',
-		'once in a lifetime', 'dream destination', 'bestie', 'slay', 'obsessed',
-		'hubby', 'adventure of a lifetime', 'pop of color', 'main character energy',
-		'the best',
+		'bespoke', 'wanderlust', 'magical', 'breathtaking', 'curated', 'jaw-dropping', // No List
+		'paradise', 'bucket list', 'hidden gem', 'iconic', 'stunning', 'ultimate', // No List
+		'epic', 'unforgettable', 'escape', 'getaway', 'luxe', '5-star', 'world-class', // No List
+		'indulge', 'pampered', 'transformative', 'white-glove', 'foodie', 'vibes', // No List
+		'once in a lifetime', 'dream destination', 'bestie', 'slay', 'obsessed', // No List
+		'hubby', 'adventure of a lifetime', 'pop of color', 'main character energy', // No List
+		'the best', // No List
 	);
 
 	/**
