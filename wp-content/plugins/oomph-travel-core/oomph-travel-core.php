@@ -3,7 +3,7 @@
  * Plugin Name:       Oomph Travel Core
  * Plugin URI:        https://oomphtravel.com
  * Description:       Data layer for the Oomph Travel rebuild — custom post types, taxonomies, schema injection, environment guards. Presentation belongs in the theme; this lives in a plugin so it survives a theme switch.
- * Version:           1.8.9
+ * Version:           1.9.0
  * Requires PHP:      8.1
  * Requires at least: 6.7
  * Tested up to:      6.8
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OOMPH_CORE_VERSION', '1.8.9' );
+define( 'OOMPH_CORE_VERSION', '1.9.0' );
 define( 'OOMPH_CORE_FILE',    __FILE__ );
 define( 'OOMPH_CORE_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'OOMPH_CORE_URI',     plugin_dir_url( __FILE__ ) );
@@ -38,6 +38,7 @@ require_once OOMPH_CORE_DIR . 'includes/class-cpt-inquiry.php';
 require_once OOMPH_CORE_DIR . 'includes/class-taxonomies.php';
 require_once OOMPH_CORE_DIR . 'includes/class-admin-columns.php';
 require_once OOMPH_CORE_DIR . 'includes/class-fields.php'; // Field access without a fields plugin — read by the seeder, the schema and the theme.
+require_once OOMPH_CORE_DIR . 'includes/class-tour-import.php'; // One JSON record → one draft tour (wp oomph import-tour, the "Add a tour" button, the seeder).
 require_once OOMPH_CORE_DIR . 'includes/class-seed.php';
 require_once OOMPH_CORE_DIR . 'includes/class-advisor.php'; // Advisor identity — read by class-schema.php and the theme.
 require_once OOMPH_CORE_DIR . 'includes/class-schema.php';

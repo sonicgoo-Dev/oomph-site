@@ -1,0 +1,167 @@
+name: Add a tour
+
+# Eric's one-click button for putting a tour record on the site.
+#
+# A tour is written first as a JSON file under content/tours/ (the /add-tour
+# skill builds it from an operator's itinerary PDF or web page; the shape is
+# in content/tours/README.md). This workflow reads that file from the chosen
+# branch and runs `wp oomph import-tour` on the chosen environment over the
+# same SSH deploy key deploy.yml uses. The tour arrives as a DRAFT with its
+# fields filled; the hero photo, the price check and the publish click stay
+# in the WordPress admin.
+#
+# mode = check runs the same command with --dry-run: the record is validated
+# on the server (operator and destination exist, no No List word, no
+# placeholder) and nothing is written. mode = import writes it. A tour whose
+# slug already exists is left alone unless `update` is ticked, and then only
+# the fields in the file are rewritten — its status and photo are untouched.
+#
+# How to run it: Actions → "Add a tour" → Run workflow → type the slug
+# (the file name without .json) → Run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tour:
+        description: "Tour slug — the file name under content/tours/ without .json (e.g. globus-italian-treasures)"
+        type: string
+        required: true
+      environment:
+        description: Where to import
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+      mode:
+        description: "check validates the record and writes nothing; import creates the draft"
+        type: choice
+        options:
+          - check
+          - import
+        default: import
+      update:
+        description: If a tour with this slug already exists, rewrite the fields in the file (status and photo untouched)
+        type: boolean
+        default: false
+      ref:
+        description: Branch that holds the content/tours/ file
+        type: string
+        default: develop
+
+concurrency:
+  group: import-tour-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  import:
+    name: ${{ inputs.mode }} ${{ inputs.tour }} on ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout the branch with the tour records
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+          sparse-checkout: content/tours
+
+      - name: Find and check the file
+        id: file
+        run: |
+          SLUG="${{ inputs.tour }}"
+          SLUG="${SLUG%.json}"
+          if ! printf '%s' "$SLUG" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; then
+            echo "::error::\"$SLUG\" is not a slug (lower-case letters, digits and hyphens only)."
+            exit 1
+          fi
+          FILE="content/tours/$SLUG.json"
+          if [ ! -f "$FILE" ]; then
+            echo "::error::$FILE does not exist on branch ${{ inputs.ref }}. Files there:"
+            ls content/tours/*.json 2>/dev/null || echo "(none)"
+            exit 1
+          fi
+          jq empty "$FILE"
+          echo "path=$FILE" >> $GITHUB_OUTPUT
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          echo "title=$(jq -r '.title // ""' "$FILE")" >> $GITHUB_OUTPUT
+
+      - name: Determine target environment
+        id: target
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "host=${{ secrets.SG_PROD_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_PROD_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_PROD_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_PROD_THEME_PATH }}" >> $GITHUB_OUTPUT
+          else
+            echo "host=${{ secrets.SG_STAGE_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_STAGE_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_STAGE_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_STAGE_THEME_PATH }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build the command
+        id: cmd
+        run: |
+          FLAGS=" --stdin"
+          if [ "${{ inputs.mode }}" = "check" ]; then
+            FLAGS="$FLAGS --dry-run"
+          elif [ "${{ inputs.environment }}" = "production" ]; then
+            FLAGS="$FLAGS --production"
+          fi
+          if [ "${{ inputs.update }}" = "true" ]; then FLAGS="$FLAGS --update"; fi
+          echo "flags=$FLAGS" >> $GITHUB_OUTPUT
+          echo "Will run: wp oomph import-tour$FLAGS < ${{ steps.file.outputs.path }}"
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SG_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ steps.target.outputs.port }} -H ${{ steps.target.outputs.host }} >> ~/.ssh/known_hosts
+
+      - name: Run wp oomph import-tour (WP-CLI via SSH)
+        id: run
+        run: |
+          set -o pipefail
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph import-tour${{ steps.cmd.outputs.flags }}" \
+            < "${{ steps.file.outputs.path }}" | tee import-tour.log
+
+      - name: Purge the cache after an import
+        if: inputs.mode == 'import'
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            "cd ${{ steps.target.outputs.path }}/../../.. && ( wp sg purge || echo 'SG Optimizer not active — skipping wp sg purge' ) && ( wp cache flush || echo 'wp cache flush failed — skipping' )"
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Add a tour — ${{ inputs.mode }} \`${{ steps.file.outputs.slug || inputs.tour }}\` on ${{ inputs.environment }}"
+            echo
+            if [ -n "${{ steps.file.outputs.title }}" ]; then echo "**${{ steps.file.outputs.title }}** · from \`${{ steps.file.outputs.path }}\` on \`${{ inputs.ref }}\`"; echo; fi
+            echo "Command: \`wp oomph import-tour${{ steps.cmd.outputs.flags }}\`"
+            echo
+            echo '```'
+            cat import-tour.log 2>/dev/null || echo "(no output — the file check or the SSH step failed before WP-CLI ran)"
+            echo '```'
+            EDIT=$(grep -m1 '^Edit: ' import-tour.log 2>/dev/null | sed 's/^Edit: //')
+            if [ "${{ inputs.mode }}" = "check" ]; then
+              echo
+              echo "Nothing was written. To import it, run the workflow again with **mode = import**."
+            elif [ -n "$EDIT" ]; then
+              echo
+              echo "Next, in WordPress: [open the tour]($EDIT) → set the featured image (the hero photo) → check the from-price → Publish."
+            fi
+          } >> $GITHUB_STEP_SUMMARY

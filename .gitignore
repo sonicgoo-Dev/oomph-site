@@ -91,3 +91,6 @@ docs/source/*.docx
 # wp-env / CI artefacts
 .wp-env.override.json
 playwright-report-ci/
+
+# Claude Code worktrees (local scratch checkouts); .claude/skills/ IS committed
+.claude/worktrees/
