@@ -488,6 +488,31 @@
 	line-height: var(--type-h3-line);
 	color: var(--text-ink);
 }
+/* The whole card opens the tour (cro-rules: whole block clickable). The
+   title link's ::after stretches over the card, which is position: relative
+   (.ot-card); "Ask Eric" sits above it so it keeps its own destination. The
+   overflow: hidden on the title and copy frame does not clip it, because
+   neither is positioned. */
+.ot-card-tour__title a { color: inherit; text-decoration: none; }
+.ot-card-tour__title a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+.ot-card-tour:hover .ot-card-tour__title a,
+.ot-card-tour__title a:focus-visible {
+	text-decoration: underline;
+	text-decoration-color: var(--accent-teal);
+	text-underline-offset: 0.15em;
+}
+.ot-card-tour__title a:focus-visible { outline: none; }
+.ot-card-tour:has( .ot-card-tour__title a:focus-visible ) {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+}
+.ot-card-tour .ot-link { position: relative; z-index: 2; }
+
 .ot-card-tour__blurb {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
