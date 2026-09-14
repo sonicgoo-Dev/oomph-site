@@ -1,11 +1,14 @@
 <?php
 /**
- * WP-CLI commands: wp oomph status · wp oomph seed · wp oomph remove-cruise
+ * WP-CLI commands: wp oomph status · wp oomph seed · wp oomph import-tour · wp oomph remove-cruise
  *
  * `status` reports environment, active theme, plugin version. Used as a smoke
  * check after deploys ("wp @stage oomph status" should return staging).
  *
  * `seed` creates the launch records as drafts (Seed class).
+ *
+ * `import-tour` creates one draft tour from a JSON record (Tour_Import
+ * class). The "Add a tour" Actions button runs it (import-tour.yml).
  *
  * `remove-cruise` takes the old cruise content out of the database, as a
  * report until --apply is given (Removals class, plan §8.4).
@@ -101,6 +104,106 @@ final class CLI {
 			\WP_CLI::success( 'Dry run — nothing written.' );
 		} else {
 			\WP_CLI::success( sprintf( '%d created, %d already existed.', $created, count( $rows ) - $created ) );
+		}
+	}
+
+	/**
+	 * Create one tour, as a draft, from a JSON record. Never publishes.
+	 *
+	 * The record shape is documented in content/tours/README.md: slug, title,
+	 * operator and destination slugs, nights, months, the card blurb, the
+	 * itinerary rows, inclusions, Eric's note and so on. The record is
+	 * checked first — unknown operator or destination, a No List word, a
+	 * placeholder — and nothing is written while anything is wrong. A tour
+	 * whose slug already exists is left alone unless --update is given, and
+	 * then only the fields present in the record are rewritten; its status
+	 * and photo are never touched.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--file=<path>]
+	 * : The JSON file. Use `-` (or --stdin) to read the record from standard input.
+	 *
+	 * [--stdin]
+	 * : Read the record from standard input instead of a file.
+	 *
+	 * [--update]
+	 * : If a tour with this slug exists, rewrite the fields the record carries.
+	 *
+	 * [--dry-run]
+	 * : Check the record and say what would happen, without writing.
+	 *
+	 * [--production]
+	 * : Required when the environment is production.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp oomph import-tour --file=content/tours/globus-italian-treasures.json --dry-run
+	 *     wp @stage oomph import-tour --stdin < content/tours/globus-italian-treasures.json
+	 *     wp @stage oomph import-tour --file=tour.json --update
+	 *
+	 * @subcommand import-tour
+	 *
+	 * @param string[]             $args
+	 * @param array<string,string> $assoc_args
+	 */
+	public function import_tour( array $args, array $assoc_args ): void {
+		$file    = (string) \WP_CLI\Utils\get_flag_value( $assoc_args, 'file', '' );
+		$stdin   = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'stdin', false ) || '-' === $file;
+		$update  = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'update', false );
+		$dry_run = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
+		$prod_ok = (bool) \WP_CLI\Utils\get_flag_value( $assoc_args, 'production', false );
+
+		if ( $stdin ) {
+			$json = stream_get_contents( STDIN );
+		} elseif ( '' !== $file ) {
+			if ( ! is_readable( $file ) ) {
+				\WP_CLI::error( sprintf( 'Cannot read %s.', $file ) );
+			}
+			$json = (string) file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file under WP-CLI.
+		} else {
+			\WP_CLI::error( 'Give the record with --file=<path> or --stdin.' );
+			return;
+		}
+
+		try {
+			$record = Tour_Import::decode( (string) $json );
+		} catch ( \InvalidArgumentException $e ) {
+			\WP_CLI::error( $e->getMessage() );
+			return;
+		}
+
+		\WP_CLI::log( sprintf( 'Environment: %s · %s', Environment::type(), $dry_run ? 'dry run, nothing changes' : ( $update ? 'create or update' : 'create only' ) ) );
+
+		$problems = Tour_Import::validate( $record );
+		if ( $problems ) {
+			foreach ( $problems as $problem ) {
+				\WP_CLI::warning( $problem );
+			}
+			\WP_CLI::error( sprintf( '%d problem(s) in the record. Nothing was written.', count( $problems ) ) );
+		}
+
+		if ( ! $dry_run && Environment::is_production() && ! $prod_ok ) {
+			\WP_CLI::error( 'This is production. Add --production to confirm, after the same import has been checked on staging.' );
+		}
+
+		$row = Tour_Import::import( $record, $update, $dry_run );
+		\WP_CLI\Utils\format_items( 'table', array( $row ), array( 'slug', 'title', 'action', 'status', 'id' ) );
+
+		if ( 0 === strpos( $row['action'], 'failed' ) ) {
+			\WP_CLI::error( $row['action'] );
+		}
+		if ( $row['edit'] ) {
+			\WP_CLI::log( 'Edit: ' . $row['edit'] );
+		}
+		if ( $dry_run ) {
+			\WP_CLI::success( 'Dry run — the record is sound. Nothing written.' );
+		} elseif ( 'updated' === $row['action'] ) {
+			\WP_CLI::success( 'Updated. Status unchanged; the photo is untouched.' );
+		} elseif ( 0 === strpos( $row['action'], 'created' ) ) {
+			\WP_CLI::success( 'Created as a draft. Set the hero photo, check the price, then publish from the edit screen.' );
+		} else {
+			\WP_CLI::success( $row['action'] . '.' );
 		}
 	}
 

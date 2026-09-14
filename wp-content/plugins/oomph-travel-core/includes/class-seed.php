@@ -1245,43 +1245,9 @@ final class Seed {
 		if ( ! $id ) {
 			return 0;
 		}
-
-		$operator = get_page_by_path( (string) $record['operator'], OBJECT, CPT_Operator::POST_TYPE );
-		Fields::write( $id, 'operator', 'field_oomph_tour_operator', $operator instanceof \WP_Post ? (string) $operator->ID : '' );
-
-		$text = array(
-			'blurb'      => 'field_oomph_tour_blurb',
-			'nights'     => 'field_oomph_tour_nights',
-			'start_city' => 'field_oomph_tour_start_city',
-			'end_city'   => 'field_oomph_tour_end_city',
-			'group_size' => 'field_oomph_tour_group_size',
-			'pace'       => 'field_oomph_tour_pace',
-			'inclusions' => 'field_oomph_tour_inclusions',
-			'erics_note' => 'field_oomph_tour_erics_note',
-		);
-		foreach ( $text as $name => $key ) {
-			Fields::write( $id, $name, $key, (string) ( $record[ $name ] ?? '' ) );
-		}
-		Fields::write( $id, 'months', 'field_oomph_tour_months', array_map( 'strval', (array) ( $record['months'] ?? array() ) ) );
-		Fields::write( $id, 'featured', 'field_oomph_tour_featured', empty( $record['featured'] ) ? '0' : '1' );
-		Fields::write_repeater(
-			$id,
-			'itinerary',
-			'field_oomph_tour_itinerary',
-			(array) ( $record['itinerary'] ?? array() ),
-			array(
-				'day'       => 'field_oomph_tour_itin_day',
-				'title'     => 'field_oomph_tour_itin_title',
-				'overnight' => 'field_oomph_tour_itin_overnight',
-				'text'      => 'field_oomph_tour_itin_text',
-			)
-		);
-
-		$destination = get_page_by_path( (string) $record['destination'], OBJECT, CPT_Destination::POST_TYPE );
-		$term_id     = $destination instanceof \WP_Post ? CPT_Destination::term_id( (int) $destination->ID ) : 0;
-		if ( $term_id ) {
-			wp_set_object_terms( $id, array( $term_id ), Taxonomies::DESTINATION );
-		}
+		// The field mapping lives with the importer, so a seeded tour and an
+		// imported one are written the same way.
+		Tour_Import::write_fields( $id, $record );
 		return $id;
 	}
 }
