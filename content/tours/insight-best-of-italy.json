@@ -1,0 +1,30 @@
+{
+  "slug": "insight-best-of-italy",
+  "title": "Best of Italy",
+  "operator": "insight-vacations",
+  "destination": "italy",
+  "nights": 10,
+  "start_city": "Rome",
+  "end_city": "Rome",
+  "months": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  "from_price": 4295,
+  "price_note": "per person, two sharing",
+  "blurb": "Rome, Florence, Venice, Assisi and Sorrento in ten nights, with Capri, Pompeii and a gondola ride along the way.",
+  "pace": "Full days on the move, with free afternoons in Rome, Sorrento and Capri",
+  "inclusions": "Ten nights in hotels, three of them at Villa Pamphili in Rome\nTen breakfasts, one lunch and five dinners\nTravel Director throughout\nVatican Museums, Sistine Chapel and the Colosseum with a local guide\nA choice in Florence: the Accademia to see Michelangelo’s David, or a walk and a café stop with your Travel Director\nLeatherwork and goldsmithing demonstration in Florence\nPrivate boat through Venice, a gondola ride and a glassblowing workshop\nBasilica of St Francis in Assisi with a local guide\nBoat to Capri and a walk through Capri town\nPompeii with a local guide\nFarm lunch at Casa Barone on the slopes of Vesuvius\nFarewell dinner in Rome with wine and a private opera performance",
+  "erics_note": "<p>This is the Insight tour I suggest when someone wants Rome, Florence and Venice and the south as well. It adds Assisi, two nights in Sorrento with a day on Capri, and Pompeii on the way back to Rome, so you see most of the country in eleven days. Most stops are two nights, and the hotel in Venice is central, which means you can walk out after the day visitors have gone.</p><p>It is a full itinerary. There are long drives from Florence to Venice by way of Pisa, and from Assisi down to Sorrento. The Rome hotel, Villa Pamphili, sits beside a large park rather than in the centre. If you would rather slow down and spend longer in fewer places, ask me about a custom journey.</p>",
+  "featured": false,
+  "itinerary": [
+    { "day": 1, "title": "Arrive in Rome", "overnight": "Rome", "text": "Settle in, then meet your Travel Director and the group for dinner at a local restaurant." },
+    { "day": 2, "title": "The Vatican and ancient Rome", "overnight": "Rome", "text": "With a local guide, the Vatican Museums and the Sistine Chapel, then St Peter’s Basilica from outside. Across the Tiber, the Circus Maximus, the Arch of Constantine and a guided visit to the Colosseum. The rest of the day is free. If Vatican tickets are unavailable, the Capitoline Museums take their place." },
+    { "day": 3, "title": "Through Chianti to Florence", "overnight": "Florence", "text": "North from Rome through Lazio and the Chianti hills to Florence. Dinner at a local restaurant." },
+    { "day": 4, "title": "Florence", "overnight": "Florence", "text": "Your choice: the Accademia and Michelangelo’s David, or a walk with your Travel Director and a stop at a local café. Then the cathedral, the bell tower, the Baptistery and Piazza della Signoria on foot, and a demonstration of leatherwork and goldsmithing." },
+    { "day": 5, "title": "Pisa, then Venice", "overnight": "Venice", "text": "The Leaning Tower, the cathedral and the baptistery in the Square of Miracles, then across the Apennines and Emilia-Romagna to Venice. Dinner at a local restaurant." },
+    { "day": 6, "title": "Venice", "overnight": "Venice", "text": "A private boat past churches and palaces to St Mark’s Square, a walk past the Bridge of Sighs and the Doge’s Palace, a gondola ride, and a visit to a glassblowing workshop." },
+    { "day": 7, "title": "Assisi", "overnight": "Assisi", "text": "The Church of St Mary of the Angels in the valley, then the upper town with a local guide and the Basilica of St Francis, with Giotto’s frescoes. Free time in town. Dinner is included." },
+    { "day": 8, "title": "South to Sorrento", "overnight": "Sorrento", "text": "South past Cassino, then along the coast road to Sorrento, above the Bay of Naples. The rest of the day is free." },
+    { "day": 9, "title": "Capri", "overnight": "Sorrento", "text": "A boat across the bay to Marina Grande, up to Capri town for a walk with a local guide, then the funicular down and back to Sorrento. The rest of the day is free." },
+    { "day": 10, "title": "Pompeii, Vesuvius and Rome", "overnight": "Rome", "text": "A guided walk through the excavations at Pompeii, then lunch at Casa Barone, a family farm on Vesuvius that grows Piennolo tomatoes. On to Rome for a farewell dinner with wine and a private opera performance." },
+    { "day": 11, "title": "Depart Rome", "overnight": "", "text": "The tour ends after breakfast." }
+  ]
+}
