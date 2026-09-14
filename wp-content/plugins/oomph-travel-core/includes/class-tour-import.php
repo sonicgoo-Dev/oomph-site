@@ -309,7 +309,7 @@ final class Tour_Import {
 		if ( preg_match_all( $pattern, $plain, $m ) ) {
 			$problems[] = sprintf( '%s uses a No List word: %s.', $where, implode( ', ', array_unique( array_map( 'strtolower', $m[1] ) ) ) );
 		}
-		if ( preg_match_all( '/\[[A-Z][^\]]{2,}\]|$X,X{3}/', $plain, $m ) ) {
+		if ( preg_match_all( '/\[[A-Z][^\]]{2,}\]|\$X,X{3}/', $plain, $m ) ) {
 			$problems[] = sprintf( '%s has a placeholder: %s.', $where, implode( ' ', array_unique( $m[0] ) ) );
 		}
 		return $problems;
