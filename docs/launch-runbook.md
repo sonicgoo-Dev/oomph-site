@@ -174,7 +174,8 @@ old site until the push in step B; nothing to do on launch day.
 ## 4. The week after
 
 - Watch Search Console → Core Web Vitals and Pages weekly; lab Lighthouse only as a tie-breaker (plan 8.6).
-- Delete Fluent Forms; deactivate and, after a clean week, delete ACF Pro and cancel its licence (SCF replaced it in Stage 4).
+- Delete Fluent Forms.
+- ACF Pro stays: it is still the live fields plugin (checked 2026-09-15 — Secure Custom Fields was never installed). Cancel the licence only after the swap in `docs/stage-4-fields-runbook.md`, staging first.
 - Retire `kadence-oomph-child`: delete the theme in wp-admin, then a PR removes it from the repo and from `deploy.yml`.
 - Delete the old region and trip-style terms and the itinerary records if Eric decides so; the Rank Math redirect duplicates likewise.
 - Publish the launch Journal articles as they are ready; the homepage shows the Journal once three are live.
