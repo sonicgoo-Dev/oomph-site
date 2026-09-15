@@ -56,7 +56,14 @@
 	text-transform: uppercase;
 	color: var(--accent-teal-on-navy);
 }
-.ot-links .ot-card-journal { overflow: hidden; }
+.ot-links .ot-card-journal { overflow: hidden; color: var(--text-ink); }
+/*
+ * The card is a light surface inside the navy band, so it takes back the
+ * light-surface colours the band's `a` and muted-eyebrow rules override
+ * (pale teal and faint grey on white failed AA at 1.9:1 and 3.1:1).
+ */
+.ot-links .ot-card-journal .ot-card-journal__link { color: inherit; }
+.ot-links .ot-card-journal .ot-eyebrow--muted { color: var(--text-muted); }
 .ot-links .ot-card-journal__body { padding: var(--space-md) var(--space-lg) var(--space-lg); }
 
 .ot-links__cta {
