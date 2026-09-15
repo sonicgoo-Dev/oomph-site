@@ -34,13 +34,18 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
 
 ## Open
 
-1. **Eric:** newsletter signup with an address never on the list, then the
-   PlainSend confirmation; Clarity and GA4 Realtime show a visit.
-2. **Week after (runbook §4):** delete Fluent Forms; deactivate, then delete
-   ACF Pro and cancel its licence; delete the `kadence-oomph-child` theme in
-   wp-admin, then a PR removes it from the repo and from `deploy.yml`.
-3. **Search Console, weekly for a month:** Pages → Not found (404) will list
+1. **Done 2026-09-15:** newsletter confirmation arrived from a fresh
+   address; Clarity and GA4 Realtime show visits.
+2. **Week after (runbook §4):** delete Fluent Forms; delete the
+   `kadence-oomph-child` theme in wp-admin, then a PR removes it from the
+   repo and from `deploy.yml`.
+3. **ACF Pro is still the live fields plugin.** Secure Custom Fields was
+   never installed (checked 2026-09-15: `advanced-custom-fields-pro/` present,
+   `secure-custom-fields/` absent). Keep ACF Pro until Eric chooses the swap
+   in `docs/stage-4-fields-runbook.md`, staging first; only then cancel the
+   licence.
+4. **Search Console, weekly for a month:** Pages → Not found (404) will list
    the old cruise addresses; that is expected (D02). Watch Core Web Vitals.
-4. **Eric's decisions still open:** operator logos (add or hide the slot);
+5. **Eric's decisions still open:** operator logos (add or hide the slot);
    the Hawaii Stays name. Kept by decision: the hidden cruise regions,
    trip styles and itinerary records; the Rank Math redirect duplicates.
