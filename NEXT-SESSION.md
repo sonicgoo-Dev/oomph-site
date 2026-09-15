@@ -7,14 +7,14 @@
 ## Where things stand
 
 - `develop` holds the whole rebuild: the `oomphtravel` block theme (0.8.8)
-  and `oomph-travel-core` (1.9.0). Staging (`staging2.oomphtravel.com`) runs
-  it. `main` is 235 commits behind, and production still runs
+  and `oomph-travel-core` (1.9.2). Staging (`staging2.oomphtravel.com`) runs
+  it. `main` is 238 commits behind, and production still runs
   `kadence-oomph-child` with plugin 1.0.0.
 - **The plan is `docs/launch-runbook.md`.** Code goes live by merging
   `develop` into `main`, which activates nothing. Content goes live only when
   Eric clicks Site Tools → WordPress → Staging → Deploy (Full). That click is
   the launch.
-- Last PR merged: #122, which made the whole tour card open the tour page.
+- Last PRs merged: #122 made the whole tour card open the tour page; #124 and #125 fixed the sitemap and the homepage tours row.
 
 ## Staging, checked over HTTP on 2026-09-15
 
@@ -27,20 +27,17 @@
 | Homepage "How to travel" photos | Done |
 | Nine cruise posts | Already on cruiseoomph.com; never list as open |
 | `/services/` | Still published and in the page sitemap; Eric's decision |
-| Stale `oomph_region` sitemap | Gone from the sitemap index |
+| Sitemap | Posts, pages, destinations, operators, tours; no `oomph_region`, no `/links/` |
+| Homepage featured tours | Tauck, Globus and Insight |
 
 ## Open before launch day
 
-1. **Check the sitemap.** The index lists posts, pages and destinations only.
-   The tours, the operator pages and the `/escorted-tours/` and
-   `/destinations/` archives are missing, and `/links/` (noindex) is listed.
-   Find out whether that is Rank Math's per-type sitemap setting in the
-   staging database or code in `class-seo.php`, and fix it on staging before
-   the push carries it to production.
-2. **Check the homepage featured tours row.** The seeded featured tours
-   (`globus-rome-florence-venice`, `insight-italy-country-roads`) are still
-   drafts, and the three published tours are not marked featured. The
-   homepage showed no tour cards on 2026-09-15.
+1. **Done 2026-09-15: sitemap.** PRs #124 and #125 (plugin 1.9.2). The
+   index now lists posts, pages, destinations, operators and tours. The tour
+   sitemap opens with `/escorted-tours/`, and `/links/` is out.
+2. **Done 2026-09-15: homepage featured tours.** Globus Italian Treasures
+   and Insight Best of Italy are flagged featured, so the row shows all
+   three published tours.
 3. **Eric's items:** export Fluent Forms entries from production, take the
    "pre-launch" backup, stop editing production wp-admin, pick the launch
    date.
@@ -64,7 +61,7 @@ This session is the OomphTravel launch (plan P11). Read CLAUDE.md, NEXT-SESSION.
 
 Work in this order:
 1. Pull develop and confirm the state in NEXT-SESSION.md over HTTP against staging2.oomphtravel.com and oomphtravel.com. Anything that no longer matches, correct in the file. Do not list as open anything the memory says I already did.
-2. Fix the two pre-launch gaps in NEXT-SESSION.md: the sitemap missing tours, operators and the two archives, and the homepage featured tours row. If the cause is a setting in the staging database rather than code, give me click-by-click steps instead of changing it.
+2. The sitemap and the homepage featured tours row were fixed on 2026-09-15. Confirm they still hold on staging.
 3. Run the day-before checks against staging: the live Playwright suite, npm run audit:a11y and npm run audit:lh. Report results in a short table.
 4. Give me a one-page go/no-go list of what is left for me, in plain language, with the clicks.
 5. Stop there. Do not open the develop to main release PR, and do not touch production, until I say "launch". On that word, follow runbook §2 A to G with me step by step, including the smoke test in D, and merge main back into develop afterwards.
