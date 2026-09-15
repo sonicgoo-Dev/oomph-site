@@ -87,7 +87,10 @@ final class Plainsend {
 			get_stylesheet_directory_uri() . '/assets/js/newsletter.js',
 			array(),
 			(string) filemtime( $path ),
-			true
+			// Deferred, not merely in the footer: a plain footer script still
+			// fetches at medium priority alongside the hero image (Lighthouse,
+			// Stage 12); defer drops it to low and out of the LCP's way.
+			array( 'in_footer' => true, 'strategy' => 'defer' )
 		);
 
 		wp_localize_script(

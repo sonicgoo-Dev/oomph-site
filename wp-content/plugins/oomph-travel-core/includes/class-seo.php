@@ -1,12 +1,24 @@
 <?php
 /**
- * Technical SEO: robots.txt + llms.txt.
+ * Technical SEO: llms.txt, and the one archive that must not be indexed.
  *
- * - robots.txt: allow crawling on the public (production) site, point to the
- *   Rank Math sitemap. Non-public environments (staging) keep WordPress's
- *   default disallow.
+ * - robots.txt: Rank Math already serves a crawl-friendly one with the XML
+ *   sitemap, so nothing here touches it. Non-public environments (staging)
+ *   keep WordPress's default disallow.
  * - llms.txt: a plain-text guide for AI crawlers (the emerging /llms.txt
- *   convention), generated from the site's key pages + recent journal posts.
+ *   convention), generated from the site's key pages, the destinations, the
+ *   tour index and the recent journal posts. Rewritten for the resurfaced
+ *   site map (plan §4.2); the old cruise pages are gone from it.
+ * - /category/uncategorized/: WordPress's default category, which every post
+ *   without a chosen topic falls into. It is a duplicate of the Journal and
+ *   the plan asks for it to be noindexed or removed (§4.2). Noindexed here,
+ *   so the archive still resolves for anyone holding the link.
+ * - XML sitemap: Rank Math lists a post type only when its own "Include in
+ *   Sitemap" setting is on, and a type registered after Rank Math was set
+ *   up starts with it off. Tours and operators were missing for that
+ *   reason, and with them the /escorted-tours/ archive, which Rank Math adds
+ *   as the first entry of the tour sitemap. The setting is held on here.
+ *   /links/ is noindex, so it is kept out of the page sitemap.
  *
  * @package OomphTravel\Core
  */
@@ -22,87 +34,124 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class SEO {
 
 	public static function init(): void {
-		// Rank Math already serves a crawl-friendly robots.txt with the XML
-		// sitemap, so we don't filter robots_txt. We only add /llms.txt,
-		// served early — before WordPress's canonical trailing-slash redirect
-		// would fire on the .txt request.
-		add_action( 'init', array( __CLASS__, 'serve_llms' ), 0 );
+		// Served on init, after the post types register at priority 10 (their
+		// permalinks and archive links need that), and long before the
+		// canonical trailing-slash redirect at template_redirect would fire
+		// on the .txt request.
+		add_action( 'init', array( __CLASS__, 'serve_llms' ), 20 );
+		add_filter( 'wp_robots', array( __CLASS__, 'uncategorized_robots' ) );
+		add_filter( 'rank_math/frontend/robots', array( __CLASS__, 'uncategorized_robots_rank_math' ) );
+		add_filter( 'option_rank-math-options-sitemap', array( __CLASS__, 'sitemap_post_types' ) );
+		add_filter( 'rank_math/sitemap/entry', array( __CLASS__, 'sitemap_skip_noindex_pages' ), 10, 3 );
+		add_action( 'init', array( __CLASS__, 'refresh_sitemap_cache' ), 101 );
+	}
 
-		// Sailings are imported in the hundreds and nobody hand-writes a meta
-		// description for each; generate one from the sailing's own fields.
-		// A description typed in the editor always wins.
-		add_filter( 'rank_math/frontend/description', array( __CLASS__, 'sailing_description' ), 10, 1 );
+	/* ---------------------------------------------------------------- */
+	/* XML sitemap                                                        */
+	/* ---------------------------------------------------------------- */
+
+	/** Post types whose records are public pages and belong in the sitemap. */
+	private const SITEMAP_POST_TYPES = array( 'oomph_destination', 'oomph_tour', 'oomph_operator' );
+
+	/**
+	 * Hold Rank Math's "Include in Sitemap" on for the site's own record
+	 * types. Rank Math reads this option when it builds the sitemap index.
+	 *
+	 * @param mixed $options
+	 * @return mixed
+	 */
+	public static function sitemap_post_types( $options ) {
+		if ( ! is_array( $options ) ) {
+			return $options;
+		}
+		foreach ( self::SITEMAP_POST_TYPES as $type ) {
+			$options[ 'pt_' . $type . '_sitemap' ] = 'on';
+		}
+		return $options;
 	}
 
 	/**
-	 * Auto meta description for a Group Cruise, built from its own data.
+	 * Leave /links/ out of the page sitemap while it is noindex (the theme
+	 * sets the tag; `oomph_links_noindex` returning false lifts both).
+	 * Rank Math passes a raw database row here, not a WP_Post, so the check
+	 * reads the columns rather than the class.
 	 *
-	 * Distinctive Voyages lead with the private shore event; amenity
-	 * departures lead with the amenity. Falls through untouched for every
-	 * other post type and for sailings with a hand-written description.
-	 *
-	 * @param string $description Rank Math's value.
-	 * @return string
+	 * @param mixed  $url
+	 * @param string $type
+	 * @param mixed  $post
+	 * @return mixed
 	 */
-	public static function sailing_description( $description ) {
-		if ( ! is_singular( CPT_Cruise::POST_TYPE ) || ! function_exists( 'get_field' ) ) {
-			return $description;
+	public static function sitemap_skip_noindex_pages( $url, $type = '', $post = null ) {
+		if (
+			'post' === $type
+			&& is_object( $post )
+			&& 'page' === ( $post->post_type ?? '' )
+			&& 'links' === ( $post->post_name ?? '' )
+			&& (bool) apply_filters( 'oomph_links_noindex', true )
+		) {
+			return false;
 		}
-
-		$post_id = get_queried_object_id();
-		if ( ! $post_id ) {
-			return $description;
-		}
-
-		$manual = get_post_meta( $post_id, 'rank_math_description', true );
-		if ( is_string( $manual ) && '' !== trim( $manual ) ) {
-			return $description;
-		}
-
-		$f         = static function ( string $k ) use ( $post_id ): string {
-			return trim( (string) get_field( $k, $post_id ) );
-		};
-		$ship      = $f( 'cruise_ship_name' );
-		$line      = $f( 'cruise_line' );
-		$start     = $f( 'cruise_dates_start' );
-		$type      = $f( 'sailing_type' );
-		$perk      = $f( 'amenity_summary' );
-		$event     = $f( 'shore_event_1_name' );
-		$embark    = $f( 'embark_city' );
-		$disembark = $f( 'disembark_city' );
-
-		// "{Itinerary} — {Ship}, {Month Year}" is the imported title shape.
-		$itin = explode( ' — ', (string) get_the_title( $post_id ) )[0];
-		$when = $start ? date_i18n( 'F Y', (int) strtotime( $start ) ) : '';
-
-		$parts   = array();
-		$parts[] = sprintf( '%s aboard %s%s.', $itin, $ship ?: 'ship', $when ? ", {$when}" : '' );
-
-		if ( $embark && $disembark ) {
-			$parts[] = $embark === $disembark
-				? "Round-trip from {$embark}."
-				: "{$embark} to {$disembark}.";
-		}
-
-		if ( 'distinctive_voyage' === $type && $event ) {
-			$parts[] = "Includes a private shore event: {$event}.";
-		} elseif ( $perk ) {
-			$parts[] = rtrim( $perk, '.' ) . '.';
-		}
-
-		$parts[] = $line
-			? "Planned with Eric Hempel — same {$line} fare, more included."
-			: 'Planned with Eric Hempel.';
-
-		$out = trim( (string) preg_replace( '/\s+/', ' ', implode( ' ', $parts ) ) );
-
-		// Meta descriptions truncate around 160 chars; cut on a word boundary.
-		if ( mb_strlen( $out ) > 158 ) {
-			$out = rtrim( mb_substr( $out, 0, 155 ), " .,;:—-" ) . '…';
-		}
-
-		return $out;
+		return $url;
 	}
+
+	/**
+	 * Rank Math caches the sitemap. Clear it once per plugin version, so a
+	 * deploy that changes what the sitemap holds shows up without a manual
+	 * settings save.
+	 */
+	public static function refresh_sitemap_cache(): void {
+		if ( OOMPH_CORE_VERSION === get_option( 'oomph_core_sitemap_version' ) ) {
+			return;
+		}
+		if ( ! class_exists( '\RankMath\Sitemap\Cache' ) || ! method_exists( '\RankMath\Sitemap\Cache', 'invalidate_storage' ) ) {
+			return;
+		}
+		\RankMath\Sitemap\Cache::invalidate_storage();
+		update_option( 'oomph_core_sitemap_version', OOMPH_CORE_VERSION, false );
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* The stray archive                                                  */
+	/* ---------------------------------------------------------------- */
+
+	/** True on /category/uncategorized/ (whatever the default category is called). */
+	private static function is_uncategorized_archive(): bool {
+		if ( ! is_category() ) {
+			return false;
+		}
+		$default = (int) get_option( 'default_category' );
+		return $default > 0 && is_category( $default );
+	}
+
+	/**
+	 * @param array<string,mixed> $robots
+	 * @return array<string,mixed>
+	 */
+	public static function uncategorized_robots( array $robots ): array {
+		if ( self::is_uncategorized_archive() ) {
+			$robots['noindex'] = true;
+			$robots['follow']  = true;
+			unset( $robots['index'] );
+		}
+		return $robots;
+	}
+
+	/**
+	 * Rank Math writes its own robots tag; give it the same instruction.
+	 *
+	 * @param mixed $robots
+	 * @return mixed
+	 */
+	public static function uncategorized_robots_rank_math( $robots ) {
+		if ( is_array( $robots ) && self::is_uncategorized_archive() ) {
+			$robots['index'] = 'noindex';
+		}
+		return $robots;
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* llms.txt                                                           */
+	/* ---------------------------------------------------------------- */
 
 	public static function serve_llms(): void {
 		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
@@ -118,41 +167,83 @@ final class SEO {
 		exit;
 	}
 
+	/**
+	 * One published page as a list line, or '' when it is not there to link.
+	 *
+	 * @param string $slug Page slug.
+	 * @param string $desc One sentence after the colon.
+	 */
+	private static function page_line( string $slug, string $desc ): string {
+		$p = get_page_by_path( $slug );
+		if ( ! $p || 'publish' !== get_post_status( $p ) ) {
+			return '';
+		}
+		return '- [' . get_the_title( $p ) . '](' . get_permalink( $p ) . '): ' . $desc;
+	}
+
 	public static function llms_content(): string {
-		$site = home_url( '/' );
-		$out  = array();
+		$out     = array();
+		$advisor = Advisor::name();
 
 		$out[] = '# Oomph Travel';
 		$out[] = '';
-		$advisor = Advisor::name();
-		$out[] = '> Premium and luxury cruise planning and custom European journeys, planned by one named advisor — ' . $advisor . ', a CLIA member and Silversea Ultra-Luxury Specialist based in Port Angeles, Washington. No planning fee; suppliers pay a commission that does not change your price.';
+		$out[] = '> Custom journeys, escorted tours, resort and villa stays and multi-generational trips, planned by one named advisor — ' . $advisor . ', a CLIA member based in Port Angeles, Washington. No planning fee; suppliers pay a commission that does not change your price. Premium and luxury cruises are planned by the same advisor at CruiseOomph (https://cruiseoomph.com).';
 		$out[] = '';
 
-		$out[] = '## Services';
-		foreach ( array(
-			'luxury-cruise-planning'             => 'Luxury cruise planning — premium and ultra-luxury cruises (Silversea, Regent, Seabourn, Crystal, Cunard Grills, Viking), cabin selection, onboard credit, pre/post extensions.',
-			'custom-italy-travel'                => 'Custom Italy travel — region-by-region itineraries (Tuscany, the Lakes, the Amalfi Coast, Puglia, Sicily, the Dolomites), private drivers, vetted guides.',
-			'multi-generational-travel-planning' => 'Multi-generational travel — trips planned across two or three generations, around pace, mobility, dietary needs, and room/cabin configurations.',
-		) as $slug => $desc ) {
-			$p = get_page_by_path( $slug );
-			if ( $p && 'publish' === get_post_status( $p ) ) {
-				$out[] = '- [' . get_the_title( $p ) . '](' . get_permalink( $p ) . '): ' . $desc;
-			}
+		$ways = array_filter(
+			array(
+				self::page_line( 'custom-journeys', 'Independent, hand-planned trips by destination: the route, the hotels, the drivers and guides, booked and held by one person.' ),
+				self::page_line( 'resorts-and-villas', 'Resort stays, villas and private homes, and the hotels inside custom trips, vetted and booked by the advisor.' ),
+				self::page_line( 'multi-generational-travel-planning', 'Trips planned across two or three generations, around pace, mobility, dietary needs and room configurations.' ),
+				self::page_line( 'cruise-planning', 'How cruise planning fits alongside land travel; the cruises themselves are found and booked at CruiseOomph.' ),
+			)
+		);
+		if ( $ways ) {
+			$out[] = '## Ways to travel';
+			array_push( $out, ...$ways );
+			$out[] = '';
 		}
-		$out[] = '';
 
-		$out[] = '## Start here';
-		foreach ( array(
-			'discovery-call'       => 'Book a free 30-minute discovery call.',
-			'trip-quiz'            => 'Cabin quiz — a 7-question quiz that matches you to the right cruise cabin category.',
-			'cruise-travel-trends' => 'Cruise Travel Trends — a free field guide to where cruising is headed in 2026–2027.',
-		) as $slug => $desc ) {
-			$p = get_page_by_path( $slug );
-			if ( $p && 'publish' === get_post_status( $p ) ) {
-				$out[] = '- [' . get_the_title( $p ) . '](' . get_permalink( $p ) . '): ' . $desc;
-			}
+		$archive = get_post_type_archive_link( CPT_Tour::POST_TYPE );
+		if ( $archive ) {
+			$out[] = '## Escorted tours';
+			$out[] = '- [Escorted tours](' . $archive . '): small-group and classic escorted departures from operators the advisor sells, with a fit note on each and the next dates.';
+			$out[] = '';
 		}
-		$out[] = '';
+
+		$destinations = get_posts(
+			array(
+				'post_type'      => CPT_Destination::POST_TYPE,
+				'post_status'    => 'publish',
+				'numberposts'    => -1,
+				'orderby'        => 'menu_order title',
+				'order'          => 'ASC',
+			)
+		);
+		if ( $destinations ) {
+			$out[] = '## Destinations';
+			$index = get_post_type_archive_link( CPT_Destination::POST_TYPE );
+			if ( $index ) {
+				$out[] = '- [All destinations](' . $index . ')';
+			}
+			foreach ( $destinations as $d ) {
+				$excerpt = wp_strip_all_tags( (string) get_the_excerpt( $d ) );
+				$out[]   = '- [' . get_the_title( $d ) . '](' . get_permalink( $d ) . ')' . ( '' !== $excerpt ? ': ' . $excerpt : '' );
+			}
+			$out[] = '';
+		}
+
+		$start = array_filter(
+			array(
+				self::page_line( 'start-planning', 'Two short steps to describe the trip; a reply within one business day.' ),
+				self::page_line( 'travel-trends', 'The yearly Travel Trends guide, free by email.' ),
+			)
+		);
+		if ( $start ) {
+			$out[] = '## Start here';
+			array_push( $out, ...$start );
+			$out[] = '';
+		}
 
 		$posts = get_posts( array( 'numberposts' => 20, 'post_status' => 'publish' ) );
 		if ( $posts ) {
@@ -163,10 +254,15 @@ final class SEO {
 			$out[] = '';
 		}
 
-		$about = get_page_by_path( 'about' );
+		$about = array_filter(
+			array(
+				self::page_line( 'about', 'Who plans the trips, and why.' ),
+				self::page_line( 'client-stories', 'Four reviews from clients, in their own words.' ),
+			)
+		);
 		if ( $about ) {
 			$out[] = '## About';
-			$out[] = '- [About ' . $advisor . '](' . get_permalink( $about ) . ')';
+			array_push( $out, ...$about );
 			$out[] = '';
 		}
 

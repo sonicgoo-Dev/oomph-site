@@ -63,34 +63,11 @@ function oomph_render_footer(): void {
 		'multi-generational-travel-planning' => 'Multi-Generational',
 		'journal'                            => 'Journal',
 		'client-stories'                     => 'Client Stories',
-		'trip-quiz'                          => 'Cabin Quiz',
-		'cruise-travel-trends'               => 'Cruise Trends Guide',
 		'discovery-call'                     => 'Discovery Call',
 	) as $slug => $label ) {
 		$p = get_page_by_path( $slug );
 		if ( $p && 'publish' === get_post_status( $p ) ) {
 			$explore[] = '<li><a href="' . esc_url( home_url( "/$slug/" ) ) . '">' . esc_html( $label ) . '</a></li>';
-		}
-	}
-
-	// Group Cruises — the CPT archive, only when there's a published sailing to
-	// show. Slotted right after Luxury Cruise Planning.
-	if ( function_exists( 'oomph_has_published_sailings' ) && oomph_has_published_sailings() ) {
-		$gc_link = get_post_type_archive_link( 'oomph_cruise' );
-		if ( $gc_link ) {
-			$gc_item = '<li><a href="' . esc_url( $gc_link ) . '">Group Cruises</a></li>';
-			$pos     = null;
-			foreach ( $explore as $i => $html ) {
-				if ( false !== strpos( $html, 'luxury-cruise-planning' ) ) {
-					$pos = $i + 1;
-					break;
-				}
-			}
-			if ( null === $pos ) {
-				$explore[] = $gc_item;
-			} else {
-				array_splice( $explore, $pos, 0, $gc_item );
-			}
 		}
 	}
 

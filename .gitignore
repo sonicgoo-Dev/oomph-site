@@ -57,6 +57,7 @@ xmlrpc.php
 # Other themes and all plugins — managed via WP admin, not git
 /wp-content/themes/*
 !/wp-content/themes/kadence-oomph-child/
+!/wp-content/themes/oomphtravel/
 /wp-content/plugins/*
 !/wp-content/plugins/oomph-travel-core/
 /wp-content/mu-plugins/
@@ -86,3 +87,10 @@ CLAUDE.local.md
 # binaries are large.
 docs/source/*.pdf
 docs/source/*.docx
+
+# wp-env / CI artefacts
+.wp-env.override.json
+playwright-report-ci/
+
+# Claude Code worktrees (local scratch checkouts); .claude/skills/ IS committed
+.claude/worktrees/

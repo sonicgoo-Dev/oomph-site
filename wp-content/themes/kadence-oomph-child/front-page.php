@@ -144,11 +144,11 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 	<?php /* 3. WHO I HELP --------------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="who-i-help-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">Who I help</p>
 				<h2 id="who-i-help-title">Three kinds of trip, three kinds of traveler.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<article class="oomph-card">
 					<h3 class="oomph-card__headline">Couples planning a milestone.</h3>
 					<p>Anniversaries, retirements, the trip you've talked about for ten years. The kind that has to land — choose the cabin, get the dinner reservations right, pace the days so neither of you comes home tired.</p>
@@ -168,11 +168,11 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 	<?php /* 4. WHAT I PLAN ------------------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-european-itinerary" aria-labelledby="what-i-plan-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">What I plan</p>
 				<h2 id="what-i-plan-title">Three services. One named advisor.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<a class="oomph-card oomph-card--clickable oomph-card--media" href="/luxury-cruise-planning/">
 					<figure class="oomph-card__media"><?php echo oomph_picture( 'cards/card-cruise.jpg', array( 'alt' => 'Gentoo penguin on Antarctic snow with a luxury expedition cruise ship anchored behind', 'width' => 900, 'height' => 600 ) ); ?></figure>
 					<h3 class="oomph-card__headline">Luxury cruise planning.</h3>
@@ -198,26 +198,6 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 		</div>
 	</section>
 
-	<?php /* 4b. SAILINGS I'M HOSTING (only when a sailing is published) -- */ ?>
-	<?php if ( function_exists( 'oomph_has_published_sailings' ) && oomph_has_published_sailings() ) : ?>
-	<section class="oomph-section" aria-labelledby="home-sailings-title">
-		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
-				<p class="oomph-eyebrow">Group Cruises · Distinctive Voyages</p>
-				<h2 id="home-sailings-title">Sailings I'm hosting.</h2>
-			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
-				<?php foreach ( oomph_get_upcoming_sailings( 3 ) as $sailing_id ) { oomph_render_sailing_card( $sailing_id ); } ?>
-			</div>
-			<p class="oomph-section__cta oomph-section__cta--center">
-				<a class="oomph-btn oomph-btn--primary" href="<?php echo esc_url( (string) get_post_type_archive_link( 'oomph_cruise' ) ); ?>">
-					See all sailings <span aria-hidden="true">→</span>
-				</a>
-			</p>
-		</div>
-	</section>
-	<?php endif; ?>
-
 	<?php /* 5. FOUNDER MINI-BIO --------------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-cabin-notes" aria-labelledby="founder-title">
 		<div class="oomph-container">
@@ -236,8 +216,8 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 					?>
 				</figure>
 				<div class="oomph-founder__copy">
-					<p class="oomph-eyebrow oomph-eyebrow--inverse">One Advisor</p>
-					<h2 id="founder-title" class="oomph-italic-display oomph-italic-display--h1">Hi, I'm Eric.</h2>
+					<p class="oomph-eyebrow" style="color: var(--color-champagne);">One Advisor</p>
+					<h2 id="founder-title" class="oomph-italic-display" style="font-size: var(--text-h1);">Hi, I'm Eric.</h2>
 					<p>I plan premium and luxury cruises and custom European journeys for clients who want one named advisor across the whole trip — from the first call to the last flight home. Based in Port Angeles, Washington.</p>
 					<p>
 						<a class="oomph-btn oomph-btn--inverse" href="/about/">
@@ -252,57 +232,25 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 	<?php /* 6. HOW IT WORKS ------------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="how-it-works-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">How it works</p>
 				<h2 id="how-it-works-title">Three steps. One conversation to start.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<div>
 					<p class="oomph-eyebrow">Step One · Discover</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">A free 30-minute call.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">A free 30-minute call.</h3>
 					<p>We talk about the trip you're imagining — who's going, when, where you've already been, what you'd never do again. By the end I know whether I'm the right advisor for you, and you know what comes next.</p>
 				</div>
 				<div>
 					<p class="oomph-eyebrow">Step Two · Design</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">One proposal, not five.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">One proposal, not five.</h3>
 					<p>Cabin selection, itinerary, transfers, dinner reservations, the small details that make a trip feel choreographed. You see one proposal, not five — because I do the narrowing for you.</p>
 				</div>
 				<div>
 					<p class="oomph-eyebrow">Step Three · Depart</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">Eyes on it the whole time.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">Eyes on it the whole time.</h3>
 					<p>If something changes — a delayed flight, a closed restaurant, a sudden chance to do something better — I'm reachable. The point of an advisor isn't the planning; it's the person on call when the day shifts.</p>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<?php /* 7. LEAD MAGNET -------------------------------------------- */ ?>
-	<section class="oomph-section is-style-oomph-quiet-premium" aria-labelledby="lead-magnet-title">
-		<div class="oomph-container">
-			<div class="oomph-grid oomph-grid--2 oomph-leadmagnet">
-				<figure class="oomph-cover oomph-leadmagnet__cover">
-					<?php
-						echo oomph_picture(
-							'cabin-guide-cover.webp',
-							array(
-								'alt'    => 'Cover of the Silversea cabin selection guide',
-								'width'  => 900,
-								'height' => 1443,
-								'sizes'  => '(min-width: 768px) 50vw, 100vw',
-							)
-						); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — escaped in helper.
-						?>
-				</figure>
-				<div class="oomph-leadmagnet__copy">
-					<p class="oomph-eyebrow">Cruise · Cabin Note</p>
-					<h2 id="lead-magnet-title">The cabin you choose determines the trip you have.</h2>
-					<p>Same ship, same itinerary — two cabins three decks apart can be a different vacation. Answer seven questions and I'll point you to the cabin category that fits how you actually sail, plus my full Cabin Selection Guide.</p>
-					<p>
-						<a class="oomph-btn oomph-btn--primary" href="/trip-quiz/">
-							Take the cabin quiz <span aria-hidden="true">→</span>
-						</a>
-						<span class="oomph-btn-microcopy">Seven questions, about two minutes.</span>
-					</p>
 				</div>
 			</div>
 		</div>
@@ -311,11 +259,11 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 	<?php /* 8. TESTIMONIALS ------------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="testimonials-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">Client Stories</p>
 				<h2 id="testimonials-title">In their words.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<blockquote class="oomph-card oomph-card--champagne">
 					<p>"Thirtieth anniversary, Silver Nova, March 2025. Eric had the cabin, the dinner reservations, and the shore time mapped before we even knew what to ask for."</p>
 					<footer class="oomph-card__meta">The Hendersons · 30th anniversary · Silver Nova · March 2025</footer>
@@ -340,11 +288,11 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 	<?php /* 10. FEATURED JOURNAL --------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="journal-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">From the Journal</p>
 				<h2 id="journal-title">Recent field notes.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<?php
 				$recent_posts = get_posts(
 					array(
@@ -387,23 +335,28 @@ $show_trust_strip = (bool) oomph_acf_field( 'hero_trust_strip', true );
 
 	<?php /* 11. FINAL CTA --------------------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-cabin-notes" aria-labelledby="final-cta-title">
-		<div class="oomph-container oomph-cta-band">
-			<p class="oomph-eyebrow oomph-eyebrow--inverse">One trip</p>
-			<h2 id="final-cta-title" class="oomph-italic-display oomph-cta-band__heading">
+		<div class="oomph-container" style="text-align: center;">
+			<p class="oomph-eyebrow" style="color: var(--color-champagne);">One trip</p>
+			<h2 id="final-cta-title" class="oomph-italic-display" style="font-size: var(--text-h1); max-width: 22ch; margin-inline: auto;">
 				Plan the trip you'll talk about for thirty years.
 			</h2>
-			<p class="oomph-cta-band__action">
+			<p style="margin-top: var(--space-6);">
 				<a class="oomph-btn oomph-btn--inverse" href="/discovery-call/">
 					Start a conversation <span aria-hidden="true">→</span>
 				</a>
-				<span class="oomph-btn-microcopy oomph-microcopy--inverse">Email, text, or a quick call — whatever's easiest for you.</span>
+				<span class="oomph-btn-microcopy" style="color: var(--color-champagne);">Email, text, or a quick call — whatever's easiest for you.</span>
 			</p>
 		</div>
 	</section>
 
 </main>
 
-<?php get_template_part( 'parts/sticky-cta' ); /* Sticky mobile CTA — R2 */ ?>
+<?php /* Sticky mobile CTA — R2. Visible at every scroll depth, mobile only. */ ?>
+<aside class="oomph-sticky-cta" aria-label="Quick contact">
+	<a class="oomph-btn oomph-btn--primary" href="/discovery-call/">
+		Start a conversation <span aria-hidden="true">→</span>
+	</a>
+</aside>
 
 <?php
 get_footer();

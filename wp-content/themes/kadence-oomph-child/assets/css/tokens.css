@@ -16,9 +16,16 @@
 /* ---------------------------------------------------------------------------
  * Self-hosted fonts (variable)
  *
- * All four .woff2 files ship in assets/fonts/. Only Inter regular is
- * preloaded (inc/enqueue.php) — Fraunces arrives with swap; see the
- * 2026-07 LCP audit for the rationale.
+ * Drop these .woff2 files in assets/fonts/. Get them from
+ * https://gwfh.mranftl.com/fonts or fontsource.org. Until they're present,
+ * the @font-face rules are inert and the browser falls back to the family
+ * stack on font-family declarations elsewhere.
+ *
+ * TODO files needed:
+ *   inter-variable-latin.woff2          (wght 100-900)
+ *   inter-variable-latin-italic.woff2   (wght 100-900, italic)
+ *   fraunces-variable-latin.woff2       (opsz 9-144, wght 100-900)
+ *   fraunces-variable-latin-italic.woff2 (opsz 9-144, wght 100-900, italic)
  * --------------------------------------------------------------------------- */
 
 @font-face {
@@ -148,11 +155,6 @@
 
   --tracking-eyebrow: 0.14em;  /* all-caps Inter eyebrows — wide editorial tracking (design system: 0.14–0.18em) */
 
-  /* Display tracking — Fraunces tightens slightly at display sizes.
-   * Body and small sizes never track negative. */
-  --tracking-h1:      -0.01em;
-  --tracking-display: -0.015em;
-
   /* =========================================================================
    * Spacing — 8-point baseline (4px starting unit)
    * ========================================================================= */
@@ -168,11 +170,6 @@
   --space-9:  72px;
   --space-10: 96px;
   --space-11: 128px;
-
-  /* Section rhythm — fluid, so band spacing breathes with the viewport
-   * instead of stepping at one breakpoint. */
-  --space-band:  clamp(var(--space-9), 8vw, var(--space-10));  /* between major sections: 72 → 96px */
-  --space-stack: clamp(var(--space-7), 5vw, var(--space-8));   /* intro → content inside a section: 40 → 56px */
 
   /* =========================================================================
    * Layout

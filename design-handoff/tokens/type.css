@@ -1,0 +1,204 @@
+/* OomphTravel type ramp
+ * 22 text styles exported from Figma on 10 September 2026.
+ * Fraunces for display and headings, Inter for everything else.
+ * Line heights are unitless. Letter spacing is in em.
+ * Fraunces Display is used at optical size 144 for the hero (D-Display only).
+ */
+
+:root {
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Desktop/Display — Hero headline */
+.desktop-display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 72px;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/H1 — Page title */
+.desktop-h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/H2 — Section title */
+.desktop-h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/H2 Statement — Statement band */
+.desktop-h2-statement {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/H3 — Card title */
+.desktop-h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/Quote — Client story — italic */
+.desktop-quote {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 26px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop/Price — Tour card price */
+.desktop-price {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+/* Desktop/Body — Body copy, 720px max measure */
+.desktop-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Desktop/Body Small — Card body */
+.desktop-body-small {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* Desktop/Meta — Captions, meta */
+.desktop-meta {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Desktop/Eyebrow — ALL CAPS, +0.12em */
+.desktop-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Desktop/Button — Buttons */
+.desktop-button {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.0;
+}
+
+/* Desktop/Nav — Header links */
+.desktop-nav {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.0;
+}
+
+/* Desktop/Wordmark — Logo wordmark */
+.desktop-wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+
+/* Mobile/Display — Hero headline */
+.mobile-display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 40px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile/H1 — Page title */
+.mobile-h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile/H2 — Section title */
+.mobile-h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile/H3 — Card title */
+.mobile-h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile/Body — Body copy */
+.mobile-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* Mobile/Body Small — List rows */
+.mobile-body-small {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Mobile/Eyebrow — ALL CAPS */
+.mobile-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Mobile/Wordmark — Logo wordmark */
+.mobile-wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}

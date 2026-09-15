@@ -1,0 +1,344 @@
+/*
+ * OomphTravel — escorted tours (plan §6.5 index, §6.6 operator, §6.7 tour).
+ * Loaded on those three pages only, after destination.css, which supplies
+ * the hero, prose and accordion primitives. Tokens only, no hex.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Index: filters                                                        */
+/* ------------------------------------------------------------------ */
+
+.ot-filters {
+	display: grid;
+	grid-template-columns: repeat( 4, minmax( 0, 1fr ) ) auto;
+	gap: var(--space-md);
+	align-items: end;
+	margin: 0 0 var(--space-md);
+	padding: var(--space-lg);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+}
+.ot-filters__field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	min-width: 0;
+}
+.ot-filters__label {
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.ot-filters__select {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding: var(--space-xs) var(--space-md);
+	font-family: var(--font-body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+	appearance: auto;
+}
+.ot-filters__select:focus-visible {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+}
+.ot-filters__actions {
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	white-space: nowrap;
+}
+/* With the script running, a change submits; the button is redundant. */
+.ot-filters.is-live .ot-filters__submit { display: none; }
+
+.ot-filters__count {
+	margin: 0 0 var(--space-lg);
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-tours-grid__empty {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+
+/* Operator card: the CruiseOomph hand-off line (D32). */
+.ot-card-operator__cruise {
+	margin: 0;
+	font-size: var(--wp--custom--type--desktop--meta--size);
+	line-height: var(--wp--custom--type--desktop--meta--line-height);
+	color: var(--text-muted);
+}
+.ot-card-operator__cruise a { color: var(--text-ink); text-decoration-color: var(--accent-teal); }
+
+/* ------------------------------------------------------------------ */
+/* Index: how I match you (three numbered steps)                         */
+/* ------------------------------------------------------------------ */
+
+.ot-steps {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+.ot-steps__step {
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-steps__step:first-child { border-top-color: var(--accent-teal); }
+.ot-steps__number {
+	display: block;
+	margin-bottom: var(--space-sm);
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	color: var(--accent-teal);
+}
+.ot-steps__title {
+	margin: 0 0 var(--space-xs);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-steps__body {
+	margin: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-slate);
+}
+
+/* ------------------------------------------------------------------ */
+/* Facts (operator aside, tour at-a-glance)                              */
+/* ------------------------------------------------------------------ */
+
+.ot-facts {
+	margin: 0;
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-facts__row {
+	display: grid;
+	grid-template-columns: 9em minmax( 0, 1fr );
+	gap: var(--space-md);
+	padding-block: var(--space-sm);
+	border-bottom: 1px solid var(--line-hairline);
+}
+.ot-facts__term {
+	margin: 0;
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	line-height: var(--type-body-line);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.ot-facts__value {
+	margin: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+}
+.ot-facts__value a { color: var(--text-ink); text-decoration-color: var(--accent-teal); }
+.ot-facts__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+}
+.ot-facts__list li {
+	position: relative;
+	padding-left: var(--space-md);
+}
+.ot-facts__list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: calc( var(--type-body-line) / 2 - 2px );
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--accent-teal);
+}
+
+/* ------------------------------------------------------------------ */
+/* Operator page                                                         */
+/* ------------------------------------------------------------------ */
+
+.ot-op-hero { padding-block: var(--space-section); }
+.ot-op-hero__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-md);
+	max-width: calc( var(--wp--custom--measure--heading) + 2 * var(--space-page-margin) );
+}
+.ot-op-hero__logo { margin-bottom: var(--space-sm); }
+.ot-op-hero__logo img { display: block; max-height: 64px; width: auto; height: auto; }
+.ot-op-hero__title {
+	margin: 0;
+	font-size: var(--type-h1-size);
+	line-height: var(--type-h1-line);
+	color: var(--text-ink);
+	text-wrap: balance;
+}
+.ot-op-hero__lead {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-op-hero__inner .ot-btn { margin-top: var(--space-sm); }
+
+.ot-op-fit__inner {
+	display: grid;
+	grid-template-columns: minmax( 0, 7fr ) minmax( 0, 4fr );
+	gap: var(--space-2xl);
+	align-items: start;
+}
+.ot-op-facts { padding-top: var(--space-xs); }
+
+.ot-op-ways__cols {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+}
+.ot-op-ways__col {
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-op-ways__title {
+	margin: 0 0 var(--space-sm);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-op-ways__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+}
+.ot-op-ways__list a { color: var(--text-ink); text-decoration-color: var(--accent-teal); }
+
+/* ------------------------------------------------------------------ */
+/* Tour page                                                             */
+/* ------------------------------------------------------------------ */
+
+.ot-tour-hero__lead {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-on-navy);
+	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
+}
+.ot-tour-hero__price {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xs);
+	color: var(--text-on-navy);
+}
+.ot-tour-price {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--space-xs);
+	margin: 0;
+}
+.ot-tour-price__amount {
+	font-family: var(--wp--custom--type--desktop--price--family);
+	font-weight: var(--wp--custom--type--desktop--price--weight);
+	font-size: var(--type-h2-size);
+	line-height: var(--type-h2-line);
+}
+.ot-tour-price__from,
+.ot-tour-price__per,
+.ot-tour-price__note,
+.ot-tour-price__caption {
+	margin: 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: color-mix( in srgb, var(--text-on-navy) 82%, transparent );
+}
+.ot-tour-price__caption { color: var(--text-on-navy); }
+
+.ot-tour-glance__cols {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: var(--space-2xl);
+	align-items: start;
+}
+.ot-tour-glance__subhead {
+	margin: 0 0 var(--space-sm);
+	padding-top: var(--space-sm);
+	border-top: 1px solid var(--line-hairline);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-tour-glance__brochure {
+	margin: var(--space-md) 0 0;
+	font-size: var(--type-body-small-size);
+}
+
+.ot-tour-itinerary .ot-accordion__body { display: flex; flex-direction: column; gap: var(--space-xs); }
+.ot-tour-itinerary__text { margin: 0; }
+.ot-tour-itinerary__overnight {
+	margin: 0;
+	font-size: var(--type-body-small-size);
+	line-height: var(--type-body-small-line);
+	color: var(--text-muted);
+}
+.ot-tour-itinerary__overnight-label {
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	margin-right: var(--space-xs);
+}
+
+/* ------------------------------------------------------------------ */
+/* Phone                                                                 */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+	.ot-filters { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+	.ot-filters__actions { grid-column: 1 / -1; }
+}
+
+@media (max-width: 767px) {
+	.ot-filters { grid-template-columns: minmax( 0, 1fr ); padding: var(--space-md); }
+	.ot-steps,
+	.ot-op-fit__inner,
+	.ot-op-ways__cols,
+	.ot-tour-glance__cols { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-lg); }
+	.ot-facts__row { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-2xs); }
+}

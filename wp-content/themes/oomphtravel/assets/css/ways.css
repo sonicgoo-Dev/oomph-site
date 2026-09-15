@@ -1,0 +1,217 @@
+/*
+ * OomphTravel — ways to travel (plan §6.4 Custom journeys, §6.8 Resorts &
+ * villas, §6.9 Multi-generational trips, §6.10 Cruise planning). Loaded on
+ * those four pages only, after destination.css (hero, prose, columns,
+ * accordion) and tours.css (numbered steps). Tokens only, no hex.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Hero lead and button                                                  */
+/* ------------------------------------------------------------------ */
+
+.ot-way-hero__copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-md);
+}
+.ot-way-hero__lead {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-on-navy);
+	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
+}
+.ot-way-hero__copy .ot-btn { margin-top: var(--space-xs); }
+
+/* ------------------------------------------------------------------ */
+/* Who this is for, and who it isn't: two lists side by side            */
+/* ------------------------------------------------------------------ */
+
+.ot-way-who__cols {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: var(--space-2xl);
+}
+.ot-way-who__col {
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-way-who__col--for { border-top-color: var(--accent-teal); }
+.ot-way-who__title {
+	margin: 0 0 var(--space-md);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-way-who__list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+	max-width: 44ch;
+}
+.ot-way-who__list li {
+	position: relative;
+	padding-left: var(--space-md);
+}
+.ot-way-who__list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: calc( var(--type-body-line) / 2 - 2px );
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--accent-teal);
+}
+.ot-way-who__col--not .ot-way-who__list li::before { background: var(--line-hairline); }
+
+/* ------------------------------------------------------------------ */
+/* What I do · What I plan around · How I choose: a grid of items       */
+/* ------------------------------------------------------------------ */
+
+.ot-way-items {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-xl) var(--space-2xl);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.ot-way-items--2 { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+.ot-way-items--4 { grid-template-columns: repeat( 4, minmax( 0, 1fr ) ); gap: var(--space-xl); }
+.ot-way-item {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-way-item__title {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 400;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-way-item__body {
+	margin: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-slate);
+	max-width: 40ch;
+}
+
+/* The note under the steps and the fees paragraph. */
+.ot-way-note {
+	margin: var(--space-xl) 0 0;
+	max-width: var(--wp--custom--measure--body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-slate);
+}
+.ot-way-prose { max-width: var(--wp--custom--measure--body); }
+
+/* ------------------------------------------------------------------ */
+/* Resorts & villas: what booking through me adds, two separate blocks  */
+/* ------------------------------------------------------------------ */
+
+.ot-way-adds__intro { margin: 0 0 var(--space-xl); }
+.ot-way-adds__cols {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+}
+.ot-way-adds__block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+	padding: var(--space-lg);
+	background: var(--surface-white);
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+}
+.ot-way-adds__block--villas { background: transparent; }
+.ot-way-adds__title {
+	margin: 0;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-way-adds__block p {
+	margin: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-ink);
+}
+.ot-way-adds__block p + p { color: var(--text-slate); }
+
+/* ------------------------------------------------------------------ */
+/* Cruise planning: three link cards, the land section, the closing     */
+/* ------------------------------------------------------------------ */
+
+.ot-way-links {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.ot-way-link {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-xs);
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-way-link:first-child { border-top-color: var(--accent-teal); }
+.ot-way-link__title {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 400;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+.ot-way-link__body {
+	margin: 0 0 var(--space-xs);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-slate);
+	max-width: 36ch;
+}
+
+.ot-way-land__action { margin: var(--space-xl) 0 0; }
+
+.ot-way-closing__lockup { align-items: center; margin-bottom: 0; }
+
+/* ------------------------------------------------------------------ */
+/* Phone                                                                 */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+	.ot-way-items,
+	.ot-way-items--4 { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+}
+
+@media (max-width: 767px) {
+	.ot-way-who__cols,
+	.ot-way-items,
+	.ot-way-items--2,
+	.ot-way-items--4,
+	.ot-way-adds__cols,
+	.ot-way-links { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-lg); }
+	.ot-way-adds__block { padding: var(--space-md); }
+}

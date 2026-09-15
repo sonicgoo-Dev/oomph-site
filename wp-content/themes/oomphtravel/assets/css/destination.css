@@ -1,0 +1,358 @@
+/*
+ * OomphTravel — destination pages (plan §6.2 index, §6.3 template). Loaded
+ * on the destination archive and singles only, after components.css.
+ * Tokens only, no hex; translucency is color-mix() from a token.
+ */
+
+.ot-main--flush { min-height: 0; }
+
+/* ------------------------------------------------------------------ */
+/* Hero (full on a destination, short on the index)                    */
+/* ------------------------------------------------------------------ */
+
+.ot-dest-hero {
+	position: relative;
+	isolation: isolate;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	min-height: min( 70vh, 640px );
+	min-height: min( 70svh, 640px );
+	overflow: hidden;
+	background: var(--navy-deep);
+	color: var(--text-on-navy);
+}
+.ot-dest-hero--short { min-height: 420px; }
+.ot-dest-hero--bare  { min-height: 0; }
+
+.ot-dest-hero__picture,
+.ot-dest-hero__picture img {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+.ot-dest-hero__picture img {
+	object-fit: cover;
+	object-position: 50% 40%;
+}
+
+.ot-dest-hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(
+		180deg,
+		color-mix( in srgb, var(--navy-deep) 6%, transparent ) 0%,
+		color-mix( in srgb, var(--navy-deep) 20%, transparent ) 45%,
+		color-mix( in srgb, var(--navy-deep) 80%, transparent ) 100%
+	);
+}
+
+.ot-dest-hero__inner {
+	width: 100%;
+	padding-block: var(--space-xl);
+}
+.ot-dest-hero--bare .ot-dest-hero__inner { padding-block: var(--space-section) var(--space-xl); }
+
+.ot-dest-hero__copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-md);
+	max-width: var(--wp--custom--measure--heading);
+}
+.ot-dest-hero .ot-eyebrow { color: var(--text-on-navy); }
+
+.ot-dest-hero__title {
+	margin: 0;
+	color: var(--text-on-navy);
+	font-size: var(--type-h1-size);
+	line-height: var(--type-h1-line);
+	text-wrap: balance;
+	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
+}
+.ot-dest-hero__copy .ot-btn { margin-top: var(--space-sm); }
+
+/* ------------------------------------------------------------------ */
+/* Intro                                                               */
+/* ------------------------------------------------------------------ */
+
+.ot-prose {
+	max-width: var(--wp--custom--measure--body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	color: var(--text-slate);
+}
+.ot-prose p { margin: 0 0 var(--space-md); }
+.ot-prose p:last-child { margin-bottom: 0; }
+.ot-prose p:first-child {
+	font-family: var(--font-display);
+	font-weight: 300;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Regions · Ways · Stays: quiet columns, hairline on top              */
+/* ------------------------------------------------------------------ */
+
+.ot-dest-regions__grid,
+.ot-dest-ways__cols,
+.ot-dest-stays__list {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: var(--space-xl);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.ot-dest-stays__list { grid-template-columns: repeat( 2, minmax( 0, 1fr ) ); }
+
+.ot-dest-region,
+.ot-dest-way,
+.ot-dest-stay {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-sm);
+	padding-top: var(--space-md);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-dest-way--lead { border-top-color: var(--accent-teal); }
+
+.ot-dest-region__name,
+.ot-dest-way__title,
+.ot-dest-stay__name {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 400;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+
+.ot-dest-region__blurb,
+.ot-dest-way__body,
+.ot-dest-stay__note,
+.ot-dest-stay__perks,
+.ot-dest-way__operators {
+	margin: 0;
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+	max-width: 40ch;
+}
+.ot-dest-way__body { margin-bottom: var(--space-xs); }
+.ot-dest-way__operators { font-size: var(--type-body-small-size); }
+.ot-dest-way__operators-label { color: var(--text-muted); }
+.ot-dest-way__operators a { color: var(--text-ink); text-decoration-color: var(--accent-teal); }
+.ot-dest-stay__perks {
+	font-size: var(--type-body-small-size);
+	color: var(--text-muted);
+}
+.ot-dest-ways__tours { margin-top: var(--space-xl); }
+
+/* ------------------------------------------------------------------ */
+/* Accordion (sample itinerary, FAQ)                                   */
+/* ------------------------------------------------------------------ */
+
+.ot-accordion {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-width: var(--wp--custom--measure--heading);
+	border-top: 1px solid var(--line-hairline);
+}
+.ot-accordion__item { border-bottom: 1px solid var(--line-hairline); }
+
+.ot-accordion__summary {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-md);
+	padding-block: var(--space-md);
+	cursor: pointer;
+	list-style: none;
+	color: var(--text-ink);
+}
+.ot-accordion__summary::-webkit-details-marker { display: none; }
+.ot-accordion__summary:hover .ot-accordion__title { color: var(--accent-teal); }
+.ot-accordion__summary:focus-visible {
+	outline: 2px solid var(--accent-teal);
+	outline-offset: 2px;
+}
+
+.ot-accordion__label {
+	flex: 0 0 5.5em;
+	font-family: var(--font-body);
+	font-weight: var(--wp--custom--type--desktop--eyebrow--weight);
+	font-size: var(--type-eyebrow-size);
+	letter-spacing: var(--wp--custom--type--desktop--eyebrow--letter-spacing);
+	text-transform: uppercase;
+	color: var(--accent-teal);
+}
+.ot-accordion__title {
+	flex: 1 1 auto;
+	font-family: var(--font-display);
+	font-weight: 400;
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	transition: color var(--wp--custom--motion--quick) ease;
+}
+
+/* The marker: a plus that turns into a minus. */
+.ot-accordion__marker {
+	position: relative;
+	flex: none;
+	align-self: center;
+	width: 16px;
+	height: 16px;
+}
+.ot-accordion__marker::before,
+.ot-accordion__marker::after {
+	content: "";
+	position: absolute;
+	inset: 50% auto auto 0;
+	width: 16px;
+	height: 1.5px;
+	background: var(--accent-teal);
+	transform: translateY(-50%);
+	transition: transform var(--wp--custom--motion--quick) ease;
+}
+.ot-accordion__marker::after { transform: translateY(-50%) rotate(90deg); }
+.ot-accordion__item[open] .ot-accordion__marker::after { transform: translateY(-50%) rotate(0deg); }
+
+.ot-accordion__body {
+	margin: 0;
+	padding: 0 0 var(--space-lg) 0;
+	max-width: var(--wp--custom--measure--body);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line);
+}
+.ot-dest-itinerary .ot-accordion__body { padding-left: calc( 5.5em + var(--space-md) ); }
+
+.ot-dest-itinerary__note {
+	margin: var(--space-lg) 0 0;
+	font-size: var(--type-body-small-size);
+	color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* When to go: the twelve-month strip                                  */
+/* ------------------------------------------------------------------ */
+
+.ot-months {
+	display: grid;
+	grid-template-columns: repeat( 12, minmax( 0, 1fr ) );
+	gap: var(--space-xs);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-width: var(--wp--custom--measure--heading);
+}
+.ot-months__month {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	aspect-ratio: 1;
+	border: 1px solid var(--line-hairline);
+	border-radius: var(--radius-card);
+	background: var(--surface-white);
+	color: var(--text-muted);
+	font-family: var(--font-body);
+	font-weight: 500;
+	font-size: var(--type-body-small-size);
+}
+.ot-months__month abbr { text-decoration: none; }
+.ot-months__month.is-best {
+	background: var(--accent-teal);
+	border-color: var(--accent-teal);
+	color: var(--surface-white);
+}
+.ot-months__month.is-shoulder {
+	background: color-mix( in srgb, var(--accent-teal) 22%, var(--surface-white) );
+	border-color: color-mix( in srgb, var(--accent-teal) 40%, var(--line-hairline) );
+	color: var(--text-ink);
+}
+
+.ot-months__key {
+	display: flex;
+	gap: var(--space-md);
+	margin: var(--space-md) 0 0;
+	font-size: var(--type-body-small-size);
+	color: var(--text-muted);
+}
+.ot-months__key-item::before {
+	content: "";
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	margin-right: var(--space-xs);
+	border-radius: 2px;
+	vertical-align: -1px;
+	background: var(--accent-teal);
+}
+.ot-months__key-item--shoulder::before { background: color-mix( in srgb, var(--accent-teal) 22%, var(--surface-white) ); border: 1px solid color-mix( in srgb, var(--accent-teal) 40%, var(--line-hairline) ); }
+
+/* ------------------------------------------------------------------ */
+/* Quotation · By ship                                                 */
+/* ------------------------------------------------------------------ */
+
+.ot-dest-quote__inner { max-width: calc( 720px + 2 * var(--space-page-margin) ); }
+
+.ot-dest-ship { padding-block: var(--space-lg); }
+.ot-dest-ship__text {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--space-xs) var(--space-md);
+	margin: 0;
+	font-size: var(--type-body-size);
+}
+.ot-dest-ship__lead {
+	font-family: var(--font-display);
+	font-size: var(--type-h3-size);
+	color: var(--text-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Index groups                                                        */
+/* ------------------------------------------------------------------ */
+
+.ot-dest-index__group + .ot-dest-index__group { padding-top: 0; }
+.ot-dest-index__heading {
+	margin: 0 0 var(--space-lg);
+	font-size: var(--type-h2-size);
+	line-height: var(--type-h2-line);
+}
+.ot-dest-index__empty {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	font-family: var(--font-display);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line);
+	color: var(--text-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Phone                                                               */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+	.ot-dest-regions__grid,
+	.ot-dest-ways__cols,
+	.ot-dest-stays__list { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-lg); }
+	.ot-months { grid-template-columns: repeat( 6, minmax( 0, 1fr ) ); }
+	.ot-accordion__summary { flex-wrap: wrap; }
+	.ot-accordion__label { flex-basis: 100%; }
+	.ot-dest-itinerary .ot-accordion__body { padding-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ot-accordion__marker::before,
+	.ot-accordion__marker::after,
+	.ot-accordion__title { transition: none; }
+}

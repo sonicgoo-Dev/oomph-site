@@ -4,7 +4,7 @@
  *
  * Single output() entry on wp_head outputs one combined @graph that
  * covers Organization, Person, BreadcrumbList sitewide, plus contextual
- * Service / Event / FAQPage / Article depending on page type.
+ * Service / FAQPage / Article depending on page type.
  *
  * Bodies of each graph come from docs/schema.md. Real values (URLs,
  * dates, photo paths) substitute placeholders at runtime via
@@ -106,19 +106,29 @@ final class Schema {
 		$graph[] = self::organization();
 		$graph[] = self::person();
 
+		// The second advisor (D15, D28): on About, where her bio is printed,
+		// and on a journal post she wrote, where the byline names her.
+		$second = self::second_advisor();
+		if ( $second && ( is_page( 'about' ) || ( is_singular( 'post' ) && self::post_by_second_advisor( get_post(), $second ) ) ) ) {
+			$graph[] = self::second_person( $second );
+		}
+
 		if ( is_singular() || is_front_page() ) {
 			$graph[] = self::breadcrumb();
 		}
 
-		if ( is_singular( CPT_Cruise::POST_TYPE ) ) {
-			$event = self::event_for_current_post();
-			if ( $event ) {
-				$graph[] = $event;
+		if ( is_singular( 'post' ) ) {
+			$graph[] = self::article();
+		}
+
+		if ( is_singular( CPT_Destination::POST_TYPE ) ) {
+			foreach ( self::destination_nodes() as $node ) {
+				$graph[] = $node;
 			}
 		}
 
-		if ( is_singular( 'post' ) ) {
-			$graph[] = self::article();
+		if ( is_singular( CPT_Tour::POST_TYPE ) ) {
+			$graph[] = self::tour_node();
 		}
 
 		if ( self::is_service_page() ) {
@@ -224,19 +234,9 @@ final class Schema {
 				array( '@type' => 'Organization', 'name' => 'Cruise Lines International Association', 'url' => 'https://cruising.org' ),
 				array( '@type' => 'Organization', 'name' => 'Nexion Travel Group', 'url' => 'https://nexion.com' ),
 			),
+			// Supplier specialist certificates (Silversea, BritAgent) were removed
+			// 2026-09-11 at Eric's request; they no longer appear anywhere on the site.
 			'hasCredential' => array(
-				array(
-					'@type'              => 'EducationalOccupationalCredential',
-					'credentialCategory' => 'certification',
-					'name'               => 'Silversea Ultra-Luxury Specialist',
-					'recognizedBy'       => array( '@type' => 'Organization', 'name' => 'Silversea Cruises' ),
-				),
-				array(
-					'@type'              => 'EducationalOccupationalCredential',
-					'credentialCategory' => 'certification',
-					'name'               => 'BritAgent Pro',
-					'recognizedBy'       => array( '@type' => 'Organization', 'name' => 'VisitBritain' ),
-				),
 				// Medical degree — visible on /about in the credentials grid,
 				// which is what earns it a place here (docs/schema.md: never
 				// mark up content that isn't on the page).
@@ -259,6 +259,208 @@ final class Schema {
 		return $person;
 	}
 
+
+	/**
+	 * The second advisor, Amy Hempel (plan §6.11, D15, D28), as the theme
+	 * registers her through `oomph_second_advisor`: name, login, url (the
+	 * /about/#amy anchor), jobTitle, description, image. The theme owns the
+	 * data because the theme prints it, so the node never claims copy that
+	 * is not on the page. Null until the theme registers her.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	private static function second_advisor(): ?array {
+		$data = apply_filters( 'oomph_second_advisor', array() );
+		if ( ! is_array( $data ) || '' === trim( (string) ( $data['name'] ?? '' ) ) || '' === trim( (string) ( $data['url'] ?? '' ) ) ) {
+			return null;
+		}
+		return $data;
+	}
+
+	/**
+	 * @param array<string,mixed> $advisor From second_advisor().
+	 * @return array<string,mixed>
+	 */
+	private static function second_person( array $advisor ): array {
+		$node = array(
+			'@type'    => 'Person',
+			'@id'      => (string) $advisor['url'],
+			'name'     => (string) $advisor['name'],
+			'url'      => (string) $advisor['url'],
+			'worksFor' => array( '@id' => home_url( '/' ) . '#organization' ),
+		);
+		if ( '' !== trim( (string) ( $advisor['jobTitle'] ?? '' ) ) ) {
+			$node['jobTitle'] = (string) $advisor['jobTitle'];
+		}
+		if ( '' !== trim( (string) ( $advisor['description'] ?? '' ) ) ) {
+			$node['description'] = wp_strip_all_tags( (string) $advisor['description'] );
+		}
+		if ( '' !== trim( (string) ( $advisor['image'] ?? '' ) ) ) {
+			$node['image'] = (string) $advisor['image'];
+		}
+		return $node;
+	}
+
+	/**
+	 * True when the post's author is the second advisor's WordPress user.
+	 *
+	 * @param \WP_Post|null       $post
+	 * @param array<string,mixed> $advisor
+	 */
+	private static function post_by_second_advisor( $post, array $advisor ): bool {
+		$login = trim( (string) ( $advisor['login'] ?? '' ) );
+		if ( '' === $login || ! $post instanceof \WP_Post ) {
+			return false;
+		}
+		$user = get_userdata( (int) $post->post_author );
+		return $user instanceof \WP_User && $user->user_login === $login;
+	}
+
+	/**
+	 * TouristDestination for a destination record (docs/schema.md), with the
+	 * page's FAQ as FAQPage when it has real Q&A pairs. Plan §6.3 item 9.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function destination_nodes(): array {
+		$post = get_post();
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+		$id  = (int) $post->ID;
+		$url = (string) get_permalink( $post );
+
+		$intro       = wp_strip_all_tags( Fields::value( $id, 'intro' ) );
+		$description = '' !== $intro ? wp_trim_words( $intro, 40, '…' ) : (string) get_the_excerpt( $post );
+
+		$variant = Fields::value( $id, 'variant' );
+		$types   = array( 'Couples', 'Multi-generational families' );
+		if ( 'resort' === $variant ) {
+			$types[] = 'Resort travelers';
+		}
+
+		$nodes = array(
+			array(
+				'@type'       => 'TouristDestination',
+				'@id'         => $url . '#destination',
+				'name'        => get_the_title( $post ),
+				'url'         => $url,
+				'description' => $description,
+				'touristType' => $types,
+			),
+		);
+
+		$thumb = (int) get_post_thumbnail_id( $post );
+		if ( $thumb ) {
+			$nodes[0]['image'] = (string) wp_get_attachment_image_url( $thumb, 'full' );
+		}
+
+		$main_entity = array();
+		foreach ( Fields::repeater( $id, 'faq', array( 'question', 'answer' ) ) as $row ) {
+			if ( '' === $row['question'] || '' === $row['answer'] ) {
+				continue;
+			}
+			$main_entity[] = array(
+				'@type'          => 'Question',
+				'name'           => $row['question'],
+				'acceptedAnswer' => array(
+					'@type' => 'Answer',
+					'text'  => wp_strip_all_tags( $row['answer'] ),
+				),
+			);
+		}
+		if ( $main_entity ) {
+			$nodes[] = array(
+				'@type'      => 'FAQPage',
+				'@id'        => $url . '#faq',
+				'mainEntity' => $main_entity,
+			);
+		}
+
+		return $nodes;
+	}
+
+	/**
+	 * TouristTrip for a tour page (plan §6.7), with an Offer only where a
+	 * from-price exists (D36). No departures and no availability (D35): the
+	 * Offer carries the standard price and the page URL, nothing dated.
+	 * The itinerary is the same repeater the accordion prints.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private static function tour_node(): array {
+		$post = get_post();
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+		$id  = (int) $post->ID;
+		$url = (string) get_permalink( $post );
+
+		$node = array(
+			'@type' => 'TouristTrip',
+			'@id'   => $url . '#trip',
+			'name'  => get_the_title( $post ),
+			'url'   => $url,
+		);
+
+		$blurb = wp_strip_all_tags( Fields::value( $id, 'blurb' ) );
+		if ( '' !== $blurb ) {
+			$node['description'] = $blurb;
+		}
+
+		$operator = CPT_Tour::operator_id( $id );
+		if ( $operator && 'publish' === get_post_status( $operator ) ) {
+			$node['provider'] = array(
+				'@type' => 'Organization',
+				'name'  => get_the_title( $operator ),
+				'url'   => (string) get_permalink( $operator ),
+			);
+		}
+
+		$places = get_the_terms( $id, Taxonomies::DESTINATION );
+		if ( is_array( $places ) && $places ) {
+			$node['touristType'] = array( 'Escorted tour travelers' );
+			$node['itinerary']   = array(
+				'@type'           => 'ItemList',
+				'itemListElement' => array(),
+			);
+			$position = 0;
+			foreach ( Fields::repeater( $id, 'itinerary', array( 'day', 'title', 'overnight', 'text' ) ) as $row ) {
+				if ( '' === $row['title'] ) {
+					continue;
+				}
+				++$position;
+				$node['itinerary']['itemListElement'][] = array(
+					'@type'    => 'ListItem',
+					'position' => $position,
+					'name'     => ( '' !== $row['day'] ? 'Day ' . $row['day'] . ': ' : '' ) . $row['title'],
+				);
+			}
+			if ( ! $node['itinerary']['itemListElement'] ) {
+				unset( $node['itinerary'] );
+			}
+		}
+
+		$thumb = (int) get_post_thumbnail_id( $post );
+		if ( $thumb ) {
+			$node['image'] = (string) wp_get_attachment_image_url( $thumb, 'full' );
+		}
+
+		$price = CPT_Tour::from_price( $id );
+		if ( null !== $price ) {
+			$node['offers'] = array(
+				'@type'         => 'Offer',
+				'url'           => $url,
+				'price'         => (string) $price,
+				'priceCurrency' => 'USD',
+				'description'   => 'From-price per person, double occupancy. Dates and availability confirmed on request.',
+				'seller'        => array( '@id' => home_url( '/#organization' ) ),
+			);
+		}
+
+		return $node;
+	}
+
 	private static function breadcrumb(): array {
 		$items = array(
 			array(
@@ -269,12 +471,43 @@ final class Schema {
 			),
 		);
 
+		if ( is_singular( CPT_Destination::POST_TYPE ) ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => 'Destinations',
+				'item'     => (string) get_post_type_archive_link( CPT_Destination::POST_TYPE ),
+			);
+		}
+
+		// Tours and operators both sit under the escorted tours index; a tour
+		// also passes through its operator's page when that page is live.
+		if ( is_singular( array( CPT_Tour::POST_TYPE, CPT_Operator::POST_TYPE ) ) ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => 'Escorted tours',
+				'item'     => (string) get_post_type_archive_link( CPT_Tour::POST_TYPE ),
+			);
+			if ( is_singular( CPT_Tour::POST_TYPE ) ) {
+				$operator = CPT_Tour::operator_id( (int) get_queried_object_id() );
+				if ( $operator && 'publish' === get_post_status( $operator ) ) {
+					$items[] = array(
+						'@type'    => 'ListItem',
+						'position' => 3,
+						'name'     => get_the_title( $operator ),
+						'item'     => (string) get_permalink( $operator ),
+					);
+				}
+			}
+		}
+
 		if ( is_singular() && ! is_front_page() ) {
 			$post = get_post();
 			if ( $post ) {
 				$items[] = array(
 					'@type'    => 'ListItem',
-					'position' => 2,
+					'position' => count( $items ) + 1,
 					'name'     => get_the_title( $post ),
 					'item'     => (string) get_permalink( $post ),
 				);
@@ -367,114 +600,6 @@ final class Schema {
 	}
 
 	/**
-	 * Event schema for a single oomph_cruise, driven by the Group Cruise ACF
-	 * fields. Every property is emitted only when its source field is real:
-	 *
-	 *   • Distinctive Voyages → Event + startDate/endDate + ship-as-Place
-	 *     location + one subEvent per populated shore event. NO offers — these
-	 *     sailings carry no price data, and availability is never fabricated.
-	 *   • Hosted / amenity → Event + offers when a real price exists.
-	 *
-	 * Booking references are never read here.
-	 */
-	private static function event_for_current_post(): ?array {
-		$post = get_post();
-		if ( ! $post ) {
-			return null;
-		}
-
-		$f = static function ( string $name ) use ( $post ) {
-			return function_exists( 'get_field' ) ? get_field( $name, $post->ID ) : null;
-		};
-
-		$sailing_type = (string) ( $f( 'sailing_type' ) ?: 'hosted_group' );
-		$ship         = trim( (string) $f( 'cruise_ship_name' ) );
-		$line         = trim( (string) $f( 'cruise_line' ) );
-		$start        = (string) $f( 'cruise_dates_start' );
-		$end          = (string) $f( 'cruise_dates_end' );
-		$url          = (string) get_permalink( $post );
-
-		$event = array(
-			'@type'               => 'Event',
-			'@id'                 => $url . '#event',
-			'name'                => get_the_title( $post ),
-			'url'                 => $url,
-			'eventStatus'         => 'https://schema.org/EventScheduled',
-			'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-			'organizer'           => array( '@id' => home_url( '/' ) . '#organization' ),
-		);
-
-		if ( '' !== $start ) {
-			$event['startDate'] = $start;
-		}
-		if ( '' !== $end ) {
-			$event['endDate'] = $end;
-		}
-		if ( '' !== $ship ) {
-			$event['location'] = array(
-				'@type' => 'Place',
-				'name'  => '' !== $line ? "{$ship} ({$line})" : $ship,
-			);
-		}
-
-		// Description only from real editorial copy — never the import placeholder.
-		$desc = wp_strip_all_tags( (string) get_the_excerpt( $post ) );
-		if ( '' !== $desc && false === strpos( $desc, 'WHY THIS SAILING' ) ) {
-			$event['description'] = $desc;
-		}
-
-		if ( 'distinctive_voyage' === $sailing_type ) {
-			$subs = array();
-			for ( $n = 1; $n <= 3; $n++ ) {
-				$name = trim( (string) $f( "shore_event_{$n}_name" ) );
-				if ( '' === $name ) {
-					continue;
-				}
-				$sub  = array(
-					'@type' => 'Event',
-					'name'  => $name,
-				);
-				$sdate = (string) $f( "shore_event_{$n}_date" );
-				if ( '' !== $sdate ) {
-					$sub['startDate'] = $sdate;
-				}
-				$sloc = trim( (string) $f( "shore_event_{$n}_location" ) );
-				if ( '' !== $sloc ) {
-					$sub['location'] = array( '@type' => 'Place', 'name' => $sloc );
-				}
-				$sdet = trim( (string) $f( "shore_event_{$n}_details" ) );
-				if ( '' !== $sdet ) {
-					$sub['description'] = $sdet;
-				}
-				$slink = trim( (string) $f( "shore_event_{$n}_link" ) ); // Flyer — also shown on the page.
-				if ( '' !== $slink ) {
-					$sub['url'] = $slink;
-				}
-				$subs[] = $sub;
-			}
-			if ( ! empty( $subs ) ) {
-				$event['subEvent'] = $subs;
-			}
-			// No offers for Distinctive Voyages — price data does not exist.
-			return $event;
-		}
-
-		// Hosted / amenity — attach offers only when a real price is set.
-		$price = $f( 'cruise_price_per_person' );
-		if ( is_numeric( $price ) && (float) $price > 0 ) {
-			$event['offers'] = array(
-				'@type'         => 'Offer',
-				'price'         => (string) ( (float) $price ),
-				'priceCurrency' => 'USD',
-				'availability'  => 'https://schema.org/InStock',
-				'url'           => $url,
-			);
-		}
-
-		return $event;
-	}
-
-	/**
 	 * Reviews + AggregateRating for /client-stories/.
 	 *
 	 * Returns a partial TravelAgency node carrying review[] + aggregateRating,
@@ -546,13 +671,21 @@ final class Schema {
 		$site = home_url( '/' );
 		$url  = (string) get_permalink( $post );
 
+		// The byline names the second advisor when she wrote the post, so the
+		// node points at her entity instead of the lead advisor's.
+		$author_id = $site . 'about/#advisor';
+		$second    = self::second_advisor();
+		if ( $second && self::post_by_second_advisor( $post, $second ) ) {
+			$author_id = (string) $second['url'];
+		}
+
 		$article = array(
 			'@type'            => 'BlogPosting',
 			'@id'              => $url . '#article',
 			'mainEntityOfPage' => $url,
 			'headline'         => get_the_title( $post ),
 			'description'      => wp_strip_all_tags( (string) get_the_excerpt( $post ) ),
-			'author'           => array( '@id' => $site . 'about/#advisor' ),
+			'author'           => array( '@id' => $author_id ),
 			'publisher'        => array( '@id' => $site . '#organization' ),
 			'datePublished'    => get_the_date( 'c', $post ),
 			'dateModified'     => get_the_modified_date( 'c', $post ),

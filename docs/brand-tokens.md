@@ -1,5 +1,11 @@
 # Brand Tokens — Oomph Travel
 
+> **Superseded 2026-09-10.** Colour and type now come from
+> `design-handoff/tokens/` (exported from Figma, D21 Deep Teal). This file is
+> kept for the *print* brand book and for the retiring kadence child theme.
+> Do not port values from here into `wp-content/themes/oomphtravel/`.
+
+
 Single source of truth for colors, typography, spacing, radii, and shadows. Pulled from the Brand Book (Volume I, MMXXVI). When CSS or `theme.json` references a token, the value lives **only** here. Update here first, then propagate.
 
 ---
@@ -79,13 +85,13 @@ On editorial pages, push neutrals to 70 and Terracotta to 3. On inquiry flows, P
 | Fraunces | Literary register — H1, H2, italic display | Google Fonts (self-hosted) | `--font-display` |
 | Inter | Credentialed register — body, UI, meta | Google Fonts (self-hosted) | `--font-text` |
 
-Self-host both. `font-display: swap`. Preload Inter regular only — Fraunces arrives with swap (2026-07 LCP audit: preloading Fraunces delayed LCP; the fallback-stack flash is acceptable).
+Self-host both. `font-display: swap`. Preload the two weights used above the fold (Fraunces 300, Inter 400).
 
 ### Scale (mobile-first; desktop multipliers in parens)
 
 | Token | Mobile | Desktop | Use |
 |---|---|---|---|
-| `--text-eyebrow` | 12px/16 | 13px/18 | Section eyebrows, all-caps Inter 500 tracked +0.14em (`--tracking-eyebrow`) |
+| `--text-eyebrow` | 12px/16 | 13px/18 | Section eyebrows, all-caps Inter 500 tracked +0.08em |
 | `--text-body-sm` | 14px/22 | 15px/24 | Captions, meta |
 | `--text-body` | 16px/26 | 17px/28 | Body prose — Inter 400 |
 | `--text-lead` | 18px/30 | 20px/32 | Subheads — Fraunces italic 300 |
@@ -102,7 +108,7 @@ Constrain to **66–72ch**. Generous whitespace inside the layout; never inside 
 
 - Fraunces sets the headline, Inter sets the body.
 - Italic Fraunces is reserved for emphasis and editorial pull-quotes. Don't run italic for more than one sentence in body text.
-- All-caps is for eyebrows and credentials only. Track Inter +0.14em when set in caps (`--tracking-eyebrow`).
+- All-caps is for eyebrows and credentials only. Track Inter +0.08em when set in caps.
 
 ---
 

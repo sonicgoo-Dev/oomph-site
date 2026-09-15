@@ -7,7 +7,7 @@
  *   LH_RUNS=1 npm run audit:lh             # single run (fast, but not evidence)
  *
  * Reads the page-type inventory from tests/e2e/fixtures/routes.ts (single
- * source of truth), adds the newest journal post + soonest sailing discovered
+ * source of truth), adds the newest journal post discovered
  * from the live site, runs `npx lighthouse` (mobile emulation is Lighthouse's
  * default) against each, and writes:
  *   - scripts/audit/out/lighthouse.json   (full per-URL numbers)
@@ -49,23 +49,22 @@ const journalPost = await discoverFirst(
   '/journal/',
   /class="oomph-card oomph-card--clickable[^"]*" href="([^"]+)"/
 );
-const sailing = await discoverFirst(
-  '/group-cruises/',
-  /class="oomph-card oomph-card--clickable oomph-sailing-card" href="([^"]+)"/
-);
 if (journalPost) paths.push(journalPost);
-if (sailing) paths.push(sailing);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const results = [];
 
 const median = (xs) => xs.slice().sort((a, b) => a - b)[Math.floor(xs.length / 2)];
 
+// The CLI entry point, run with this same Node binary — `npx` is a shell
+// shim on Windows and execFileSync cannot spawn it there (ENOENT).
+const LH_CLI = path.join(REPO, 'node_modules', 'lighthouse', 'cli', 'index.js');
+
 function runOnce(url) {
   const raw = execFileSync(
-    'npx',
+    process.execPath,
     [
-      'lighthouse',
+      LH_CLI,
       url,
       '--output=json',
       '--output-path=stdout',

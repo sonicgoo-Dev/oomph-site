@@ -26,12 +26,16 @@
 }
 
 .oomph-section {
-  padding-block: var(--space-band); /* fluid 72 → 96px; replaces the old breakpoint step */
+  padding-block: var(--space-10);
+}
+
+@media (max-width: 767px) {
+  .oomph-section { padding-block: var(--space-9); }
 }
 
 .oomph-section__intro {
   max-width: 56ch;
-  margin: 0 auto var(--space-stack);
+  margin: 0 auto var(--space-8);
   text-align: center;
 }
 
@@ -376,7 +380,6 @@
   font-style: italic;
   font-size: var(--text-display);
   line-height: var(--line-display);
-  letter-spacing: var(--tracking-display);
   text-wrap: balance;
   margin: var(--space-4) 0 var(--space-5);
 }
@@ -499,9 +502,6 @@
 
 /* ---------------------------------------------------------------------------
  * Placeholder boxes — clearly mark where Eric's photography goes
- *
- * @deprecated (elevation WS2) — retire this whole block once the licensed-
- * media pipeline replaces the last placeholder slot. Do not add new uses.
  * --------------------------------------------------------------------------- */
 
 .oomph-placeholder-square {
@@ -671,7 +671,7 @@
   font-family: var(--font-text);
   font-size: var(--text-eyebrow);
   font-weight: 500;
-  letter-spacing: var(--tracking-eyebrow);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-champagne);
   margin: 0 0 var(--space-4);
@@ -808,7 +808,7 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Cabin quiz (/trip-quiz/)
+ * Fluent Forms (Discovery Call intake — goes with the plugin, plan §6.15)
  * --------------------------------------------------------------------------- */
 
 .ff-hidden-field { display: none !important; }
@@ -825,93 +825,6 @@
 .frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style):focus-visible {
   background-color: var(--color-champagne) !important;
   color: var(--color-true-ink) !important;
-}
-
-.oomph-quiz__progress {
-  font-size: var(--text-eyebrow);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--color-slate);
-  margin: 0 0 var(--space-5);
-}
-
-.oomph-quiz__q {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.oomph-quiz__question {
-  font-family: var(--font-display);
-  font-size: var(--text-h2);
-  line-height: 1.2;
-  color: var(--color-marine-navy);
-  padding: 0;
-  margin: 0 0 var(--space-6);
-  outline: none;
-}
-
-.oomph-quiz__options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.oomph-quiz__opt {
-  width: 100%;
-  min-height: 44px;
-  text-align: left;
-  font-family: var(--font-text);
-  font-size: var(--text-body);
-  line-height: 1.4;
-  color: var(--text-default);
-  background: var(--surface-paper);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
-  cursor: pointer;
-  transition: border-color var(--duration-quick) var(--easing-standard),
-              background-color var(--duration-quick) var(--easing-standard),
-              transform var(--duration-quick) var(--easing-standard);
-}
-.oomph-quiz__opt:hover,
-.oomph-quiz__opt:focus-visible {
-  border-color: var(--color-old-brass);
-  background: var(--color-bone);
-  color: var(--text-default); /* hold text color — Kadence's button:hover turns it light */
-  transform: translateY(-1px);
-}
-
-.oomph-quiz__back {
-  margin-top: var(--space-6);
-  background: none;
-  border: 0;
-  color: var(--color-slate);
-  font-size: var(--text-body-sm);
-  cursor: pointer;
-}
-.oomph-quiz__back:hover { color: var(--color-marine-navy); }
-
-.oomph-quiz__ask {
-  margin-top: var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  background: var(--surface-alt);
-  border-left: 3px solid var(--color-old-brass);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-body-sm);
-}
-
-.oomph-quiz__thanks {
-  margin-top: var(--space-8);
-  padding-top: var(--space-7);
-  border-top: 1px solid var(--hairline);
-}
-.oomph-quiz__cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  align-items: center;
-  margin-top: var(--space-6);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1064,177 +977,3 @@
 .oomph-testimonial__meta p { margin: 0 0 var(--space-1); }
 .oomph-testimonial__author strong { color: var(--color-charcoal); }
 .oomph-testimonial__trip { font-style: italic; }
-
-/* Sailing card — shore-event line (shared: /group-cruises/, homepage, cruise page). */
-.oomph-sailing-card__event {
-  color: var(--color-bronze); /* was --signal-accent (old brass): 3.0:1 on bone — under AA; bronze is 4.8:1 (2026-07 audit) */
-  font-size: var(--text-body-sm);
-  font-weight: 600;
-  margin-bottom: var(--space-2);
-}
-
-/* Sailing card — amenity-departure variant. Lighter than a hosted/DV card:
- * these are commodity listings, so the perk line reads as supporting detail
- * rather than the headline event a Distinctive Voyage carries. */
-.oomph-sailing-card__perk {
-  color: var(--text-muted);
-  font-size: var(--text-body-sm);
-  margin-bottom: var(--space-2);
-}
-
-.oomph-sailing-card--amenity .oomph-card__eyebrow {
-  color: var(--text-muted);
-}
-
-/* Amenity block on a sailing single — the offer itself on an amenity
- * departure, a supporting list on a hosted sailing. */
-.oomph-cruise-amenity {
-  margin-bottom: var(--space-8);
-  padding: var(--space-6);
-  background: var(--surface-alt);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-}
-
-.oomph-cruise-amenity__list {
-  margin: var(--space-4) 0 var(--space-4);
-  padding-left: var(--space-5);
-}
-
-.oomph-cruise-amenity__list li {
-  margin-bottom: var(--space-2);
-}
-
-.oomph-cruise-amenity__note {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: var(--text-body-sm);
-}
-
-/* ===========================================================================
- * Utilities & band components — inline-style elimination (elevation WS1 PR-2)
- * Templates carry zero style="" attributes; every one-off below is a named,
- * token-backed class. Keep this section last so utilities win ties.
- * ========================================================================== */
-
-/* Accents on inverse (Cabin Notes / dark) grounds */
-.oomph-eyebrow--inverse   { color: var(--color-champagne); }
-.oomph-microcopy--inverse { color: var(--color-champagne); }
-.oomph-text-paper         { color: var(--color-paper); }
-.oomph-text-muted         { color: var(--text-muted); }
-
-/* Italic display heads pinned to an explicit scale step */
-.oomph-italic-display--h1 { font-size: var(--text-h1); }
-.oomph-italic-display--h2 { font-size: var(--text-h2); }
-.oomph-italic-display--h3 { font-size: var(--text-h3); }
-
-/* Spacing utilities — 8-pt scale only */
-.oomph-u-mt-5 { margin-top: var(--space-5); }
-.oomph-u-mt-6 { margin-top: var(--space-6); }
-.oomph-u-mt-7 { margin-top: var(--space-7); }
-.oomph-u-mb-4 { margin-bottom: var(--space-4); }
-.oomph-u-center { text-align: center; }
-
-/* Centered CTA row that closes a card grid */
-.oomph-section__cta--center {
-  text-align: center;
-  margin-top: var(--space-7);
-}
-
-/* Final CTA band — the dark closing section every page ends on */
-.oomph-cta-band { text-align: center; }
-.oomph-cta-band__heading {
-  font-size: var(--text-h1);
-  max-width: 22ch;
-  margin-inline: auto;
-}
-.oomph-cta-band__action { margin-top: var(--space-6); }
-
-/* Display pull-quote + plain citation (testimonials) */
-.oomph-pullquote--display {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: var(--text-h2);
-  line-height: 1.3;
-}
-.oomph-pullquote__cite--plain {
-  font-family: var(--font-text);
-  font-style: normal;
-  font-size: var(--text-body-sm);
-  color: var(--color-slate);
-}
-
-/* Calendly embed, booked confirmation, and no-config fallback */
-.oomph-calendly--frame { min-width: 320px; height: 680px; }
-.oomph-calendly__confirm {
-  text-align: center;
-  padding: var(--space-8) 0;
-}
-.oomph-quiz__cta--center { justify-content: center; }
-.oomph-fallback-box {
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  padding: var(--space-7);
-  text-align: center;
-}
-.oomph-fallback-box p { margin: 0 0 var(--space-3); }
-.oomph-fallback-box p:last-child { margin-bottom: 0; }
-
-/* ===========================================================================
- * Image treatment — frame, caption, credit (elevation WS1 PR-3)
- *
- * Photography is never manipulated (no filters, no duotone — licensed media
- * must appear unaltered). Consistency comes from the hairline frame, the
- * caption discipline, and whitespace.
- * ========================================================================== */
-
-.oomph-frame {
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.oomph-figure { margin: 0; }
-
-/* Caption voice per voice-guide.md: place, season, what's happening —
- * never a literal description. */
-.oomph-figure__caption {
-  font-family: var(--font-text);
-  font-style: normal;
-  font-size: var(--text-body-sm);
-  line-height: var(--line-body-sm);
-  color: var(--text-muted);
-  border-top: 1px solid var(--hairline);
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-}
-
-.oomph-figure__credit {
-  display: block;
-  font-size: var(--text-eyebrow);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: var(--space-1);
-}
-
-/* ===========================================================================
- * Reveal — sparse scroll-in motion (elevation WS1 PR-3)
- *
- * assets/js/reveal.js adds .oomph-reveal-ready to <html> only when JS runs,
- * IntersectionObserver exists, AND the visitor allows motion — so content
- * is never hidden without a way to reveal it, and reduced-motion visitors
- * get a completely static page.
- * ========================================================================== */
-
-@media (prefers-reduced-motion: no-preference) {
-  .oomph-reveal-ready [data-reveal] {
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 500ms ease-out, transform 500ms ease-out;
-  }
-  .oomph-reveal-ready [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-  }
-}

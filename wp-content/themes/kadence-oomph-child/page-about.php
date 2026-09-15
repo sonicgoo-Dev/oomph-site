@@ -109,11 +109,11 @@ $advisor_bio  = oomph_advisor_bio();
 	<?php /* 4. WHO I SERVE, AND WHY ----------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-european-itinerary" aria-labelledby="serve-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">Who I serve</p>
 				<h2 id="serve-title">Three kinds of trip, three reasons I'm the right advisor.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<article>
 					<h3 class="oomph-card__headline">Couples planning a milestone.</h3>
 					<p>Anniversaries, retirements, the trip you've talked about for ten years. The kind that has to land — choose the right cabin, get the dinner reservations, pace the days so neither of you comes home tired. I plan milestone trips because I've planned my own; the ones you only get a couple of in a lifetime deserve someone who has been there.</p>
@@ -133,7 +133,7 @@ $advisor_bio  = oomph_advisor_bio();
 	<?php /* 5. CREDENTIALS -------------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="credentials-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">Credentials</p>
 				<h2 id="credentials-title">The training behind the planning.</h2>
 			</div>
@@ -181,11 +181,11 @@ $advisor_bio  = oomph_advisor_bio();
 	<?php /* 6. FIRST-HAND EXPERIENCE ---------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-cabin-notes" aria-labelledby="experience-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
-				<p class="oomph-eyebrow oomph-eyebrow--inverse">Field notes</p>
-				<h2 id="experience-title" class="oomph-text-paper">First-hand experience.</h2>
+			<div class="oomph-section__intro">
+				<p class="oomph-eyebrow" style="color: var(--color-champagne);">Field notes</p>
+				<h2 id="experience-title" style="color: var(--color-paper);">First-hand experience.</h2>
 			</div>
-			<ol class="oomph-experience-list oomph-text-paper">
+			<ol class="oomph-experience-list" style="color: var(--color-paper);">
 				<!-- TODO: Eric — verify counts/ships/dates against your records. Items read naturally either way, but accuracy matters before launch. -->
 				<li>Sailed 14 Silversea voyages between 2018 and 2025.</li>
 				<li>Silver Nova · Western Mediterranean · March 2025.</li>
@@ -202,24 +202,24 @@ $advisor_bio  = oomph_advisor_bio();
 	<?php /* 7. HOW I WORK --------------------------------------------- */ ?>
 	<section class="oomph-section" aria-labelledby="how-title">
 		<div class="oomph-container">
-			<div class="oomph-section__intro" data-reveal>
+			<div class="oomph-section__intro">
 				<p class="oomph-eyebrow">How I work</p>
 				<h2 id="how-title">Three steps. One conversation to start.</h2>
 			</div>
-			<div class="oomph-grid oomph-grid--3" data-reveal>
+			<div class="oomph-grid oomph-grid--3">
 				<div>
 					<p class="oomph-eyebrow">Step One · Discover</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">A free 30-minute call.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">A free 30-minute call.</h3>
 					<p>We talk about the trip you're imagining — who's going, when, where you've already been, what you'd never do again. By the end of the call I know whether I'm the right advisor for you, and you know what comes next. No pressure either way.</p>
 				</div>
 				<div>
 					<p class="oomph-eyebrow">Step Two · Design</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">One proposal, not five.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">One proposal, not five.</h3>
 					<p>Cabin selection, itinerary, transfers, dinner reservations — the small details that make a trip feel choreographed. You see one proposal because I do the narrowing for you. Revisions are part of the process; the goal is a plan we both agree on before any money changes hands.</p>
 				</div>
 				<div>
 					<p class="oomph-eyebrow">Step Three · Depart</p>
-					<h3 class="oomph-italic-display oomph-italic-display--h3">Eyes on it the whole time.</h3>
+					<h3 class="oomph-italic-display" style="font-size: var(--text-h3);">Eyes on it the whole time.</h3>
 					<p>If something changes — a delayed flight, a closed restaurant, a sudden chance to do something better — I'm reachable. The point of an advisor isn't the planning; it's the person on call when the day shifts. I stay on your trip until you're back home.</p>
 				</div>
 			</div>
@@ -241,55 +241,48 @@ $advisor_bio  = oomph_advisor_bio();
 		</div>
 	</section>
 
-	<?php
-	/* 9. PULL-QUOTE TESTIMONIAL — a real review, attribution single-sourced
-	     from inc/client-stories.php (R31). The quoted sentence is verbatim
-	     from that review's body. Renders nothing if the source row goes away.
-	     Review schema stays on /client-stories/ only (R12). */
-	$about_quote = null;
-	if ( function_exists( 'oomph_client_testimonials' ) ) {
-		foreach ( oomph_client_testimonials() as $t ) {
-			if ( 'travellover52' === $t['author'] ) {
-				$about_quote = $t;
-				break;
-			}
-		}
-	}
+	<?php /* 9. PULL-QUOTE TESTIMONIAL — hidden until real attribution is available.
+	         Per cro-rules R31: first name + last initial, trip type, destination, date.
+	         Per docx §10.4 example: "He kept the trip moving when my mother's knee
+	         gave out in Florence. That's the part the website doesn't show you."
+	         To re-enable, uncomment the section below and replace the placeholders.
 	?>
-	<?php if ( $about_quote ) : ?>
 	<section class="oomph-section" aria-labelledby="testimonial-title">
 		<div class="oomph-container oomph-container--prose">
 			<p class="oomph-eyebrow">In their words</p>
 			<h2 id="testimonial-title" class="sr-only">Testimonial.</h2>
-			<blockquote class="oomph-pullquote oomph-pullquote--display">
-				<p>&ldquo;What truly sets Eric apart is his eye for detail and his ability to tailor experiences that reflect who we are.&rdquo;</p>
-				<footer class="oomph-pullquote__cite oomph-pullquote__cite--plain">
-					<?php echo esc_html( $about_quote['author'] . ' · ' . $about_quote['trip'] . ' · ' . date_i18n( 'F Y', strtotime( $about_quote['date_pub'] ) ) ); ?>
-				</footer>
+			<blockquote class="oomph-pullquote" style="font-family: var(--font-display); font-style: italic; font-size: var(--text-h2); line-height: 1.3;">
+				<p>[ PLACEHOLDER — character-focused testimonial. Replace before launch. ]</p>
+				<footer class="oomph-pullquote__cite" style="font-family: var(--font-text); font-style: normal; font-size: var(--text-body-sm); color: var(--color-slate);">[ Name · Trip type · Destination · Date ]</footer>
 			</blockquote>
 		</div>
 	</section>
-	<?php endif; ?>
+	<?php */ ?>
 
 	<?php /* 10. FINAL CTA --------------------------------------------- */ ?>
 	<section class="oomph-section is-style-oomph-cabin-notes" aria-labelledby="final-cta-title">
-		<div class="oomph-container oomph-cta-band">
-			<p class="oomph-eyebrow oomph-eyebrow--inverse">First call</p>
-			<h2 id="final-cta-title" class="oomph-italic-display oomph-cta-band__heading">
+		<div class="oomph-container" style="text-align: center;">
+			<p class="oomph-eyebrow" style="color: var(--color-champagne);">First call</p>
+			<h2 id="final-cta-title" class="oomph-italic-display" style="font-size: var(--text-h1); max-width: 22ch; margin-inline: auto;">
 				Worth a thirty-minute call?
 			</h2>
-			<p class="oomph-cta-band__action">
+			<p style="margin-top: var(--space-6);">
 				<a class="oomph-btn oomph-btn--inverse" href="/discovery-call/">
 					Start a conversation <span aria-hidden="true">→</span>
 				</a>
-				<span class="oomph-btn-microcopy oomph-microcopy--inverse">Email, text, or a quick call — whatever's easiest for you.</span>
+				<span class="oomph-btn-microcopy" style="color: var(--color-champagne);">Email, text, or a quick call — whatever's easiest for you.</span>
 			</p>
 		</div>
 	</section>
 
 </main>
 
-<?php get_template_part( 'parts/sticky-cta' ); /* Sticky mobile CTA — R2 */ ?>
+<?php /* Sticky mobile CTA — R2. Visible at every scroll depth, mobile only. */ ?>
+<aside class="oomph-sticky-cta" aria-label="Quick contact">
+	<a class="oomph-btn oomph-btn--primary" href="/discovery-call/">
+		Start a conversation <span aria-hidden="true">→</span>
+	</a>
+</aside>
 
 <?php
 get_footer();
