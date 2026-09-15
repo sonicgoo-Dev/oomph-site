@@ -50,14 +50,13 @@ Content on staging, all **Eric**:
 - [x] **Tours and operators are published.** Done by Eric (checked
       2026-09-15): Tauck Italy: Rome to the Lakes, Globus Italian Treasures
       and Insight Best of Italy, plus the Globus, Tauck and Insight pages.
-      Still open: the homepage featured tours row showed no cards, because
-      the seeded featured tours are drafts (see `NEXT-SESSION.md`).
+      The homepage featured tours row shows all three (fixed 2026-09-15).
 - [x] **`10-day-united-kingdom-itinerary` exists on staging.** Restored by
       Eric (checked 2026-09-15) at `/journal/10-day-united-kingdom-itinerary/`,
       retitled and with a featured image.
-- [ ] **The sitemap lists every public type.** On 2026-09-15 it held posts,
-      pages and destinations only: no tours, operators or archives. Fix on
-      staging before the push.
+- [x] **The sitemap lists every public type.** Fixed 2026-09-15 (PRs #124,
+      #125): posts, pages, destinations, operators and tours, with
+      `/escorted-tours/` in the tour sitemap and `/links/` left out.
 
 Before production loses anything, all **Eric** unless noted:
 
