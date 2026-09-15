@@ -14,7 +14,7 @@
   "inclusions": "Ten nights in first-class hotels\nTen breakfasts and four dinners, including welcome and farewell dinners\nTour director throughout\nGuided walks in Rome, Florence, Venice and Assisi\nCastel Sant’Angelo with a local guide\nBoat along the Cinque Terre coast, weather permitting, and the train back from Monterosso\nStop at the Leaning Tower in Pisa\nChianti wine tasting with local food at a farmhouse\nPrivate boat ride in Venice and a glassblowing demonstration\nA choice of excursion in Florence: the Pitti Palace with an aperitivo, or a food walk",
   "brochure_link": "https://www.globusjourneys.com/tour/italian-treasures/LK/?season=2027",
   "erics_note": "<p>This is the Globus tour I suggest for a first trip to Italy when Rome, Florence and Venice on their own feel too narrow. It adds two nights in Lucca for the Cinque Terre and Pisa, a wine tasting in Chianti, and a night in Assisi on the way back to Rome. Most stops are two nights, so you unpack less often than the route suggests.</p><p>The days are full, and Rome to Lucca and Venice to Assisi are long drives. In Venice the hotel is in Sant’Elena, a quiet residential corner a vaporetto ride from St Mark’s. If you would rather see fewer places and stay longer in each, ask me about a custom journey instead.</p>",
-  "featured": false,
+  "featured": true,
   "itinerary": [
     { "day": 1, "title": "Arrive in Rome", "overnight": "Rome", "text": "Meet your tour director and the group at 5 pm for a welcome dinner at a local restaurant." },
     { "day": 2, "title": "St Peter’s and the Forum", "overnight": "Rome", "text": "A guided walk through St Peter’s Square, then the Roman Forum. The afternoon and evening are free." },

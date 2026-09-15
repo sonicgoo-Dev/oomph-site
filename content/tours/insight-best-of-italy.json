@@ -10,10 +10,10 @@
   "from_price": 4295,
   "price_note": "per person, two sharing",
   "blurb": "Rome, Florence, Venice, Assisi and Sorrento in ten nights, with Capri, Pompeii and a gondola ride along the way.",
-  "pace": "Full days on the move, with free afternoons in Rome, Sorrento and Capri",
+  "pace": "Full days on the move, with free afternoons",
   "inclusions": "Ten nights in hotels, three of them at Villa Pamphili in Rome\nTen breakfasts, one lunch and five dinners\nTravel Director throughout\nVatican Museums, Sistine Chapel and the Colosseum with a local guide\nA choice in Florence: the Accademia to see Michelangelo’s David, or a walk and a café stop with your Travel Director\nLeatherwork and goldsmithing demonstration in Florence\nPrivate boat through Venice, a gondola ride and a glassblowing workshop\nBasilica of St Francis in Assisi with a local guide\nBoat to Capri and a walk through Capri town\nPompeii with a local guide\nFarm lunch at Casa Barone on the slopes of Vesuvius\nFarewell dinner in Rome with wine and a private opera performance",
   "erics_note": "<p>This is the Insight tour I suggest when someone wants Rome, Florence and Venice and the south as well. It adds Assisi, two nights in Sorrento with a day on Capri, and Pompeii on the way back to Rome, so you see most of the country in eleven days. Most stops are two nights, and the hotel in Venice is central, which means you can walk out after the day visitors have gone.</p><p>It is a full itinerary. There are long drives from Florence to Venice by way of Pisa, and from Assisi down to Sorrento. The Rome hotel, Villa Pamphili, sits beside a large park rather than in the centre. If you would rather slow down and spend longer in fewer places, ask me about a custom journey.</p>",
-  "featured": false,
+  "featured": true,
   "itinerary": [
     { "day": 1, "title": "Arrive in Rome", "overnight": "Rome", "text": "Settle in, then meet your Travel Director and the group for dinner at a local restaurant." },
     { "day": 2, "title": "The Vatican and ancient Rome", "overnight": "Rome", "text": "With a local guide, the Vatican Museums and the Sistine Chapel, then St Peter’s Basilica from outside. Across the Tiber, the Circus Maximus, the Arch of Constantine and a guided visit to the Colosseum. The rest of the day is free. If Vatican tickets are unavailable, the Capitoline Museums take their place." },
