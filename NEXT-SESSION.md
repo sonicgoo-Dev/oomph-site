@@ -1,85 +1,46 @@
-# Next session: launch (plan P11)
+# Next session: the week after launch (runbook §4)
 
-> Rewritten 2026-09-15. The earlier version of this file (the `/links/` LCP
-> notes from August) is obsolete: that site and its footer form are gone in
-> the rebuild. The paste-in prompt for the launch session is at the bottom.
+> Rewritten 2026-09-15, after the launch. The launch-day handoff this file
+> used to hold is in git history (#126, #131, #133).
 
 ## Where things stand
 
-- `develop` holds the whole rebuild: the `oomphtravel` block theme (0.8.9)
-  and `oomph-travel-core` (1.9.3). Staging (`staging2.oomphtravel.com`) runs
-  it. `main` is 246 commits behind (245 before this PR), and production still runs
-  `kadence-oomph-child` with plugin 1.0.0.
-- **The plan is `docs/launch-runbook.md`.** Code goes live by merging
-  `develop` into `main`, which activates nothing. Content goes live only when
-  Eric clicks Site Tools → WordPress → Staging → Deploy (Full). That click is
-  the launch.
-- Last PRs merged: #122 made the whole tour card open the tour page; #124 and #125 fixed the sitemap and the homepage tours row; #126 this handoff.
-- Merged and on staging after the day-before checks on 2026-09-15: #127
-  (live tours spec), #128 (a filtered tours view printed robots
-  `content="1, 1"` instead of noindex), #129 (Journal card contrast on
-  `/links/`, theme 0.8.9), #130 (homepage "How to travel" photos no longer
-  compete with the hero), #131 (this file), #132 (UK post No List wording,
-  plugin 1.9.3; Eric then edited the post himself).
+- **oomphtravel.com runs the rebuild** since 2026-09-15: the `oomphtravel`
+  block theme (0.8.9) and `oomph-travel-core` (1.9.3). Release PR #134 was
+  squash-merged to `main` and deployed; Eric pushed staging to live in Site
+  Tools (the staging copy is labelled **Site-rebuild**); `main` was merged
+  back into `develop` (#136), so the next release merges cleanly.
+- #135 reconciled `main`'s workflow history first: `e2e.yml` is the `cmd`
+  version the residential runner needs, and `deploy.yml` keeps the
+  ssh-keyscan retry and one multiplexed SSH connection.
 
-## Staging, checked over HTTP on 2026-09-15 (re-checked in the launch session)
+## What launch day found, and what was done
 
-| Item | State |
+| Found | Done |
 |---|---|
-| Destinations | All eleven published |
-| Tours published | Tauck Italy: Rome to the Lakes, Globus Italian Treasures, Insight Best of Italy |
-| Operator pages | 200 at `/escorted-tours/globus/`, `/escorted-tours/tauck/` and `/escorted-tours/insight-vacations/` |
-| UK itinerary post | Restored and retitled "Ten Days in the United Kingdom, the Way I'd Plan It", with a featured image. No List wording fixed (#132 and Eric's own edit); content guard clean |
-| Homepage "How to travel" photos | Done |
-| Nine cruise posts | Already on cruiseoomph.com; never list as open |
-| `/services/` | Still published and in the page sitemap; Eric's decision |
-| Sitemap | Posts (1), pages (11), destinations (12, `/destinations/` first), operators (3), tours (4, `/escorted-tours/` first); no `oomph_region`, no `/links/` |
-| Homepage featured tours | Tauck, Globus and Insight |
-| Production | Unchanged since 29 Aug by its sitemap dates: kadence child, 10 posts, GA4 and Clarity present, indexable. Its index still lists six stale `oomph_cruise` sitemaps (five 404); the push replaces them |
+| First Full Deploy refused: WordPress 7.1 live, 7.0 on staging | Eric updated staging to 7.1, then deployed |
+| Site Kit did not come across (staging never had it) | Eric reinstalled and reconnected it; the GA4 tag is back |
+| Site emails went to spam: SPF allows only Google, DMARC `p=quarantine` | Eric installed FluentSMTP (Google Workspace SMTP, app password); form emails reach the inbox |
+| Staging's display name (the email address) showed as the advisor's name | Eric set the display name to Eric Hempel |
+| A static `/llms.txt` from May claimed a cruise certification | Removals button (apply, production) deleted it; the generated one serves |
+| Fluent Forms still active | Deactivated after the Start planning send worked (D31) |
 
-## Open before launch day
+Smoke test over HTTP: seventeen pages 200 with `index, follow`, a
+self-canonical, one H1 and the expected schema; the five redirects; the
+theme 404 for removed cruise pages; sitemap index with posts, pages,
+destinations, operators and tours. Live suite 43/43 against production.
+Search Console: sitemap resubmitted; indexing requested for `/`,
+`/destinations/italy/` and `/start-planning/`. Instagram points at `/links/`.
 
-1. **Done 2026-09-15: sitemap.** PRs #124 and #125 (plugin 1.9.2). The
-   index now lists posts, pages, destinations, operators and tours. The tour
-   sitemap opens with `/escorted-tours/`, and `/links/` is out.
-2. **Done 2026-09-15: homepage featured tours.** Globus Italian Treasures
-   and Insight Best of Italy are flagged featured, so the row shows all
-   three published tours.
-3. **Eric's items:** export Fluent Forms entries from production, take the "pre-launch" backup, stop editing production
-   wp-admin, pick the launch date.
-4. **Eric's decisions, easiest before the push:** `/services/`; the legacy
-   cruise region, trip-style and itinerary records; the Rank Math redirect
-   duplicates; the operator logo slot; the Hawaii Stays name.
-5. **Claude, the day before — run 2026-09-15 against staging:**
-   `npx playwright test` 41 passed, 2 failed (the tours spec, fixed by
-   #127 + #128; the content guard, the UK post wording); `npm run audit:a11y`
-   28/28 pages, two serious contrast finds on `/links/` (fixed by #129);
-   `npm run audit:lh` (mobile, median of 5): Perf 94–100 and Best Practices
-   100 on all fourteen; A11y 100 except `/links/` 96 (#129); SEO 63–66
-   everywhere only because staging is noindex with no canonical; CLS ≤ 0.007;
-   LCP 1.5–2.4 s on thirteen pages, **3.1 s on the homepage** (#130: an eager
-   card photo downloaded alongside the hero). **After the fixes were on
-   staging:** live suite 43/43 with the content guard clean; homepage LCP
-   median 2.0 s (Perf 99); `/links/` A11y 100.
+## Open
 
-## After launch
-
-Runbook §2 C–G and §4. Then merge `main` back into `develop`, because
-releases are squash-merged.
-
-## Prompt for the launch session
-
-Paste everything inside the block into a new Claude Code session opened in `C:\Projects\oomph-site`.
-
-```text
-This session is the OomphTravel launch (plan P11). Read CLAUDE.md, NEXT-SESSION.md and docs/launch-runbook.md first, then your memory files, before doing anything.
-
-Work in this order:
-1. Pull develop and confirm the state in NEXT-SESSION.md over HTTP against staging2.oomphtravel.com and oomphtravel.com. Anything that no longer matches, correct in the file. Do not list as open anything the memory says I already did.
-2. The sitemap and the homepage featured tours row were fixed on 2026-09-15. Confirm they still hold on staging. Confirm the content guard is still clean.
-3. Run the day-before checks against staging: the live Playwright suite, npm run audit:a11y and npm run audit:lh. Report results in a short table.
-4. Give me a one-page go/no-go list of what is left for me, in plain language, with the clicks.
-5. Stop there. Do not open the develop to main release PR, and do not touch production, until I say "launch". On that word, follow runbook §2 A to G with me step by step, including the smoke test in D, and merge main back into develop afterwards.
-
-Rules that stay in force: branch off develop, one PR per change, squash-merge. Ask before deleting anything, changing a decision in the decisions log, adding a plugin or dependency, or anything touching the live site. Staging shares SSH credentials with production, so treat it with production caution. Never ask me to paste a credential into chat. Do not use the Rank Math MCP; it points at the live site. I am not technical: when I must act, give me clicks, not terminal commands.
-```
+1. **Eric:** newsletter signup with an address never on the list, then the
+   PlainSend confirmation; Clarity and GA4 Realtime show a visit.
+2. **Week after (runbook §4):** delete Fluent Forms; deactivate, then delete
+   ACF Pro and cancel its licence; delete the `kadence-oomph-child` theme in
+   wp-admin, then a PR removes it from the repo and from `deploy.yml`.
+3. **Search Console, weekly for a month:** Pages → Not found (404) will list
+   the old cruise addresses; that is expected (D02). Watch Core Web Vitals.
+4. **Eric's decisions still open:** operator logos (add or hide the slot);
+   the Hawaii Stays name. Kept by decision: the hidden cruise regions,
+   trip styles and itinerary records; the Rank Math redirect duplicates.
