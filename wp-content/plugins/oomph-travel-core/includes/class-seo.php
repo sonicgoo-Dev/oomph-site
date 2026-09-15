@@ -13,6 +13,12 @@
  *   without a chosen topic falls into. It is a duplicate of the Journal and
  *   the plan asks for it to be noindexed or removed (§4.2). Noindexed here,
  *   so the archive still resolves for anyone holding the link.
+ * - XML sitemap: Rank Math lists a post type only when its own "Include in
+ *   Sitemap" setting is on, and a type registered after Rank Math was set
+ *   up starts with it off. Tours and operators were missing for that
+ *   reason, and with them the /escorted-tours/ archive, which Rank Math adds
+ *   as the first entry of the tour sitemap. The setting is held on here.
+ *   /links/ is noindex, so it is kept out of the page sitemap.
  *
  * @package OomphTravel\Core
  */
@@ -35,6 +41,71 @@ final class SEO {
 		add_action( 'init', array( __CLASS__, 'serve_llms' ), 20 );
 		add_filter( 'wp_robots', array( __CLASS__, 'uncategorized_robots' ) );
 		add_filter( 'rank_math/frontend/robots', array( __CLASS__, 'uncategorized_robots_rank_math' ) );
+		add_filter( 'option_rank-math-options-sitemap', array( __CLASS__, 'sitemap_post_types' ) );
+		add_filter( 'rank_math/sitemap/entry', array( __CLASS__, 'sitemap_skip_noindex_pages' ), 10, 3 );
+		add_action( 'init', array( __CLASS__, 'refresh_sitemap_cache' ), 101 );
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* XML sitemap                                                        */
+	/* ---------------------------------------------------------------- */
+
+	/** Post types whose records are public pages and belong in the sitemap. */
+	private const SITEMAP_POST_TYPES = array( 'oomph_destination', 'oomph_tour', 'oomph_operator' );
+
+	/**
+	 * Hold Rank Math's "Include in Sitemap" on for the site's own record
+	 * types. Rank Math reads this option when it builds the sitemap index.
+	 *
+	 * @param mixed $options
+	 * @return mixed
+	 */
+	public static function sitemap_post_types( $options ) {
+		if ( ! is_array( $options ) ) {
+			return $options;
+		}
+		foreach ( self::SITEMAP_POST_TYPES as $type ) {
+			$options[ 'pt_' . $type . '_sitemap' ] = 'on';
+		}
+		return $options;
+	}
+
+	/**
+	 * Leave /links/ out of the page sitemap while it is noindex (the theme
+	 * sets the tag; `oomph_links_noindex` returning false lifts both).
+	 *
+	 * @param mixed  $url
+	 * @param string $type
+	 * @param mixed  $post
+	 * @return mixed
+	 */
+	public static function sitemap_skip_noindex_pages( $url, $type = '', $post = null ) {
+		if (
+			'post' === $type
+			&& $post instanceof \WP_Post
+			&& 'page' === $post->post_type
+			&& 'links' === $post->post_name
+			&& (bool) apply_filters( 'oomph_links_noindex', true )
+		) {
+			return false;
+		}
+		return $url;
+	}
+
+	/**
+	 * Rank Math caches the sitemap. Clear it once per plugin version, so a
+	 * deploy that changes what the sitemap holds shows up without a manual
+	 * settings save.
+	 */
+	public static function refresh_sitemap_cache(): void {
+		if ( OOMPH_CORE_VERSION === get_option( 'oomph_core_sitemap_version' ) ) {
+			return;
+		}
+		if ( ! class_exists( '\RankMath\Sitemap\Cache' ) || ! method_exists( '\RankMath\Sitemap\Cache', 'invalidate_storage' ) ) {
+			return;
+		}
+		\RankMath\Sitemap\Cache::invalidate_storage();
+		update_option( 'oomph_core_sitemap_version', OOMPH_CORE_VERSION, false );
 	}
 
 	/* ---------------------------------------------------------------- */
