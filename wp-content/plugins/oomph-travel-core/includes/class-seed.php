@@ -175,6 +175,11 @@ final class Seed {
 			$rows[] = array( 'slug' => $record['slug'], 'title' => $record['title'], 'action' => $id ? 'created (' . $status . ')' : 'failed', 'id' => $id );
 		}
 
+		// The staging deploy runs `seed pages`, so Journal wording fixes ride on it.
+		if ( 'pages' === $what ) {
+			$rows = array_merge( $rows, self::correct_posts( $dry_run ) );
+		}
+
 		return $rows;
 	}
 
@@ -381,6 +386,80 @@ final class Seed {
 				'to'      => 'For spring and fall in the popular regions, six to nine months is comfortable; the villas and guides worth having book early. I’ve turned around shorter timelines, but the runway buys you the good options.',
 			),
 		);
+	}
+
+	/**
+	 * Wording in Journal posts that breaks the No List, keyed by post slug.
+	 *
+	 * The UK itinerary post came across from the old site with its old copy
+	 * (restored on staging 2026-09-15) and Eric asked for the reworded lines.
+	 * Each pair replaces an exact phrase in the post body or excerpt; a phrase
+	 * Eric has already changed no longer matches and is left alone, so running
+	 * this again changes nothing. Phrases avoid apostrophes, which the database
+	 * may hold as ' or ’. Add to this list, never edit an entry.
+	 *
+	 * @return array<string,array<int,array{0:string,1:string}>>
+	 */
+	private static function post_corrections(): array {
+		return array(
+			'10-day-united-kingdom-itinerary' => array(
+				array( 'breathtaking landscapes, and vibrant cities', 'Highland landscapes, and vibrant cities' ), // No List
+				array( 'the iconic skyline of London', 'the London skyline' ), // No List
+				array( 'provides stunning views of the city', 'gives long views over the city' ), // No List
+				array( 'Iconic Landmarks', 'London’s Landmarks' ), // No List
+				array( 'world-class museums', 'free national museums' ), // No List
+				array( 'offers breathtaking views of countryside, mountains, and rivers', 'runs past open countryside, mountains and rivers' ), // No List
+				array( 'visit the iconic Inverness Castle', 'visit Inverness Castle' ), // No List
+				array( 'enjoy the stunning views and possibly', 'enjoy the views down the loch and possibly' ), // No List
+				array( 'stunning scenery', 'mountain scenery' ), // No List
+				array( 'the iconic Arlington Row', 'Arlington Row' ), // No List
+				array( 'admire the stunning architecture', 'admire the Roman stonework' ), // No List
+				array( 'From the iconic landmarks of London to the breathtaking landscapes of the Scottish Highlands', 'From London’s landmarks to the Scottish Highlands' ), // No List
+				array( 'the best time to visit the UK?', 'the right time to visit the UK?' ), // No List
+				array( 'The best time to visit the UK is during spring', 'I’d plan it for spring' ), // No List
+				array( 'winter offers a magical atmosphere, especially around Christmas', 'winter brings Christmas markets and lamp-lit streets' ), // No List
+				array( 'Cotswold’s', 'Cotswolds' ),
+				array( "Cotswold's", 'Cotswolds' ),
+			),
+		);
+	}
+
+	/**
+	 * Apply post_corrections() to the posts that exist. A revision is saved
+	 * first, so the old wording can be restored from the post's Revisions.
+	 *
+	 * @return array<int,array{slug:string,title:string,action:string,id:int}>
+	 */
+	private static function correct_posts( bool $dry_run ): array {
+		$rows = array();
+		foreach ( self::post_corrections() as $slug => $pairs ) {
+			$post = get_page_by_path( $slug, OBJECT, 'post' );
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$content = (string) $post->post_content;
+			$excerpt = (string) $post->post_excerpt;
+			$done    = 0;
+			foreach ( $pairs as $pair ) {
+				$content = str_replace( $pair[0], $pair[1], $content, $in_content );
+				$excerpt = str_replace( $pair[0], $pair[1], $excerpt, $in_excerpt );
+				$done   += ( $in_content || $in_excerpt ) ? 1 : 0;
+			}
+			if ( $done && ! $dry_run ) {
+				wp_save_post_revision( (int) $post->ID );
+				// Run as a CLI user with no role, kses would filter the body.
+				kses_remove_filters();
+				wp_update_post( wp_slash( array( 'ID' => (int) $post->ID, 'post_content' => $content, 'post_excerpt' => $excerpt ) ) );
+				kses_init_filters();
+			}
+			$rows[] = array(
+				'slug'   => $slug,
+				'title'  => (string) $post->post_title,
+				'action' => sprintf( 'post, %d phrase(s) %s', $done, $dry_run ? 'would be corrected' : 'corrected' ),
+				'id'     => (int) $post->ID,
+			);
+		}
+		return $rows;
 	}
 
 	/**
