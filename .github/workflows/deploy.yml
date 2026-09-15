@@ -58,7 +58,24 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SG_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ steps.target.outputs.port }} -H ${{ steps.target.outputs.host }} >> ~/.ssh/known_hosts
+          # Every step below shares ONE multiplexed SSH connection:
+          # SiteGround's firewall rate-limits repeated short sessions from
+          # shared runner IPs (from main, #61/#63, reconciled at launch).
+          mkdir -p ~/.ssh/cm
+          # SiteGround's SSH endpoint intermittently drops keyscan connections.
+          # Retry with backoff, and treat an empty result as a failure too
+          # (keyscan can exit 0 with no keys).
+          for attempt in 1 2 3 4 5; do
+            ssh-keyscan -T 10 -p ${{ steps.target.outputs.port }} -H ${{ steps.target.outputs.host }} > ~/.ssh/keyscan_out || true
+            if [ -s ~/.ssh/keyscan_out ]; then
+              cat ~/.ssh/keyscan_out >> ~/.ssh/known_hosts
+              exit 0
+            fi
+            echo "ssh-keyscan attempt ${attempt}/5 returned no keys; retrying in $((attempt * 5))s…"
+            sleep $((attempt * 5))
+          done
+          echo "::error::ssh-keyscan failed after 5 attempts — SiteGround SSH endpoint unreachable" >&2
+          exit 1
 
       - name: Deploy child theme via rsync
         run: |
@@ -70,7 +87,7 @@ jobs:
             --exclude='*.md' \
             --exclude='docs' \
             --exclude='.DS_Store' \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }}" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180" \
             wp-content/themes/kadence-oomph-child/ \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:${{ steps.target.outputs.path }}/
 
@@ -86,7 +103,7 @@ jobs:
             --exclude='.git' \
             --exclude='*.md' \
             --exclude='.DS_Store' \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }}" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180" \
             wp-content/themes/oomphtravel/ \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:$THEME2_PATH/
 
@@ -106,7 +123,7 @@ jobs:
             --exclude='*.md' \
             --exclude='docs' \
             --exclude='.DS_Store' \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }}" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180" \
             wp-content/plugins/oomph-travel-core/ \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }}:$PLUGIN_PATH/
 
@@ -120,6 +137,7 @@ jobs:
         continue-on-error: true
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180 \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
             "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations && wp oomph seed operators && wp oomph seed tours && wp oomph seed pages"
 
@@ -127,12 +145,18 @@ jobs:
         continue-on-error: true
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180 \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
             "cd ${{ steps.target.outputs.path }}/../../.. && ( wp sg purge || echo 'SG Optimizer not active — skipping wp sg purge' ) && ( wp cache flush || echo 'wp cache flush failed — skipping' )"
 
       - name: Clean up SSH key
         if: always()
-        run: rm -f ~/.ssh/deploy_key
+        run: |
+          # Close the multiplexed master connection, then remove the key.
+          ssh -o ControlPath=~/.ssh/cm/%r@%h-%p -O exit \
+            -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} 2>/dev/null || true
+          rm -f ~/.ssh/deploy_key
 
       - name: Summary
         run: |
