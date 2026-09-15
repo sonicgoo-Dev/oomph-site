@@ -47,16 +47,17 @@ Content on staging, all **Eric**:
 
 - [x] **Homepage "How to travel" cards have their four photos.** Done by Eric
       (confirmed on staging 2026-09-13).
-- [ ] **Operators and the three launch tours are published** (Globus, Tauck,
-      Insight, plus their operator pages). Today every tour and operator is a
-      draft, so `/escorted-tours/` opens with no tours in it.
-- [ ] **`10-day-united-kingdom-itinerary` exists on staging.** It is live on
-      production (published 16 Jun) and the removals button deliberately keeps
-      it, yet staging returns 404 for it and has no published posts at all.
-      Posts → Trash on staging first; if it is there, Restore. If not, copy
-      it from production by hand (open both editors, copy the blocks, set the
-      same slug and featured image). Without this the post vanishes from the
-      live site while Google still lists it.
+- [x] **Tours and operators are published.** Done by Eric (checked
+      2026-09-15): Tauck Italy: Rome to the Lakes, Globus Italian Treasures
+      and Insight Best of Italy, plus the Globus, Tauck and Insight pages.
+      Still open: the homepage featured tours row showed no cards, because
+      the seeded featured tours are drafts (see `NEXT-SESSION.md`).
+- [x] **`10-day-united-kingdom-itinerary` exists on staging.** Restored by
+      Eric (checked 2026-09-15) at `/journal/10-day-united-kingdom-itinerary/`,
+      retitled and with a featured image.
+- [ ] **The sitemap lists every public type.** On 2026-09-15 it held posts,
+      pages and destinations only: no tours, operators or archives. Fix on
+      staging before the push.
 
 Before production loses anything, all **Eric** unless noted:
 
@@ -131,7 +132,7 @@ production does not (the destination heroes, Amy's portrait).
 - `gtag/js` (Site Kit) and `clarity.ms` present on the homepage.
 - `/discovery-call/` → 301 → `/start-planning/`; `/custom-italy-travel/` → `/destinations/italy/`; `/luxury-cruise-planning/` → `/cruise-planning/`; `/group-cruises/anything/` → cruiseoomph.com/cruises/ with the UTM tag.
 - `/trip-quiz/`, `/cruise-travel-trends/`, a cruise post slug → the theme's 404 page.
-- `/sitemap_index.xml` lists the page and destination sitemaps only.
+- `/sitemap_index.xml` lists posts, pages, destinations, tours and operators, and no `oomph_region` sitemap.
 - Then the suites: `gh workflow run e2e.yml --repo sonicgoo-Dev/oomph-site -f target=production` (runs from Eric's PC), `npm run audit:a11y`, `npm run audit:lh` (both default to production).
 
 **E. The two real sends — Eric**

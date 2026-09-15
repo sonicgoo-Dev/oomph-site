@@ -16,6 +16,7 @@
 > - **Cruise:** sells at cruiseoomph.com; every cruise route here hands off with the UTM tag in `docs/02-components.md`. The importer, sailings, quiz and nine cruise posts are deleted, not redirected (D02); the one courtesy exception is `/group-cruises/…` → cruiseoomph.com/cruises/ (D43). Redirects live in code (`class-redirects.php`), not in Rank Math's table; the content removal is the "Remove the cruise content" Actions button (`removals.yml`, `wp oomph remove-cruise`).
 > - **Plugin path** is `wp-content/plugins/oomph-travel-core/`, not `plugins/`.
 > - **Adding a tour:** the `/add-tour` skill (`.claude/skills/add-tour/SKILL.md`) turns an operator's itinerary PDF or page into `content/tours/<slug>.json`, and the "Add a tour" Actions button (`import-tour.yml`, `wp oomph import-tour`) writes it to the site as a draft. Record shape and rules: `content/tours/README.md`.
+> - **Launch (plan P11):** read `NEXT-SESSION.md` (current state, what is open, the launch-session prompt) and `docs/launch-runbook.md` before any launch step. Merging `develop` into `main` ships files and activates nothing. The content goes live only when Eric clicks SiteGround's Deploy Staging to Live. Nothing reaches production until Eric says "launch".
 >
 > The No List gains: bespoke · wanderlust · magical · breathtaking · curated · jaw-dropping · paradise · bucket list (already there) — and the readiness doc's placeholder markers (`[…]`, `$X,XXX`) must never ship.
 
