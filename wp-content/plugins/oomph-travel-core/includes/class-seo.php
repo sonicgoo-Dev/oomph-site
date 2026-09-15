@@ -73,6 +73,8 @@ final class SEO {
 	/**
 	 * Leave /links/ out of the page sitemap while it is noindex (the theme
 	 * sets the tag; `oomph_links_noindex` returning false lifts both).
+	 * Rank Math passes a raw database row here, not a WP_Post, so the check
+	 * reads the columns rather than the class.
 	 *
 	 * @param mixed  $url
 	 * @param string $type
@@ -82,9 +84,9 @@ final class SEO {
 	public static function sitemap_skip_noindex_pages( $url, $type = '', $post = null ) {
 		if (
 			'post' === $type
-			&& $post instanceof \WP_Post
-			&& 'page' === $post->post_type
-			&& 'links' === $post->post_name
+			&& is_object( $post )
+			&& 'page' === ( $post->post_type ?? '' )
+			&& 'links' === ( $post->post_name ?? '' )
 			&& (bool) apply_filters( 'oomph_links_noindex', true )
 		) {
 			return false;
