@@ -60,10 +60,16 @@ $ot_cards = array(
 	) + $ot_way_photo( 'multigen', __( 'Sitges, on the Catalan coast: the church of Sant Bartomeu above the beach in late light.', 'oomphtravel' ) ),
 );
 ?>
+<?php
+/*
+ * No card is eager: the row sits below the homepage hero, and an eager
+ * first photo downloaded alongside the hero and delayed its LCP on phones.
+ */
+?>
 <div class="ot-container">
 	<div class="ot-grid ot-grid--4">
-		<?php foreach ( $ot_cards as $ot_i => $ot_card ) : ?>
-			<?php echo oomphtravel_card_way( $ot_card, 0 === $ot_i ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+		<?php foreach ( $ot_cards as $ot_card ) : ?>
+			<?php echo oomphtravel_card_way( $ot_card ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 		<?php endforeach; ?>
 	</div>
 </div>
