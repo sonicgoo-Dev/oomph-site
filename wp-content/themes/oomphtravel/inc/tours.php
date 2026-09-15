@@ -671,7 +671,20 @@ function oomphtravel_tours_filtered_robots( array $robots ): array {
 	return $robots;
 }
 add_filter( 'wp_robots', 'oomphtravel_tours_filtered_robots' );
-add_filter( 'rank_math/frontend/robots', 'oomphtravel_tours_filtered_robots' );
+
+/**
+ * Rank Math's array is shaped differently from core's: its values are the
+ * printed words (`index => 'noindex'`), not flags. Core's shape printed
+ * `content="1, 1"` here.
+ */
+function oomphtravel_tours_filtered_robots_rank_math( $robots ) {
+	if ( is_array( $robots ) && is_post_type_archive( 'oomph_tour' ) && oomphtravel_tours_filtered() ) {
+		$robots['index']  = 'noindex';
+		$robots['follow'] = 'follow';
+	}
+	return $robots;
+}
+add_filter( 'rank_math/frontend/robots', 'oomphtravel_tours_filtered_robots_rank_math' );
 
 /**
  * Rank Math titles the archive "Tours Archive" from the post type label;
