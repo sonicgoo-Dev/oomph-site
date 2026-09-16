@@ -38,8 +38,7 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
   Journal** (Eric's request; #150, theme 0.10.0): navy hero beside the
   newest post's photo, pill topic chips, panelled cards, story hero beside
   its picture, author box, the advisor's invitation card. Rounded corners
-  on these two pages only. Departs from the Figma Journal frames; a D44
-  entry was proposed to Eric and not yet added.
+  on these two pages only. Recorded as D44 in the decisions log (Eric, Sep 16).
 - **Every heading had rendered at body size since the rebuild** (#151,
   0.10.1): WordPress emits `--wp--custom--type--desktop--h-2--size` (kebab
   of `h2`) and the theme asked for `--h2--`. Fixed by renaming references.
