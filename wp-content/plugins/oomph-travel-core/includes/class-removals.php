@@ -50,7 +50,7 @@ final class Removals {
 	 */
 	public const STATIC_FILES = array( 'llms.txt' );
 
-	/** Appendix B. `10-day-united-kingdom-itinerary` is not here: it stays. */
+	/** Appendix B. `10-day-united-kingdom-itinerary` is not here: Eric retired it himself on 2026-09-15 (see Redirects::moved()). */
 	public const JOURNAL = array(
 		'norwegian-fjords-vs-baltic',
 		'virgin-voyages-rockstar-suite-worth-it',

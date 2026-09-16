@@ -103,7 +103,7 @@ On production the environment's required reviewer has to approve the run
 first, and the job adds the command's own `--production` confirmation flag —
 only after the same `apply` has been checked on staging.
 
-`10-day-united-kingdom-itinerary` is not on the list and **stays**.
+`10-day-united-kingdom-itinerary` is not on the list. It stayed through the launch and was retired by Eric on 2026-09-15 (trashed in wp-admin; its address now 301s to `/journal/`).
 
 ## 4. Menus
 

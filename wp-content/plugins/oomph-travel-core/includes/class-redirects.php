@@ -18,8 +18,11 @@
  * nine are listed by slug below. /trip-quiz/, the old /cruise-travel-trends/
  * page and everything else deleted still return the theme's 404 page.
  *
- * The list is explicit slugs, never a /journal/ wildcard:
- * /journal/10-day-united-kingdom-itinerary/ is a live post on this site.
+ * The list is explicit slugs, never a /journal/ wildcard. The tenth old
+ * article, /journal/10-day-united-kingdom-itinerary/, was retired on
+ * 2026-09-15 (Eric): its in-content images did not survive the launch push
+ * and the post is being replaced rather than repaired, so its address goes
+ * to the Journal index instead of dying. New posts start from scratch.
  *
  * The rules run before WordPress decides whether the address is a page, so
  * they hold whether or not the old page record is still in the database. Rank
@@ -57,6 +60,7 @@ final class Redirects {
 			'/luxury-cruise-planning/' => '/cruise-planning/',
 			'/discovery-call/'         => '/start-planning/',
 			'/contact/'                => '/start-planning/',
+			'/journal/10-day-united-kingdom-itinerary/' => '/journal/',
 		);
 	}
 
@@ -115,8 +119,8 @@ final class Redirects {
 		}
 
 		// The nine moved articles, matched whole: any other /journal/<slug>/
-		// falls through to WordPress, which is what keeps the live UK
-		// itinerary post working.
+		// falls through to WordPress, so every current and future post on
+		// this site keeps working.
 		foreach ( self::moved_articles() as $slug ) {
 			if ( '/journal/' . $slug . '/' === $path ) {
 				return self::cruiseoomph_article( $slug );
