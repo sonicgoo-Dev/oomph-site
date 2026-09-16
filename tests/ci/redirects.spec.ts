@@ -52,13 +52,27 @@ test.describe( 'redirects', () => {
     }
   } );
 
+  // D02 as amended (Eric, 2026-09-15): the nine cruise articles live on at
+  // cruiseoomph.com under the same slug, so they move rather than 404.
+  test( 'the nine moved articles go to CruiseOomph, and other journal paths do not', async ( { request } ) => {
+    const response = await request.get( '/journal/silversea-vs-regent/', { maxRedirects: 0 } );
+    expect( response.status() ).toBe( 301 );
+    const location = response.headers()[ 'location' ] ?? '';
+    expect( location ).toMatch( /^https:\/\/cruiseoomph\.com\/silversea-vs-regent\/\?/ );
+    expect( location ).toContain( 'utm_campaign=journal' );
+
+    // A slug that is not on the list is left to WordPress.
+    const other = await request.get( '/journal/a-post-that-does-not-exist/', { maxRedirects: 0 } );
+    expect( other.status() ).toBe( 404 );
+  } );
+
   test( 'a look-alike address is not caught by the prefix', async ( { request } ) => {
     const response = await request.get( '/group-cruises-old/', { maxRedirects: 0 } );
     expect( response.status() ).toBe( 404 );
   } );
 
   test( 'the deleted pages are not redirected (D02): they are 404s', async ( { request } ) => {
-    for ( const from of [ '/trip-quiz/', '/cruise-travel-trends/', '/journal/silversea-vs-regent/' ] ) {
+    for ( const from of [ '/trip-quiz/', '/cruise-travel-trends/' ] ) {
       const response = await request.get( from, { maxRedirects: 0 } );
       expect( response.status(), from ).toBe( 404 );
     }
