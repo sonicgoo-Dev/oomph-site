@@ -9,7 +9,8 @@
  * introduction (the excerpt; R14) and byline beside the featured image on
  * a mist band; the byline from the author's WordPress profile (Eric or
  * Amy; R13) with the reading time and the month it was last updated
- * (R15); the body at 720 px; the author box; the destination the post is
+ * (R15); the body at 720 px; the author box (name and bio, no portrait:
+ * the invitation below carries it); the destination the post is
  * about as a card when a tag or category names one; three related posts;
  * and the advisor's invitation. BlogPosting schema comes from the plugin,
  * its author pointing at whichever advisor wrote it.
@@ -102,9 +103,6 @@ if ( $ot_thumb ) {
 	<section class="ot-band ot-article__author-band" aria-labelledby="ot-article-author-name">
 		<div class="ot-container">
 			<div class="ot-article__author-box">
-				<?php if ( '' !== $ot_author['image'] ) : ?>
-					<img class="ot-article__author-portrait" src="<?php echo esc_url( $ot_author['image'] ); ?>" width="144" height="144" loading="lazy" decoding="async" alt="">
-				<?php endif; ?>
 				<div class="ot-article__author-copy">
 					<?php echo oomphtravel_eyebrow( __( 'Written by', 'oomphtravel' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 					<h2 class="ot-article__author-name" id="ot-article-author-name"><a href="<?php echo esc_url( $ot_author['url'] ); ?>"><?php echo esc_html( $ot_author['name'] ); ?></a></h2>

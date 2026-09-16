@@ -643,26 +643,15 @@
 .ot-article__body .wp-block-buttons { margin: var(--space-lg) 0 var(--space-sm); }
 
 /* Who wrote it */
-.ot-article__author-band { padding-block: var(--space-xl) 0; }
+.ot-article__author-band { padding-block: var(--space-xl); }
 .ot-article__author-box {
 	box-sizing: border-box;
-	display: grid;
-	grid-template-columns: auto minmax( 0, 1fr );
-	gap: var(--space-lg);
-	align-items: center;
 	max-width: 56rem;
 	margin-left: 160px;
 	padding: var(--space-lg) var(--space-xl);
 	border: 1px solid var(--line-hairline);
 	border-radius: var(--ot-panel-radius);
 	background: var(--surface-mist);
-}
-.ot-article__author-portrait {
-	display: block;
-	width: 9rem;
-	height: 9rem;
-	object-fit: cover;
-	border-radius: 14px;
 }
 .ot-article__author-copy .ot-eyebrow { margin-bottom: var(--space-xs); }
 .ot-article__author-name {
@@ -932,6 +921,5 @@
 	.ot-article__body th,
 	.ot-article__body td { padding: 0.5rem 0.625rem; }
 	.ot-article__body blockquote p { font-size: 1.25rem; }
-	.ot-article__author-box { grid-template-columns: minmax( 0, 1fr ); gap: var(--space-md); padding: var(--space-md); }
-	.ot-article__author-portrait { width: 6rem; height: 6rem; }
+	.ot-article__author-box { padding: var(--space-md); }
 }

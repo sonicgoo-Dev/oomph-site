@@ -32,6 +32,25 @@ destinations, operators and tours. Live suite 43/43 against production.
 Search Console: sitemap resubmitted; indexing requested for `/`,
 `/destinations/italy/` and `/start-planning/`. Instagram points at `/links/`.
 
+## 2026-09-16: the Journal restyle and a site-wide heading fix
+
+- **Journal index and article are laid out like CruiseOomph's Cruise
+  Journal** (Eric's request; #150, theme 0.10.0): navy hero beside the
+  newest post's photo, pill topic chips, panelled cards, story hero beside
+  its picture, author box, the advisor's invitation card. Rounded corners
+  on these two pages only. Recorded as D44 in the decisions log (Eric, Sep 16).
+- **Every heading had rendered at body size since the rebuild** (#151,
+  0.10.1): WordPress emits `--wp--custom--type--desktop--h-2--size` (kebab
+  of `h2`) and the theme asked for `--h2--`. Fixed by renaming references.
+- The UK itinerary post was trashed by Eric (its five body images 404ed
+  after the push); `/journal/10-day-united-kingdom-itinerary/` 301s to
+  `/journal/` (#146, plugin 1.9.5). New posts start fresh.
+- The four ways-page heroes had been lazy-loaded by the content-image
+  filter (0.9.1); fixed in 0.9.3 (#147).
+- **After every release, merge `main` back into `develop` at once** (a
+  merge-commit PR, `-s ours`); every release PR this week was unmergeable
+  until that was done.
+
 ## Open
 
 1. **Done 2026-09-15:** newsletter confirmation arrived from a fresh
