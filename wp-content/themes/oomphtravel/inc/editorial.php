@@ -420,3 +420,54 @@ function oomphtravel_editorial_seo_description( $description ) {
 	return $defaults[ $key ];
 }
 add_filter( 'rank_math/frontend/description', 'oomphtravel_editorial_seo_description' );
+
+/* ------------------------------------------------------------------ */
+/* Images inside post content                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Give an in-content image its dimensions and lazy loading.
+ *
+ * The journal posts were written before the rebuild and their bodies carry
+ * bare `<img class="wp-image-133">` tags: no width, no height, no loading
+ * attribute. Without dimensions the page reflows as each one arrives (CLS),
+ * and without `loading` the browser has nothing to defer on its own — the
+ * host's optimizer swaps in its own lazy loader, but that is a setting on the
+ * server, not something this theme can rely on.
+ *
+ * The hero is the featured image, printed by the article template rather than
+ * the content, so every image reaching this filter is below the fold and can
+ * load lazily.
+ *
+ * @param string $filtered_image The `<img>` tag.
+ * @param string $context        Filter context.
+ * @param int    $attachment_id  Attachment, 0 when the class carries no id.
+ * @return string
+ */
+function oomphtravel_content_image( $filtered_image, $context, $attachment_id ) {
+	if ( ! is_string( $filtered_image ) || '' === $filtered_image ) {
+		return $filtered_image;
+	}
+
+	if ( false === stripos( $filtered_image, ' loading=' ) ) {
+		$filtered_image = str_replace( '<img ', '<img loading="lazy" ', $filtered_image );
+	}
+	if ( false === stripos( $filtered_image, ' decoding=' ) ) {
+		$filtered_image = str_replace( '<img ', '<img decoding="async" ', $filtered_image );
+	}
+
+	// Dimensions from the attachment itself, so nothing shifts as it loads.
+	if ( $attachment_id && false === stripos( $filtered_image, ' width=' ) ) {
+		$meta = wp_get_attachment_metadata( (int) $attachment_id );
+		if ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
+			$filtered_image = str_replace(
+				'<img ',
+				sprintf( '<img width="%d" height="%d" ', (int) $meta['width'], (int) $meta['height'] ),
+				$filtered_image
+			);
+		}
+	}
+
+	return $filtered_image;
+}
+add_filter( 'wp_content_img_tag', 'oomphtravel_content_image', 10, 3 );
