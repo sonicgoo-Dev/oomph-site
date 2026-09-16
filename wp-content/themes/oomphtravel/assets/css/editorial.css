@@ -361,6 +361,20 @@
 .ot-article__body h2 { font-size: var(--type-h2-size); line-height: var(--type-h2-line); }
 .ot-article__body h3 { font-size: var(--type-h3-size); line-height: var(--type-h3-line); }
 .ot-article__body a { color: var(--accent-teal); }
+/*
+ * Buttons are links, so the prose link colour above painted a core button's
+ * label teal on its teal ground — unreadable, and .ot-btn--primary (one
+ * class) could not outrank .ot-article__body a (class + element). These
+ * rules are two classes deep, so a button keeps its own label colour
+ * wherever it sits in an article.
+ */
+.ot-article__body .wp-block-button__link,
+.ot-article__body .wp-element-button,
+.ot-article__body .ot-btn--primary { color: var(--surface-white); }
+.ot-article__body .wp-block-button.is-style-outline > .wp-block-button__link,
+.ot-article__body .ot-btn--ghost { color: var(--text-ink); }
+/* A colour chosen in the editor still wins over both. */
+.ot-article__body .wp-block-button__link.has-text-color { color: inherit; }
 .ot-article__body img { height: auto; border-radius: var(--radius-card); }
 .ot-article__body figure { margin: var(--space-xl) 0; }
 .ot-article__body figcaption {
