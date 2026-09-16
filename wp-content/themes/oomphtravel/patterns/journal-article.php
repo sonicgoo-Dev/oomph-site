@@ -38,7 +38,7 @@ $ot_related   = oomphtravel_related_posts( $ot_post );
 	<?php /* 1. The photograph, full width, first thing loaded. */ ?>
 	<?php if ( $ot_thumb ) : ?>
 		<figure class="ot-article__feature">
-			<?php echo wp_get_attachment_image( $ot_thumb, 'full', false, array( 'class' => 'ot-article__feature-img', 'fetchpriority' => 'high', 'decoding' => 'async', 'sizes' => '100vw' ) ); ?>
+			<?php echo wp_get_attachment_image( $ot_thumb, 'full', false, array( 'class' => 'ot-article__feature-img', 'fetchpriority' => 'high', 'loading' => 'eager', 'decoding' => 'async', 'sizes' => '100vw' ) ); ?>
 		</figure>
 	<?php endif; ?>
 
