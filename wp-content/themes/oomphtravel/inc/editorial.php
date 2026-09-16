@@ -449,7 +449,12 @@ function oomphtravel_content_image( $filtered_image, $context, $attachment_id ) 
 		return $filtered_image;
 	}
 
-	if ( false === stripos( $filtered_image, ' loading=' ) ) {
+	// A hero the page has already marked as its priority image is never made
+	// lazy: the two attributes together tell the browser to fetch it first and
+	// then not to (CLAUDE.md, R3). The ways-page heroes are built this way.
+	$is_priority = (bool) preg_match( '/\sfetchpriority="high"/i', $filtered_image );
+
+	if ( ! $is_priority && false === stripos( $filtered_image, ' loading=' ) ) {
 		$filtered_image = str_replace( '<img ', '<img loading="lazy" ', $filtered_image );
 	}
 	if ( false === stripos( $filtered_image, ' decoding=' ) ) {
