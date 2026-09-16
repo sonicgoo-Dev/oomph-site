@@ -1,0 +1,77 @@
+name: Diagnose REST authentication
+
+# Read-only look at why application-password logins to the REST API (the
+# WordPress MCP endpoint the Rank Math connector uses) are refused. Prints
+# the site's .htaccess, the WordPress version, the active plugins, whether
+# application passwords are available, and the *names* of the advisor's
+# application passwords (never the passwords themselves). Runs over the
+# same SSH deploy key deploy.yml uses. Changes nothing.
+#
+# How Eric runs it: Actions → "Diagnose REST authentication" → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to look
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+jobs:
+  diagnose:
+    name: read-only on ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - name: Determine target environment
+        id: target
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "host=${{ secrets.SG_PROD_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_PROD_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_PROD_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_PROD_THEME_PATH }}" >> $GITHUB_OUTPUT
+          else
+            echo "host=${{ secrets.SG_STAGE_HOST }}"       >> $GITHUB_OUTPUT
+            echo "user=${{ secrets.SG_STAGE_USER }}"       >> $GITHUB_OUTPUT
+            echo "port=${{ secrets.SG_STAGE_PORT }}"       >> $GITHUB_OUTPUT
+            echo "path=${{ secrets.SG_STAGE_THEME_PATH }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SG_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          for i in 1 2 3 4 5; do
+            ssh-keyscan -p ${{ steps.target.outputs.port }} -H ${{ steps.target.outputs.host }} >> ~/.ssh/known_hosts && break
+            sleep 5
+          done
+
+      - name: Read the site (WP-CLI via SSH)
+        run: |
+          set -o pipefail
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            'cd ${{ steps.target.outputs.path }}/../../.. && pwd && echo "=== .htaccess ===" && cat .htaccess && echo && echo "=== WordPress ===" && wp core version && wp option get siteurl && echo "=== active plugins ===" && wp plugin list --status=active --fields=name,version && echo "=== application passwords available? ===" && wp eval "echo wp_is_application_passwords_available() ? \"yes\" : \"NO\"; echo PHP_EOL;" && echo "=== application password names for the advisor (no secrets) ===" && for u in $(wp user list --role=administrator --field=user_login); do echo "-- $u"; wp user application-password list "$u" --fields=name,created,last_used 2>&1 || true; done' \
+            | tee diagnose.log
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Diagnose REST authentication — ${{ inputs.environment }}"
+            echo
+            echo '```'
+            cat diagnose.log 2>/dev/null || echo "(no output — the SSH step failed before WP-CLI ran)"
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
