@@ -150,7 +150,7 @@ test.describe( '/journal/', () => {
     await expect( page.locator( 'meta[name="robots"]' ) ).toHaveAttribute( 'content', /noindex/ );
   } );
 
-  test( 'an article: byline from the profile, At a glance, the destination card, the author node', async ( { page } ) => {
+  test( 'an article: byline from the profile, the introduction, the destination card, the author node', async ( { page } ) => {
     await page.goto( '/journal/', { waitUntil: 'domcontentloaded' } );
     await page.locator( '.ot-card-journal__link' ).filter( { hasText: 'Puglia in May' } ).click( { force: true } );
     await page.waitForLoadState( 'domcontentloaded' );
@@ -158,7 +158,8 @@ test.describe( '/journal/', () => {
     await expect( page.locator( 'h1' ) ).toHaveText( 'Puglia in May: the week that works' );
     const author = page.locator( '.ot-article__author' );
     await expect( author ).toHaveAttribute( 'href', /\/about\/$/ );
-    await expect( page.locator( '.ot-article__glance' ) ).toContainText( 'Three nights in Lecce' );
+    await expect( page.locator( '.ot-article__dek' ) ).toContainText( 'Three nights in Lecce' );
+    await expect( page.locator( '.ot-article__byline' ) ).toContainText( 'minute read' );
     await expect( page.locator( '.ot-article__body h2' ) ).toHaveText( 'Where to base' );
     await expect( page.locator( '.ot-article__destination .ot-card-dest' ) ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
     await expect( page.locator( 'main .ot-btn--primary' ) ).toHaveCount( 1 );

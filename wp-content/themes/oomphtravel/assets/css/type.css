@@ -46,46 +46,46 @@ a:hover > .ot-arrow,
 
 /* Desktop/H1 — Page title */
 .ot-type-desktop-h1 {
-	font-family: var(--wp--custom--type--desktop--h1--family);
-	font-weight: var(--wp--custom--type--desktop--h1--weight);
-	font-size: var(--wp--custom--type--desktop--h1--size);
-	line-height: var(--wp--custom--type--desktop--h1--line-height);
-	letter-spacing: var(--wp--custom--type--desktop--h1--letter-spacing);
-	font-style: var(--wp--custom--type--desktop--h1--style);
-	text-transform: var(--wp--custom--type--desktop--h1--transform);
+	font-family: var(--wp--custom--type--desktop--h-1--family);
+	font-weight: var(--wp--custom--type--desktop--h-1--weight);
+	font-size: var(--wp--custom--type--desktop--h-1--size);
+	line-height: var(--wp--custom--type--desktop--h-1--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h-1--letter-spacing);
+	font-style: var(--wp--custom--type--desktop--h-1--style);
+	text-transform: var(--wp--custom--type--desktop--h-1--transform);
 }
 
 /* Desktop/H2 — Section title */
 .ot-type-desktop-h2 {
-	font-family: var(--wp--custom--type--desktop--h2--family);
-	font-weight: var(--wp--custom--type--desktop--h2--weight);
-	font-size: var(--wp--custom--type--desktop--h2--size);
-	line-height: var(--wp--custom--type--desktop--h2--line-height);
-	letter-spacing: var(--wp--custom--type--desktop--h2--letter-spacing);
-	font-style: var(--wp--custom--type--desktop--h2--style);
-	text-transform: var(--wp--custom--type--desktop--h2--transform);
+	font-family: var(--wp--custom--type--desktop--h-2--family);
+	font-weight: var(--wp--custom--type--desktop--h-2--weight);
+	font-size: var(--wp--custom--type--desktop--h-2--size);
+	line-height: var(--wp--custom--type--desktop--h-2--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h-2--letter-spacing);
+	font-style: var(--wp--custom--type--desktop--h-2--style);
+	text-transform: var(--wp--custom--type--desktop--h-2--transform);
 }
 
 /* Desktop/H2 Statement — Statement band */
 .ot-type-desktop-h2-statement {
-	font-family: var(--wp--custom--type--desktop--h2-statement--family);
-	font-weight: var(--wp--custom--type--desktop--h2-statement--weight);
-	font-size: var(--wp--custom--type--desktop--h2-statement--size);
-	line-height: var(--wp--custom--type--desktop--h2-statement--line-height);
-	letter-spacing: var(--wp--custom--type--desktop--h2-statement--letter-spacing);
-	font-style: var(--wp--custom--type--desktop--h2-statement--style);
-	text-transform: var(--wp--custom--type--desktop--h2-statement--transform);
+	font-family: var(--wp--custom--type--desktop--h-2-statement--family);
+	font-weight: var(--wp--custom--type--desktop--h-2-statement--weight);
+	font-size: var(--wp--custom--type--desktop--h-2-statement--size);
+	line-height: var(--wp--custom--type--desktop--h-2-statement--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h-2-statement--letter-spacing);
+	font-style: var(--wp--custom--type--desktop--h-2-statement--style);
+	text-transform: var(--wp--custom--type--desktop--h-2-statement--transform);
 }
 
 /* Desktop/H3 — Card title */
 .ot-type-desktop-h3 {
-	font-family: var(--wp--custom--type--desktop--h3--family);
-	font-weight: var(--wp--custom--type--desktop--h3--weight);
-	font-size: var(--wp--custom--type--desktop--h3--size);
-	line-height: var(--wp--custom--type--desktop--h3--line-height);
-	letter-spacing: var(--wp--custom--type--desktop--h3--letter-spacing);
-	font-style: var(--wp--custom--type--desktop--h3--style);
-	text-transform: var(--wp--custom--type--desktop--h3--transform);
+	font-family: var(--wp--custom--type--desktop--h-3--family);
+	font-weight: var(--wp--custom--type--desktop--h-3--weight);
+	font-size: var(--wp--custom--type--desktop--h-3--size);
+	line-height: var(--wp--custom--type--desktop--h-3--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h-3--letter-spacing);
+	font-style: var(--wp--custom--type--desktop--h-3--style);
+	text-transform: var(--wp--custom--type--desktop--h-3--transform);
 }
 
 /* Desktop/Quote — Client story — italic */
@@ -201,35 +201,35 @@ a:hover > .ot-arrow,
 
 /* Mobile/H1 — Page title */
 .ot-type-mobile-h1 {
-	font-family: var(--wp--custom--type--mobile--h1--family);
-	font-weight: var(--wp--custom--type--mobile--h1--weight);
-	font-size: var(--wp--custom--type--mobile--h1--size);
-	line-height: var(--wp--custom--type--mobile--h1--line-height);
-	letter-spacing: var(--wp--custom--type--mobile--h1--letter-spacing);
-	font-style: var(--wp--custom--type--mobile--h1--style);
-	text-transform: var(--wp--custom--type--mobile--h1--transform);
+	font-family: var(--wp--custom--type--mobile--h-1--family);
+	font-weight: var(--wp--custom--type--mobile--h-1--weight);
+	font-size: var(--wp--custom--type--mobile--h-1--size);
+	line-height: var(--wp--custom--type--mobile--h-1--line-height);
+	letter-spacing: var(--wp--custom--type--mobile--h-1--letter-spacing);
+	font-style: var(--wp--custom--type--mobile--h-1--style);
+	text-transform: var(--wp--custom--type--mobile--h-1--transform);
 }
 
 /* Mobile/H2 — Section title */
 .ot-type-mobile-h2 {
-	font-family: var(--wp--custom--type--mobile--h2--family);
-	font-weight: var(--wp--custom--type--mobile--h2--weight);
-	font-size: var(--wp--custom--type--mobile--h2--size);
-	line-height: var(--wp--custom--type--mobile--h2--line-height);
-	letter-spacing: var(--wp--custom--type--mobile--h2--letter-spacing);
-	font-style: var(--wp--custom--type--mobile--h2--style);
-	text-transform: var(--wp--custom--type--mobile--h2--transform);
+	font-family: var(--wp--custom--type--mobile--h-2--family);
+	font-weight: var(--wp--custom--type--mobile--h-2--weight);
+	font-size: var(--wp--custom--type--mobile--h-2--size);
+	line-height: var(--wp--custom--type--mobile--h-2--line-height);
+	letter-spacing: var(--wp--custom--type--mobile--h-2--letter-spacing);
+	font-style: var(--wp--custom--type--mobile--h-2--style);
+	text-transform: var(--wp--custom--type--mobile--h-2--transform);
 }
 
 /* Mobile/H3 — Card title */
 .ot-type-mobile-h3 {
-	font-family: var(--wp--custom--type--mobile--h3--family);
-	font-weight: var(--wp--custom--type--mobile--h3--weight);
-	font-size: var(--wp--custom--type--mobile--h3--size);
-	line-height: var(--wp--custom--type--mobile--h3--line-height);
-	letter-spacing: var(--wp--custom--type--mobile--h3--letter-spacing);
-	font-style: var(--wp--custom--type--mobile--h3--style);
-	text-transform: var(--wp--custom--type--mobile--h3--transform);
+	font-family: var(--wp--custom--type--mobile--h-3--family);
+	font-weight: var(--wp--custom--type--mobile--h-3--weight);
+	font-size: var(--wp--custom--type--mobile--h-3--size);
+	line-height: var(--wp--custom--type--mobile--h-3--line-height);
+	letter-spacing: var(--wp--custom--type--mobile--h-3--letter-spacing);
+	font-style: var(--wp--custom--type--mobile--h-3--style);
+	text-transform: var(--wp--custom--type--mobile--h-3--transform);
 }
 
 /* Mobile/Body — Body copy */
@@ -286,12 +286,12 @@ a:hover > .ot-arrow,
 :root {
 	--type-display-size:      var(--wp--custom--type--mobile--display--size);
 	--type-display-line:      var(--wp--custom--type--mobile--display--line-height);
-	--type-h1-size:           var(--wp--custom--type--mobile--h1--size);
-	--type-h1-line:           var(--wp--custom--type--mobile--h1--line-height);
-	--type-h2-size:           var(--wp--custom--type--mobile--h2--size);
-	--type-h2-line:           var(--wp--custom--type--mobile--h2--line-height);
-	--type-h3-size:           var(--wp--custom--type--mobile--h3--size);
-	--type-h3-line:           var(--wp--custom--type--mobile--h3--line-height);
+	--type-h1-size:           var(--wp--custom--type--mobile--h-1--size);
+	--type-h1-line:           var(--wp--custom--type--mobile--h-1--line-height);
+	--type-h2-size:           var(--wp--custom--type--mobile--h-2--size);
+	--type-h2-line:           var(--wp--custom--type--mobile--h-2--line-height);
+	--type-h3-size:           var(--wp--custom--type--mobile--h-3--size);
+	--type-h3-line:           var(--wp--custom--type--mobile--h-3--line-height);
 	--type-body-size:         var(--wp--custom--type--mobile--body--size);
 	--type-body-line:         var(--wp--custom--type--mobile--body--line-height);
 	--type-body-small-size:   var(--wp--custom--type--mobile--body-small--size);
@@ -304,12 +304,12 @@ a:hover > .ot-arrow,
 	:root {
 		--type-display-size:    var(--wp--custom--type--desktop--display--size);
 		--type-display-line:    var(--wp--custom--type--desktop--display--line-height);
-		--type-h1-size:         var(--wp--custom--type--desktop--h1--size);
-		--type-h1-line:         var(--wp--custom--type--desktop--h1--line-height);
-		--type-h2-size:         var(--wp--custom--type--desktop--h2--size);
-		--type-h2-line:         var(--wp--custom--type--desktop--h2--line-height);
-		--type-h3-size:         var(--wp--custom--type--desktop--h3--size);
-		--type-h3-line:         var(--wp--custom--type--desktop--h3--line-height);
+		--type-h1-size:         var(--wp--custom--type--desktop--h-1--size);
+		--type-h1-line:         var(--wp--custom--type--desktop--h-1--line-height);
+		--type-h2-size:         var(--wp--custom--type--desktop--h-2--size);
+		--type-h2-line:         var(--wp--custom--type--desktop--h-2--line-height);
+		--type-h3-size:         var(--wp--custom--type--desktop--h-3--size);
+		--type-h3-line:         var(--wp--custom--type--desktop--h-3--line-height);
 		--type-body-size:       var(--wp--custom--type--desktop--body--size);
 		--type-body-line:       var(--wp--custom--type--desktop--body--line-height);
 		--type-body-small-size: var(--wp--custom--type--desktop--body-small--size);
