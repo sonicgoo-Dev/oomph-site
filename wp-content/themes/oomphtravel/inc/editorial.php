@@ -291,6 +291,93 @@ function oomphtravel_related_posts( WP_Post $post ): array {
 }
 
 /* ------------------------------------------------------------------ */
+/* Journal: the magazine layout (after CruiseOomph; Eric, 2026-09-16)  */
+/* ------------------------------------------------------------------ */
+
+/** Words a reader manages in a minute, for the "N minute read" line. */
+const OOMPHTRAVEL_WORDS_PER_MINUTE = 220;
+
+/** How long a post takes to read, in whole minutes, never under one. */
+function oomphtravel_read_minutes( WP_Post $post ): int {
+	$words = str_word_count( wp_strip_all_tags( strip_shortcodes( (string) $post->post_content ) ) );
+	return max( 1, (int) round( $words / OOMPHTRAVEL_WORDS_PER_MINUTE ) );
+}
+
+/**
+ * A post's topic for the kicker: the first of its categories that is one
+ * of the four index topics, linked to that topic's view; else its first
+ * category by name, unlinked; else "Journal".
+ *
+ * @return array{name:string,url:string}
+ */
+function oomphtravel_post_topic( WP_Post $post ): array {
+	$cats   = get_the_category( $post->ID );
+	$topics = oomphtravel_journal_topics();
+	foreach ( $cats as $cat ) {
+		if ( isset( $topics[ $cat->slug ] ) ) {
+			return array( 'name' => (string) $topics[ $cat->slug ], 'url' => add_query_arg( 'topic', $cat->slug, home_url( '/journal/' ) ) );
+		}
+	}
+	return array( 'name' => $cats ? (string) $cats[0]->name : __( 'Journal', 'oomphtravel' ), 'url' => '' );
+}
+
+/**
+ * The author box under a post: the lead advisor from the plugin's Advisor
+ * class (Display name and Biographical Info from the profile), or the
+ * second advisor from oomphtravel_second_advisor(). Portraits are the
+ * theme's own.
+ *
+ * @return array{name:string,url:string,bio:string,image:string}
+ */
+function oomphtravel_post_author_box( WP_Post $post ): array {
+	$byline = oomphtravel_post_byline( $post );
+	$second = oomphtravel_second_advisor();
+	$user   = get_userdata( (int) $post->post_author );
+	if ( $user instanceof WP_User && '' !== (string) ( $second['login'] ?? '' ) && $user->user_login === $second['login'] ) {
+		return array(
+			'name'  => $byline['name'],
+			'url'   => $byline['url'],
+			'bio'   => (string) ( $second['description'] ?? '' ),
+			'image' => (string) ( $second['image'] ?? '' ),
+		);
+	}
+	$bio = class_exists( '\OomphTravel\Core\Advisor' ) ? \OomphTravel\Core\Advisor::bio() : '';
+	if ( '' === $bio && $user instanceof WP_User ) {
+		$bio = (string) $user->description;
+	}
+	return array(
+		'name'  => $byline['name'],
+		'url'   => $byline['url'],
+		'bio'   => $bio,
+		'image' => OOMPHTRAVEL_THEME_URI . 'assets/img/advisor-eric-720.webp',
+	);
+}
+
+/**
+ * The advisor's invitation that closes the Journal index and every post:
+ * Eric's portrait beside the heading and the one Start planning button, on
+ * a navy card. Stands in for the plain closing band on these two pages.
+ */
+function oomphtravel_journal_invitation( string $eyebrow, string $heading, string $body, string $url = '' ): string {
+	$url = '' !== $url ? $url : home_url( '/start-planning/' );
+	$img = OOMPHTRAVEL_THEME_URI . 'assets/img/';
+
+	return sprintf(
+		'<section class="ot-band ot-journal-invite" aria-labelledby="ot-journal-invite-title"><div class="ot-container"><div class="ot-journal-invite__card">' .
+		'<img class="ot-journal-invite__portrait" src="%1$s" srcset="%1$s 360w, %2$s 720w" sizes="(max-width: 767px) calc(100vw - 80px), 272px" width="272" height="272" loading="lazy" decoding="async" alt="%3$s">' .
+		'<div class="ot-journal-invite__copy"><p class="ot-eyebrow ot-journal-invite__eyebrow">%4$s</p><h2 class="ot-journal-invite__heading" id="ot-journal-invite-title">%5$s</h2><p class="ot-journal-invite__body">%6$s</p></div>' .
+		'%7$s</div></div></section>',
+		esc_url( $img . 'advisor-eric-360.webp' ),
+		esc_url( $img . 'advisor-eric-720.webp' ),
+		esc_attr__( 'Eric Hempel, travel advisor at Oomph Travel.', 'oomphtravel' ),
+		esc_html( $eyebrow ),
+		esc_html( $heading ),
+		esc_html( $body ),
+		oomphtravel_button( __( 'Start planning', 'oomphtravel' ), $url, 'primary', true )
+	);
+}
+
+/* ------------------------------------------------------------------ */
 /* Travel Trends guide (D17, D18, D30)                                  */
 /* ------------------------------------------------------------------ */
 
