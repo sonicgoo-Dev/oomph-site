@@ -816,8 +816,8 @@ header:has( > .ot-header ),
 	.ot-drawer__title {
 		display: block;
 		font-family: var(--font-display);
-		font-size: var(--wp--custom--type--mobile--h3--size);
-		line-height: var(--wp--custom--type--mobile--h3--line-height);
+		font-size: var(--wp--custom--type--mobile--h-3--size);
+		line-height: var(--wp--custom--type--mobile--h-3--line-height);
 		letter-spacing: -0.01em;
 	}
 	.ot-drawer__subtitle {
@@ -1017,9 +1017,9 @@ header:has( > .ot-header ),
 .ot-statement__heading {
 	margin: 0;
 	max-width: var(--wp--custom--measure--heading);
-	font-size: var(--wp--custom--type--desktop--h2-statement--size);
-	line-height: var(--wp--custom--type--desktop--h2-statement--line-height);
-	letter-spacing: var(--wp--custom--type--desktop--h2-statement--letter-spacing);
+	font-size: var(--wp--custom--type--desktop--h-2-statement--size);
+	line-height: var(--wp--custom--type--desktop--h-2-statement--line-height);
+	letter-spacing: var(--wp--custom--type--desktop--h-2-statement--letter-spacing);
 }
 .ot-statement__body {
 	margin: 0;
