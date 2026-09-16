@@ -633,20 +633,20 @@
 			},
 			"h1": {
 				"typography": {
-					"fontSize": "var(--wp--custom--type--desktop--h1--size)",
-					"lineHeight": "var(--wp--custom--type--desktop--h1--line-height)"
+					"fontSize": "var(--wp--custom--type--desktop--h-1--size)",
+					"lineHeight": "var(--wp--custom--type--desktop--h-1--line-height)"
 				}
 			},
 			"h2": {
 				"typography": {
-					"fontSize": "var(--wp--custom--type--desktop--h2--size)",
-					"lineHeight": "var(--wp--custom--type--desktop--h2--line-height)"
+					"fontSize": "var(--wp--custom--type--desktop--h-2--size)",
+					"lineHeight": "var(--wp--custom--type--desktop--h-2--line-height)"
 				}
 			},
 			"h3": {
 				"typography": {
-					"fontSize": "var(--wp--custom--type--desktop--h3--size)",
-					"lineHeight": "var(--wp--custom--type--desktop--h3--line-height)"
+					"fontSize": "var(--wp--custom--type--desktop--h-3--size)",
+					"lineHeight": "var(--wp--custom--type--desktop--h-3--line-height)"
 				}
 			},
 			"link": {
