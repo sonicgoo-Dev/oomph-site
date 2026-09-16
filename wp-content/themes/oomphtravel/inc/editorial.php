@@ -456,13 +456,13 @@ function oomphtravel_content_image( $filtered_image, $context, $attachment_id ) 
 		$filtered_image = str_replace( '<img ', '<img decoding="async" ', $filtered_image );
 	}
 
-	// Dimensions from the attachment itself, so nothing shifts as it loads.
-	if ( $attachment_id && false === stripos( $filtered_image, ' width=' ) ) {
-		$meta = wp_get_attachment_metadata( (int) $attachment_id );
-		if ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
+	// Dimensions, so nothing shifts as the image loads.
+	if ( false === stripos( $filtered_image, ' width=' ) ) {
+		$size = oomphtravel_image_dimensions( (int) $attachment_id, $filtered_image );
+		if ( $size ) {
 			$filtered_image = str_replace(
 				'<img ',
-				sprintf( '<img width="%d" height="%d" ', (int) $meta['width'], (int) $meta['height'] ),
+				sprintf( '<img width="%d" height="%d" ', $size[0], $size[1] ),
 				$filtered_image
 			);
 		}
@@ -471,3 +471,57 @@ function oomphtravel_content_image( $filtered_image, $context, $attachment_id ) 
 	return $filtered_image;
 }
 add_filter( 'wp_content_img_tag', 'oomphtravel_content_image', 10, 3 );
+
+/**
+ * An image's real dimensions: from the attachment when there is one, else
+ * from the file on disk.
+ *
+ * The journal bodies were written on the old site and many of their images
+ * have no attachment record here any more — the media library was replaced at
+ * the relaunch while the uploaded files stayed put. `wp_get_attachment_metadata()`
+ * returns nothing for those, so the file itself is measured and the answer
+ * cached for a week; the alternative is shipping them with no dimensions at
+ * all, which is what caused the layout shift.
+ *
+ * @param int    $attachment_id Attachment, 0 when unknown.
+ * @param string $tag           The `<img>` tag, read for its src.
+ * @return array{0:int,1:int}|null
+ */
+function oomphtravel_image_dimensions( int $attachment_id, string $tag ): ?array {
+	if ( $attachment_id ) {
+		$meta = wp_get_attachment_metadata( $attachment_id );
+		if ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
+			return array( (int) $meta['width'], (int) $meta['height'] );
+		}
+	}
+
+	if ( ! preg_match( '/\ssrc="([^"]+)"/i', $tag, $m ) ) {
+		return null;
+	}
+	$src = $m[1];
+
+	// Only files this site serves from its own uploads folder are measured.
+	$uploads = wp_get_upload_dir();
+	if ( 0 !== strpos( $src, (string) $uploads['baseurl'] ) ) {
+		return null;
+	}
+
+	$key    = 'ot_img_' . md5( $src );
+	$cached = get_transient( $key );
+	if ( is_array( $cached ) ) {
+		return $cached ? array( (int) $cached[0], (int) $cached[1] ) : null;
+	}
+
+	$path = $uploads['basedir'] . substr( $src, strlen( (string) $uploads['baseurl'] ) );
+	$size = ( is_string( $path ) && file_exists( $path ) ) ? @getimagesize( $path ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a corrupt file must not warn on a page view.
+
+	if ( ! is_array( $size ) || empty( $size[0] ) || empty( $size[1] ) ) {
+		set_transient( $key, array(), WEEK_IN_SECONDS );
+		return null;
+	}
+
+	$out = array( (int) $size[0], (int) $size[1] );
+	set_transient( $key, $out, WEEK_IN_SECONDS );
+
+	return $out;
+}
