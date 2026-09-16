@@ -324,10 +324,11 @@ function oomphtravel_post_topic( WP_Post $post ): array {
 /**
  * The author box under a post: the lead advisor from the plugin's Advisor
  * class (Display name and Biographical Info from the profile), or the
- * second advisor from oomphtravel_second_advisor(). Portraits are the
- * theme's own.
+ * second advisor from oomphtravel_second_advisor(). No portrait: the
+ * invitation card that follows carries Eric's, and two in a row read as a
+ * mistake (Eric, 2026-09-16).
  *
- * @return array{name:string,url:string,bio:string,image:string}
+ * @return array{name:string,url:string,bio:string}
  */
 function oomphtravel_post_author_box( WP_Post $post ): array {
 	$byline = oomphtravel_post_byline( $post );
@@ -338,7 +339,6 @@ function oomphtravel_post_author_box( WP_Post $post ): array {
 			'name'  => $byline['name'],
 			'url'   => $byline['url'],
 			'bio'   => (string) ( $second['description'] ?? '' ),
-			'image' => (string) ( $second['image'] ?? '' ),
 		);
 	}
 	$bio = class_exists( '\OomphTravel\Core\Advisor' ) ? \OomphTravel\Core\Advisor::bio() : '';
@@ -349,7 +349,6 @@ function oomphtravel_post_author_box( WP_Post $post ): array {
 		'name'  => $byline['name'],
 		'url'   => $byline['url'],
 		'bio'   => $bio,
-		'image' => OOMPHTRAVEL_THEME_URI . 'assets/img/advisor-eric-720.webp',
 	);
 }
 
