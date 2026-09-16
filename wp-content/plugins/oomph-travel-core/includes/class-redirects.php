@@ -10,9 +10,16 @@
  * under /group-cruises/ goes to CruiseOomph's cruise search, tagged like every
  * other outbound link (plan §4.3), instead of a dead end.
  *
- * Nothing else that was deleted is redirected. /trip-quiz/, the old
- * /cruise-travel-trends/ page and the nine cruise articles return the theme's
- * 404 page, which is Eric's decision in the plan.
+ * The nine cruise articles are the one amendment to D02 (Eric, 2026-09-15):
+ * they were to 404 like everything else, but every one of them lives on at
+ * cruiseoomph.com under the same slug at the site root, and CruiseOomph's own
+ * copies had been canonicalising to these addresses. A 301 to the article
+ * itself is better for a reader and for search engines than a 404, so the
+ * nine are listed by slug below. /trip-quiz/, the old /cruise-travel-trends/
+ * page and everything else deleted still return the theme's 404 page.
+ *
+ * The list is explicit slugs, never a /journal/ wildcard:
+ * /journal/10-day-united-kingdom-itinerary/ is a live post on this site.
  *
  * The rules run before WordPress decides whether the address is a page, so
  * they hold whether or not the old page record is still in the database. Rank
@@ -54,6 +61,27 @@ final class Redirects {
 	}
 
 	/**
+	 * The nine cruise articles, moved to CruiseOomph in the relaunch (D02 as
+	 * amended). Each lives at the site root there under the same slug, so
+	 * /journal/<slug>/ here becomes https://cruiseoomph.com/<slug>/.
+	 *
+	 * @return string[]
+	 */
+	public static function moved_articles(): array {
+		return array(
+			'norwegian-fjords-vs-baltic',
+			'silversea-vs-regent',
+			'virgin-voyages-rockstar-suite-worth-it',
+			'avoid-cruise-ship-crowds-in-the-mediterranean',
+			'barcelona-before-your-cruise',
+			'fly-the-drake-passage-or-sail',
+			'japan-by-sea-summer-festivals-cruise',
+			'first-premium-cruise',
+			'the-slow-cruise',
+		);
+	}
+
+	/**
 	 * Path prefixes handed to CruiseOomph. Every address underneath goes to
 	 * the same place; a sailing that was indexed two years ago cannot map to
 	 * a page on the new site, so the cruise search is the honest landing.
@@ -86,6 +114,15 @@ final class Redirects {
 			}
 		}
 
+		// The nine moved articles, matched whole: any other /journal/<slug>/
+		// falls through to WordPress, which is what keeps the live UK
+		// itinerary post working.
+		foreach ( self::moved_articles() as $slug ) {
+			if ( '/journal/' . $slug . '/' === $path ) {
+				return self::cruiseoomph_article( $slug );
+			}
+		}
+
 		// $path always ends in '/', so '/group-cruises' and '/group-cruises/'
 		// both read as the prefix itself, and '/group-cruises-x/' does not.
 		foreach ( self::handed_off() as $prefix ) {
@@ -95,6 +132,24 @@ final class Redirects {
 		}
 
 		return '';
+	}
+
+	/**
+	 * One moved article on CruiseOomph, tagged like every other outbound link.
+	 */
+	private static function cruiseoomph_article( string $slug ): string {
+		$path = '/' . $slug . '/';
+		if ( function_exists( 'oomphtravel_cruiseoomph_url' ) ) {
+			return (string) \oomphtravel_cruiseoomph_url( $path, 'journal' );
+		}
+		return add_query_arg(
+			array(
+				'utm_source'   => 'oomphtravel',
+				'utm_medium'   => 'site',
+				'utm_campaign' => 'journal',
+			),
+			'https://cruiseoomph.com' . $path
+		);
 	}
 
 	/**
