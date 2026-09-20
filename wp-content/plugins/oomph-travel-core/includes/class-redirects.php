@@ -7,8 +7,16 @@
  * working. The old /contact address had a Rank Math rule pointing at a broken
  * URL; it now lands on Start planning too. And one courtesy line for the
  * cruise content that is deleted rather than redirected (D02, D43): anything
- * under /group-cruises/ goes to CruiseOomph's cruise search, tagged like every
- * other outbound link (plan §4.3), instead of a dead end.
+ * under /group-cruises/ goes to CruiseOomph's cruise search instead of a dead
+ * end.
+ *
+ * Redirect targets carry no UTM tag (Eric, 2026-09-19). Outbound links keep
+ * the tag (plan §4.3); a 301 does not. Search engines read a tagged address
+ * as a different page from the plain one, so a tagged 301 hands whatever
+ * standing the old address had to a URL with tracking junk in it, and Search
+ * Console was indeed starting to index cruiseoomph.com/cruises/?utm_… while
+ * the plain /cruises/ went uncrawled. The traffic is still attributable: GA4
+ * on CruiseOomph sees oomphtravel.com as the referrer.
  *
  * The nine cruise articles are the one amendment to D02 (Eric, 2026-09-15):
  * they were to 404 like everything else, but every one of them lives on at
@@ -41,8 +49,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Redirects {
 
-	/** Where the cruise search lives on CruiseOomph. */
-	private const CRUISEOOMPH_CRUISES = 'https://cruiseoomph.com/cruises/';
+	/** The CruiseOomph origin, without a trailing slash. */
+	private const CRUISEOOMPH = 'https://cruiseoomph.com';
 
 	public static function init(): void {
 		// Priority 1: ahead of canonical redirects, Rank Math and the template.
@@ -139,40 +147,25 @@ final class Redirects {
 	}
 
 	/**
-	 * One moved article on CruiseOomph, tagged like every other outbound link.
+	 * One moved article on CruiseOomph, untagged (see the file header).
 	 */
 	private static function cruiseoomph_article( string $slug ): string {
-		$path = '/' . $slug . '/';
-		if ( function_exists( 'oomphtravel_cruiseoomph_url' ) ) {
-			return (string) \oomphtravel_cruiseoomph_url( $path, 'journal' );
-		}
-		return add_query_arg(
-			array(
-				'utm_source'   => 'oomphtravel',
-				'utm_medium'   => 'site',
-				'utm_campaign' => 'journal',
-			),
-			'https://cruiseoomph.com' . $path
-		);
+		return self::cruiseoomph_base() . '/' . $slug . '/';
 	}
 
 	/**
-	 * The CruiseOomph cruise search, tagged. The theme's helper knows the
-	 * staging origin and the tag format; the fallback builds the same tag so
-	 * the plugin still does the right thing under another theme.
+	 * The CruiseOomph cruise search, untagged (see the file header).
 	 */
 	private static function cruiseoomph_cruises(): string {
-		if ( function_exists( 'oomphtravel_cruiseoomph_url' ) ) {
-			return (string) \oomphtravel_cruiseoomph_url( '/cruises/', 'group-cruises' );
-		}
-		return add_query_arg(
-			array(
-				'utm_source'   => 'oomphtravel',
-				'utm_medium'   => 'site',
-				'utm_campaign' => 'group-cruises',
-			),
-			self::CRUISEOOMPH_CRUISES
-		);
+		return self::cruiseoomph_base() . '/cruises/';
+	}
+
+	/**
+	 * The CruiseOomph origin, honouring the theme's staging filter so staging
+	 * can point at its staging copy exactly as the tagged links do.
+	 */
+	private static function cruiseoomph_base(): string {
+		return untrailingslashit( (string) apply_filters( 'oomphtravel_cruiseoomph_base', self::CRUISEOOMPH ) );
 	}
 
 	public static function maybe_redirect(): void {

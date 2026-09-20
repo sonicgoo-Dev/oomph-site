@@ -7,7 +7,8 @@ import { test, expect } from '@playwright/test';
  *   - the three moved pages, and the broken /contact rule, go to their new
  *     addresses permanently, keeping any query string
  *   - anything under /group-cruises/ hands off to CruiseOomph's cruise
- *     index with the UTM tag (D43); nothing deeper is guessed at
+ *     index (D43); nothing deeper is guessed at, and the target carries no
+ *     UTM tag, so search engines credit the plain address
  *   - the deleted pages are not redirected (D02): they land on the 404
  */
 const MOVED: Array<[ string, RegExp ]> = [
@@ -40,26 +41,20 @@ test.describe( 'redirects', () => {
     expect( response.headers()[ 'location' ] ).toMatch( /\/start-planning\/\?utm_source=instagram$/ );
   } );
 
-  test( '/group-cruises/ and everything under it hands off to CruiseOomph (D43)', async ( { request } ) => {
+  test( '/group-cruises/ and everything under it hands off to CruiseOomph, untagged (D43)', async ( { request } ) => {
     for ( const from of [ '/group-cruises/', '/group-cruises/mediterranean-2027/', '/group-cruises/anything/at/all/' ] ) {
       const response = await request.get( from, { maxRedirects: 0 } );
       expect( response.status(), from ).toBe( 301 );
-      const location = response.headers()[ 'location' ] ?? '';
-      expect( location, from ).toMatch( /^https:\/\/cruiseoomph\.com\/cruises\/\?/ );
-      expect( location, from ).toContain( 'utm_source=oomphtravel' );
-      expect( location, from ).toContain( 'utm_medium=site' );
-      expect( location, from ).toContain( 'utm_campaign=group-cruises' );
+      expect( response.headers()[ 'location' ], from ).toBe( 'https://cruiseoomph.com/cruises/' );
     }
   } );
 
   // D02 as amended (Eric, 2026-09-15): the nine cruise articles live on at
   // cruiseoomph.com under the same slug, so they move rather than 404.
-  test( 'the nine moved articles go to CruiseOomph, and other journal paths do not', async ( { request } ) => {
+  test( 'the nine moved articles go to CruiseOomph untagged, and other journal paths do not', async ( { request } ) => {
     const response = await request.get( '/journal/silversea-vs-regent/', { maxRedirects: 0 } );
     expect( response.status() ).toBe( 301 );
-    const location = response.headers()[ 'location' ] ?? '';
-    expect( location ).toMatch( /^https:\/\/cruiseoomph\.com\/silversea-vs-regent\/\?/ );
-    expect( location ).toContain( 'utm_campaign=journal' );
+    expect( response.headers()[ 'location' ] ).toBe( 'https://cruiseoomph.com/silversea-vs-regent/' );
 
     // A slug that is not on the list is left to WordPress.
     const other = await request.get( '/journal/a-post-that-does-not-exist/', { maxRedirects: 0 } );
