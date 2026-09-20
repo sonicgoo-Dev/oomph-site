@@ -122,7 +122,7 @@ environment the moment the code deploys, with nothing to configure:
 | `/luxury-cruise-planning/` | `/cruise-planning/` |
 | `/discovery-call/` | `/start-planning/` |
 | `/contact/` | `/start-planning/` |
-| `/group-cruises/` and anything under it | `https://cruiseoomph.com/cruises/` + UTM (D43) |
+| `/group-cruises/` and anything under it | `https://cruiseoomph.com/cruises/`, no UTM tag (D43, amended 2026-09-19) |
 
 In **Rank Math → Redirections**, delete any rule for the same addresses so
 the two do not fight. In particular the existing `/contact` rule points at

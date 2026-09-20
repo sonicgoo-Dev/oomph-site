@@ -129,7 +129,7 @@ production does not (the destination heroes, Amy's portrait).
 
 - All fourteen page types return 200 with `index, follow`, a self-canonical, one H1, the JSON-LD types from `tests/e2e/fixtures/routes.ts`.
 - `gtag/js` (Site Kit) and `clarity.ms` present on the homepage.
-- `/discovery-call/` → 301 → `/start-planning/`; `/custom-italy-travel/` → `/destinations/italy/`; `/luxury-cruise-planning/` → `/cruise-planning/`; `/group-cruises/anything/` → cruiseoomph.com/cruises/ with the UTM tag.
+- `/discovery-call/` → 301 → `/start-planning/`; `/custom-italy-travel/` → `/destinations/italy/`; `/luxury-cruise-planning/` → `/cruise-planning/`; `/group-cruises/anything/` → cruiseoomph.com/cruises/, plain: redirect targets carry no UTM tag (D43, amended 2026-09-19).
 - `/trip-quiz/`, `/cruise-travel-trends/`, a cruise post slug → the theme's 404 page.
 - `/sitemap_index.xml` lists posts, pages, destinations, tours and operators, and no `oomph_region` sitemap.
 - Then the suites: `gh workflow run e2e.yml --repo sonicgoo-Dev/oomph-site -f target=production` (runs from Eric's PC), `npm run audit:a11y`, `npm run audit:lh` (both default to production).
