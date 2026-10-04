@@ -203,23 +203,37 @@ test.describe( '/travel-trends/', () => {
     await expect( cover ).toHaveAttribute( 'width', '960' );
     await expect( page.locator( 'link[rel="preload"][as="image"]' ) ).toHaveCount( 1 );
 
-    // The one form in the hero: a single email field (R43), the trends form,
-    // its own source for GA4, and the double opt-in success line (D30).
+    // The one form in the hero: the trends form, its own source for GA4, and
+    // the double opt-in success line (D30). Four fields, by the decision of
+    // 2026-08-24 in docs/plainsend.md, a deliberate exception to R43: first
+    // name and email required, last name and phone optional.
     const form = page.locator( '.ot-trends-hero form.oomph-signup' );
     await expect( form ).toHaveCount( 1 );
     await expect( form ).toHaveAttribute( 'action', /\/f\/trends-guide-staging$/ );
     await expect( form ).toHaveAttribute( 'data-source', 'trends_guide' );
     await expect( form ).toHaveAttribute( 'data-success', 'Check your email and press the button, then the guide is on its way.' );
     await expect( form.locator( 'input[type="email"]' ) ).toHaveCount( 1 );
-    await expect( form.locator( 'input:not([type="hidden"]):not([name="website"])' ) ).toHaveCount( 1 );
+    await expect( form.locator( 'input:not([type="hidden"]):not([name="website"])' ) ).toHaveCount( 4 );
+    await expect( form.locator( 'input[name="first_name"]' ) ).toHaveAttribute( 'required', '' );
+    await expect( form.locator( 'input[name="email"]' ) ).toHaveAttribute( 'required', '' );
+    await expect( form.locator( 'input[name="last_name"]:not([required])' ) ).toHaveCount( 1 );
+    await expect( form.locator( 'input[name="phone"]:not([required])' ) ).toHaveCount( 1 );
+    // Every field a person fills in has a label of its own.
+    for ( const name of [ 'first_name', 'last_name', 'email', 'phone' ] ) {
+      const id = await form.locator( `input[name="${ name }"]` ).getAttribute( 'id' );
+      await expect( form.locator( `label[for="${ id }"]` ) ).toHaveCount( 1 );
+    }
     await expect( form.locator( '.ot-btn--primary' ) ).toHaveText( /Send me the guide/ );
 
     // The hero's primary is the submit; the closing band has the other.
     await expect( page.locator( 'main .ot-btn--primary' ) ).toHaveCount( 2 );
     await onePrimaryPerSection( page );
 
-    // The footer's own newsletter form is unchanged and separate.
-    await expect( page.locator( '.ot-footer form.oomph-signup' ) ).toHaveAttribute( 'action', /\/f\/newsletter-staging$/ );
+    // The footer's own newsletter form is separate, and asks for the same four.
+    const footerForm = page.locator( '.ot-footer form.oomph-signup' );
+    await expect( footerForm ).toHaveAttribute( 'action', /\/f\/newsletter-staging$/ );
+    await expect( footerForm.locator( 'input:not([type="hidden"]):not([name="website"])' ) ).toHaveCount( 4 );
+    await expect( footerForm.locator( 'input[name="first_name"]' ) ).toHaveAttribute( 'required', '' );
 
     const nodes = await graphNodes( page );
     expect( nodes.find( ( n ) => n[ '@type' ] === 'BreadcrumbList' ) ).toBeTruthy();

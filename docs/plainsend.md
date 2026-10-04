@@ -26,10 +26,17 @@ Plainsend. It adds no stylesheet and no plugin.
 | Piece | Where | Why there |
 | --- | --- | --- |
 | Endpoint and form slug | `oomph-travel-core/includes/class-plainsend.php` | Environment-aware, so it belongs in the plugin and survives a theme switch |
-| Markup | `kadence-oomph-child/inc/signup-form.php` (`oomph_signup_form()`) | One helper for every surface — footer, Trends, and the coming cabin quiz — so the honeypot and timing field cannot go missing from a copy |
-| Call sites | `inc/footer.php`, `page-cruise-travel-trends.php` | Presentation |
-| Styles | `kadence-oomph-child/assets/css/components.css` (`.oomph-signup`) | Presentation |
-| Submit script | `kadence-oomph-child/assets/js/newsletter.js` | ~1 KB, deferred, no dependencies |
+| Markup | `oomphtravel/inc/template-tags.php` (`oomphtravel_signup_form()`) | One helper for every surface — footer, Journal, Travel Trends — so the honeypot and timing field cannot go missing from a copy. The retired child theme's `oomph_signup_form()` is no longer called by anything live |
+| Call sites | `oomphtravel/patterns/footer.php`, `journal-index.php`, `travel-trends.php` | Presentation |
+| Styles | `oomphtravel/assets/css/components.css` (`.ot-signup`) | Presentation |
+| Submit script | `oomphtravel/assets/js/newsletter.js` | ~1 KB, deferred, no dependencies |
+
+> **2026-10-03: the four fields were put back.** The rebuilt theme launched on
+> 15 September with a form of its own that asked for the email address only,
+> so every signup from then until this fix arrived in PlainSend without a name.
+> `oomphtravel_signup_form()` now asks for the same four fields described
+> below, and `tests/ci/editorial.spec.ts` asserts them on the Travel Trends
+> page and in the footer.
 
 **What each form asks for.** First name and email address, both required, then
 last name and phone number, both optional and marked so in the label (R39).
