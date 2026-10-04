@@ -11,6 +11,12 @@ name: E2E smoke (staging)
 #
 # Tests never submit a form (see docs/testing.md), so runs create no leads —
 # safe against production.
+#
+# A failure opens an issue (2026-10-03). The suite is non-blocking, which is
+# right for a deploy and wrong for attention: the nightly run against
+# production failed for eighteen days running and nothing stopped to say so.
+# One issue per site, kept up to date rather than reopened nightly, and
+# closed by the first run that passes. See .github/scripts/smoke-alert.js.
 
 on:
   workflow_run:
@@ -31,6 +37,11 @@ on:
 concurrency:
   group: e2e-${{ github.event_name }}-${{ inputs.target || 'auto' }}
   cancel-in-progress: true
+
+# The alert step opens, updates and closes an issue; nothing else is written.
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   e2e:
@@ -97,10 +108,31 @@ jobs:
         # do on Windows.
         run: npx playwright install chromium
 
+      # The json reporter is added here rather than in playwright.config.ts so
+      # a run on somebody's own machine is unchanged. It is what the alert
+      # reads to say WHICH test failed, not only that one did.
       - name: Run e2e smoke tests
-        run: npx playwright test
+        id: smoke
+        run: npx playwright test --reporter=list,html,json
         env:
           OOMPH_BASE_URL: ${{ (github.event_name == 'schedule' || inputs.target == 'production') && 'https://oomphtravel.com' || 'https://staging2.oomphtravel.com' }}
+          PLAYWRIGHT_JSON_OUTPUT_NAME: smoke-results.json
+          PW_TEST_HTML_REPORT_OPEN: never
+
+      # Not on a manual run: whoever pressed the button is already watching.
+      # Keyed on the test step's own outcome, so a runner that could not
+      # install Node is not reported as the site being broken, and a
+      # cancelled run says nothing at all.
+      - name: Open, update or close the alert issue
+        if: always() && github.event_name != 'workflow_dispatch' && (steps.smoke.outcome == 'success' || steps.smoke.outcome == 'failure')
+        uses: actions/github-script@v7
+        env:
+          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          SMOKE_SITE: ${{ github.event_name == 'schedule' && 'https://oomphtravel.com' || 'https://staging2.oomphtravel.com' }}
+        with:
+          script: |
+            const alert = require(process.env.GITHUB_WORKSPACE + '/.github/scripts/smoke-alert.js');
+            await alert({ github, context, core });
 
       - name: Upload Playwright report
         if: always()
