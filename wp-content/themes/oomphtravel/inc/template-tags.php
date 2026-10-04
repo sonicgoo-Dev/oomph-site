@@ -601,11 +601,18 @@ function oomphtravel_quotation( string $quote, string $attribution ): string {
 /* ------------------------------------------------------------------ */
 
 /**
- * The PlainSend signup row (Footer, D30): email, website honeypot, elapsed_ms
- * timing field, submit. Posts straight to PlainSend via the endpoint the core
- * plugin resolves per environment; renders nothing when the plugin is
- * inactive rather than a form that posts nowhere. Markup keeps the
- * `.oomph-signup` hooks newsletter.js listens for.
+ * The PlainSend signup form (Footer, D30): first name, last name, email,
+ * phone, website honeypot, elapsed_ms timing field, submit. Posts straight to
+ * PlainSend via the endpoint the core plugin resolves per environment; renders
+ * nothing when the plugin is inactive rather than a form that posts nowhere.
+ * Markup keeps the `.oomph-signup` hooks newsletter.js listens for.
+ *
+ * Four fields, on every surface, by the decision of 2026-08-24 recorded in
+ * docs/plainsend.md: first name and email required, last name and phone
+ * optional and marked so in the label (R39). It is a deliberate exception to
+ * R43's single email field. The rebuild launched with email only, so every
+ * subscriber since arrived without a name and was greeted as "there"; this
+ * puts the decision back. The field names are PlainSend's own.
  *
  * @param string $key  PlainSend form key ('newsletter', 'trends-guide').
  * @param array  $args label, button, source, id, success.
@@ -636,9 +643,26 @@ function oomphtravel_signup_form( string $key = 'newsletter', array $args = arra
 	$success = (string) $args['success'];
 	?>
 	<form class="oomph-signup ot-signup" method="post" action="<?php echo esc_url( $endpoint ); ?>" data-source="<?php echo esc_attr( (string) $args['source'] ); ?>"<?php echo '' !== $success ? ' data-success="' . esc_attr( $success ) . '"' : ''; ?>>
+		<div class="ot-signup__fields">
+			<div class="ot-signup__field">
+				<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>-first"><?php esc_html_e( 'First name', 'oomphtravel' ); ?></label>
+				<input class="oomph-signup__input ot-signup__input" type="text" id="<?php echo esc_attr( $id ); ?>-first" name="first_name" autocomplete="given-name" required>
+			</div>
+			<div class="ot-signup__field">
+				<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>-last"><?php esc_html_e( 'Last name', 'oomphtravel' ); ?> <span class="ot-signup__optional"><?php esc_html_e( 'Optional', 'oomphtravel' ); ?></span></label>
+				<input class="oomph-signup__input ot-signup__input" type="text" id="<?php echo esc_attr( $id ); ?>-last" name="last_name" autocomplete="family-name">
+			</div>
+			<div class="ot-signup__field">
+				<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( (string) $args['label'] ); ?></label>
+				<input class="oomph-signup__input ot-signup__input" type="email" id="<?php echo esc_attr( $id ); ?>" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+			</div>
+			<?php /* Kept exactly as typed and never texted: it is there for Eric to reach a lead by hand. */ ?>
+			<div class="ot-signup__field">
+				<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>-phone"><?php esc_html_e( 'Phone number', 'oomphtravel' ); ?> <span class="ot-signup__optional"><?php esc_html_e( 'Optional', 'oomphtravel' ); ?></span></label>
+				<input class="oomph-signup__input ot-signup__input" type="tel" id="<?php echo esc_attr( $id ); ?>-phone" name="phone" autocomplete="tel" inputmode="tel">
+			</div>
+		</div>
 		<div class="ot-signup__row">
-			<label class="ot-signup__label" for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( (string) $args['label'] ); ?></label>
-			<input class="oomph-signup__input ot-signup__input" type="email" id="<?php echo esc_attr( $id ); ?>" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
 			<button class="oomph-signup__submit ot-btn ot-btn--primary ot-signup__submit" type="submit"><span class="ot-btn__label"><?php echo esc_html( (string) $args['button'] ); ?></span><?php echo oomphtravel_arrow(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></button>
 		</div>
 		<?php /* Hidden from people, irresistible to bots: off-screen, not display:none. */ ?>

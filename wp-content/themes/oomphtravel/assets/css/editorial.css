@@ -745,7 +745,6 @@
 	max-width: 560px;
 	margin-top: var(--space-sm);
 }
-.ot-trends-hero__form .ot-signup__input { flex: 1 1 240px; }
 .ot-trends-hero__note {
 	margin: var(--space-sm) 0 0;
 	font-size: var(--wp--custom--type--desktop--meta--size);
