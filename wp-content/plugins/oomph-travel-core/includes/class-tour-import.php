@@ -65,7 +65,6 @@ final class Tour_Import {
 		'indulge', 'pampered', 'transformative', 'white-glove', 'foodie', 'vibes', // No List
 		'once in a lifetime', 'dream destination', 'bestie', 'slay', 'obsessed', // No List
 		'hubby', 'adventure of a lifetime', 'pop of color', 'main character energy', // No List
-		'the best', // No List
 	);
 
 	/**

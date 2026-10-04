@@ -421,6 +421,24 @@ final class Seed {
 				array( 'Cotswold’s', 'Cotswolds' ),
 				array( "Cotswold's", 'Cotswolds' ),
 			),
+			// 2026-10-03. The two words here are Abercrombie & Kent's own tour
+			// names, not Eric's adjectives, but the guard cannot tell a name
+			// from a claim and Eric asked for the article to be reworded. The
+			// trips are described instead of named; length and price are
+			// unchanged, and the Classic Kenya Safari keeps its name.
+			'escorted-safari-or-private-safari' => array(
+				array( 'Ultimate Botswana Safari, 10 days, from $14,495.', 'A 10-day Botswana safari, from $14,495.' ), // No List
+				array( 'Epic Great Migration Safari, 10 days, from $17,795.', 'A 10-day Great Migration safari, from $17,795.' ), // No List
+			),
+			// 2026-10-03. Insight's own phrase, in quotation marks in the
+			// comparison table. Kept as their description, with the grade
+			// spelled out. Three spellings of the quotation marks, because the
+			// database may hold any of them; only one will match.
+			'globus-vs-insight-vs-tauck' => array(
+				array( '"Handpicked 4 and 5 star"', 'Four- and five-star, which Insight calls “handpicked”' ), // No List
+				array( '“Handpicked 4 and 5 star”', 'Four- and five-star, which Insight calls “handpicked”' ), // No List
+				array( '&#8220;Handpicked 4 and 5 star&#8221;', 'Four- and five-star, which Insight calls “handpicked”' ), // No List
+			),
 		);
 	}
 
