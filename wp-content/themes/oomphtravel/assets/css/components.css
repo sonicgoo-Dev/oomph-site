@@ -886,15 +886,27 @@ header:has( > .ot-header ),
 	color: var(--text-on-navy-faint);
 }
 
-.ot-signup__row { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: end; }
+/* Four fields, two to a row where there is room and one where there is not.
+   auto-fit rather than a breakpoint: the form sits in a footer column, a
+   journal panel and a hero, and each is a different width at the same
+   screen size. */
+.ot-signup__fields {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 200px, 1fr ) );
+	gap: var(--space-sm);
+}
+.ot-signup__field { display: flex; flex-direction: column; gap: var(--space-xs); min-width: 0; }
+.ot-signup__row { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: end; margin-top: var(--space-sm); }
 .ot-signup__label {
-	flex: 1 1 100%;
 	font-size: var(--wp--custom--type--desktop--meta--size);
 	color: var(--text-on-navy-faint);
 }
+/* Said in words, in the label, so nobody is turned away for withholding a
+   number (R39). */
+.ot-signup__optional { opacity: 0.8; }
 .ot-signup__input {
 	box-sizing: border-box;
-	flex: 1 1 220px;
+	width: 100%;
 	min-height: 48px;
 	padding: 0 var(--space-lg);
 	border: 1px solid var(--line-on-navy);
