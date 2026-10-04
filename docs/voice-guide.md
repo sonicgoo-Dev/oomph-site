@@ -19,7 +19,7 @@ Not a salesperson. Not a travel magazine. Not a "we" — Eric is the brand, and 
 3. **Name the place, the season, the milestone.** "Puglia, in spring" beats "an Italian getaway." "Their 50th anniversary" beats "a special occasion."
 4. **Frame for gain and legacy, not loss.** "Make this 50th anniversary the one they'll talk about for the next 30 years" — not "Don't miss this once-in-a-lifetime opportunity."
 5. **Sensory language is allowed and encouraged** when it earns its place: sun-warmed, mist-veiled, candlelit, sea-salted, hand-poured, family-run, third-generation, vine-draped, marble-cooled.
-6. **No superlatives.** Drop "the best," "ultimate," "amazing," "incredible."
+6. **No superlatives.** Drop "ultimate," "amazing," "incredible." ("The best" is allowed, by Eric's decision of 2026-10-03: "the best time to go" is plain speech, and the content guard no longer flags it.)
 7. **First-hand experience markers** in every blog post. "When I sailed the Silver Nova in March 2025." "On my fourth visit to Locorotondo." "The first time I stayed at the Borgo Egnazia."
 8. **One sentence per social post.** If a second sentence is needed, write a journal post and link to it.
 

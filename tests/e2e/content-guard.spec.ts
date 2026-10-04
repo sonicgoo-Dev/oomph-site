@@ -25,8 +25,10 @@ const NO_LIST = [
   'indulge', 'pampered', 'transformative', 'white-glove', 'foodie', 'vibes',
   'once in a lifetime', 'dream destination', 'bestie', 'slay', 'obsessed',
   'hubby', 'adventure of a lifetime', 'pop of color', 'main character energy',
-  'the best',
 ];
+// "the best" was on this list until 2026-10-03. Eric took it off: it flagged
+// five Journal articles for plain uses such as "the best time to go", and
+// the nightly run against production failed on it for eighteen days.
 const NO_LIST_RE = new RegExp(`\\b(${NO_LIST.map((w) => w.replace(/[-\s]/g, '[\\s-]')).join('|')})\\b`, 'gi');
 const PLACEHOLDER_RE = /\[[A-Z][^\]]{2,}\]|\$X,XXX/g;
 
