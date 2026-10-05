@@ -10,7 +10,7 @@
  *  3. Deferred pictures: put back the src/srcset that oomphtravel_defer_image()
  *     parked in data-ot-src / data-ot-srcset.
  *  4. Ticker: the Pause / Play control (WCAG 2.2.2 — hover pause alone is not
- *     reachable from a keyboard), and loading its postcards after page load.
+ *     reachable from a keyboard), and loading its photo stamps after page load.
  */
 
 /* 1. Header state + dropdowns. */
@@ -188,7 +188,7 @@
 	}
 } )();
 
-/* 4. Destination ticker: Pause / Play, and its postcards. */
+/* 4. Destination ticker: Pause / Play, and its photo stamps. */
 ( function () {
 	'use strict';
 
@@ -198,19 +198,19 @@
 		return;
 	}
 
-	/* The postcards slide in from outside the band's clipped edge, where
+	/* The stamps slide in from outside the band's clipped edge, where
 	   lazy loading would leave them blank on arrival. Once 3. has put their
 	   sources back (after page load, so the hero goes first), fetch them all. */
-	var loadPostcards = function () {
+	var loadStamps = function () {
 		var imgs = track.querySelectorAll( 'img[loading="lazy"]' );
 		for ( var i = 0; i < imgs.length; i++ ) {
 			imgs[ i ].loading = 'eager';
 		}
 	};
 	if ( document.readyState === 'complete' ) {
-		loadPostcards();
+		loadStamps();
 	} else {
-		window.addEventListener( 'load', loadPostcards );
+		window.addEventListener( 'load', loadStamps );
 	}
 
 	toggle.addEventListener( 'click', function () {
