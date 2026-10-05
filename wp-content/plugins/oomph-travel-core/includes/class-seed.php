@@ -36,7 +36,7 @@ final class Seed {
 	 */
 	public static function destinations(): array {
 		return array(
-			array( 'slug' => 'italy',      'title' => 'Italy',                  'variant' => 'custom', 'cruiseoomph_region' => 'Mediterranean',   'headline' => 'Italy, planned by someone who keeps going back.' ),
+			array( 'slug' => 'italy',      'title' => 'Italy',                  'variant' => 'custom', 'cruiseoomph_region' => 'Mediterranean',   'headline' => 'Custom trips to Italy, planned by someone who keeps going back.' ),
 			array( 'slug' => 'uk-ireland', 'title' => 'UK & Ireland',           'variant' => 'custom', 'cruiseoomph_region' => 'Northern Europe' ),
 			array( 'slug' => 'france',     'title' => 'France',                 'variant' => 'custom', 'cruiseoomph_region' => 'Mediterranean' ),
 			array( 'slug' => 'spain',      'title' => 'Spain',                  'variant' => 'custom', 'cruiseoomph_region' => 'Mediterranean' ),
@@ -481,13 +481,47 @@ final class Seed {
 	}
 
 	/**
+	 * Headlines the seed once wrote and Eric later reworded, keyed by slug.
+	 *
+	 * The same problem as destination_corrections(), for the one-line H1: the
+	 * seed writes a headline only when it creates the record, so new wording
+	 * cannot reach a record that already exists. Italy's H1 gained "Custom
+	 * trips to" on 2026-10-04 (Eric): the page was being found for "custom
+	 * trips to Italy" and the word appeared nowhere on it. A headline that is
+	 * neither empty nor the old seeded line has been typed by Eric and is
+	 * left alone. Add to this list, never edit an entry.
+	 *
+	 * @return array<string,array<int,array{from:string,to:string}>>
+	 */
+	private static function headline_corrections(): array {
+		return array(
+			'italy' => array(
+				array(
+					'from' => 'Italy, planned by someone who keeps going back.',
+					'to'   => 'Custom trips to Italy, planned by someone who keeps going back.',
+				),
+			),
+		);
+	}
+
+	/**
 	 * Apply destination_corrections() to one record: every repeater row whose
-	 * sub-field equals a retracted sentence exactly gets the replacement.
+	 * sub-field equals a retracted sentence exactly gets the replacement. Then
+	 * headline_corrections(): an empty headline renders the old default line,
+	 * so it counts as the old wording too.
 	 *
 	 * @return int Sentences replaced.
 	 */
 	private static function correct_destination( int $id ): int {
 		$done = 0;
+		$slug = (string) get_post_field( 'post_name', $id );
+		foreach ( self::headline_corrections()[ $slug ] ?? array() as $c ) {
+			$headline = Fields::value( $id, 'headline' );
+			if ( '' === $headline || $headline === $c['from'] ) {
+				Fields::write( $id, 'headline', 'field_oomph_dest_headline', $c['to'] );
+				++$done;
+			}
+		}
 		foreach ( self::destination_corrections() as $c ) {
 			$rows = (int) get_post_meta( $id, $c['field'], true );
 			for ( $i = 0; $i < $rows; $i++ ) {
