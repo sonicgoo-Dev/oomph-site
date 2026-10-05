@@ -705,3 +705,84 @@ function oomphtravel_tours_archive_seo_description( string $description ): strin
 	return __( 'Escorted tours from Globus, Tauck, Insight Vacations, Abercrombie & Kent and National Geographic, chosen for the way you travel. Same price as booking direct.', 'oomphtravel' );
 }
 add_filter( 'rank_math/frontend/description', 'oomphtravel_tours_archive_seo_description' );
+
+/**
+ * Whole sentences of $text, as many as fit under $max characters; when even
+ * the first is too long, cut at the last space before the limit. Tags and
+ * runs of whitespace are flattened first.
+ */
+function oomphtravel_seo_sentences( string $text, int $max = 155 ): string {
+	$text = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $text ) ) ?? '' );
+	if ( mb_strlen( $text ) <= $max ) {
+		return $text;
+	}
+	$out = '';
+	foreach ( preg_split( '/(?<=[.!?])\s+/', $text ) ?: array() as $sentence ) {
+		$candidate = '' === $out ? $sentence : $out . ' ' . $sentence;
+		if ( mb_strlen( $candidate ) > $max ) {
+			break;
+		}
+		$out = $candidate;
+	}
+	if ( '' === $out ) {
+		$out = mb_substr( $text, 0, $max - 3 );
+		$cut = mb_strrpos( $out, ' ' );
+		$out = rtrim( mb_substr( $out, 0, $cut ?: $max - 3 ), ' ,;:' ) . '…';
+	}
+	return $out;
+}
+
+/**
+ * Meta description for a single tour or operator when Rank Math's own field
+ * is empty (plan 8.6: every page has a unique description). Neither record
+ * has post content for Rank Math to fall back on, so without this the tag
+ * is missing, as it was on all six live pages until Eric filled them in by
+ * hand on 2026-10-05. A description typed in Rank Math still wins.
+ *
+ * A tour reads "{Title}, with {Operator}. {Blurb}", or just the blurb when
+ * that will not fit. An operator reads its fit line, then whole sentences
+ * of the fit note while they fit.
+ *
+ * Rank Math is not installed in the CI WordPress, so this is checked on
+ * staging, not in tests/ci.
+ */
+function oomphtravel_tour_operator_seo_description( string $description ): string {
+	if ( '' !== trim( $description ) ) {
+		return $description;
+	}
+
+	if ( is_singular( 'oomph_tour' ) ) {
+		$card  = oomphtravel_tour_card( (int) get_queried_object_id() );
+		$blurb = oomphtravel_seo_sentences( (string) $card['blurb'] );
+		if ( '' === $blurb ) {
+			return $description;
+		}
+		$lead = (string) $card['title'];
+		if ( '' !== $card['operator'] && false === stripos( $lead, (string) $card['operator'] ) ) {
+			/* translators: 1: tour name, 2: operator name */
+			$lead = sprintf( __( '%1$s, with %2$s', 'oomphtravel' ), $lead, $card['operator'] );
+		}
+		$full = $lead . '. ' . $blurb;
+		return mb_strlen( $full ) <= 155 ? $full : $blurb;
+	}
+
+	if ( is_singular( 'oomph_operator' ) ) {
+		$id   = (int) get_queried_object_id();
+		$line = trim( oomphtravel_field( $id, 'fit_line' ) );
+		$note = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( oomphtravel_field( $id, 'fit_note' ) ) ) ?? '' );
+		if ( '' === $line ) {
+			return '' === $note ? $description : oomphtravel_seo_sentences( $note );
+		}
+		$out = oomphtravel_seo_sentences( $line );
+		foreach ( preg_split( '/(?<=[.!?])\s+/', $note ) ?: array() as $sentence ) {
+			if ( '' === $sentence || mb_strlen( $out . ' ' . $sentence ) > 155 ) {
+				break;
+			}
+			$out .= ' ' . $sentence;
+		}
+		return $out;
+	}
+
+	return $description;
+}
+add_filter( 'rank_math/frontend/description', 'oomphtravel_tour_operator_seo_description' );
