@@ -70,6 +70,19 @@ test.describe( 'component rules that must not regress', () => {
     await toggle.click();
     await expect( toggle ).toHaveAttribute( 'aria-pressed', 'true' );
   } );
+
+  // This config runs with reducedMotion: 'reduce' — the setting behind
+  // Windows "Animation effects" off. The band still scrolls (Eric, 2026-10-04).
+  test( 'the ticker keeps scrolling under reduced motion', async ( { page } ) => {
+    await page.goto( '/pattern-band-ticker/', { waitUntil: 'domcontentloaded' } );
+
+    const motion = await page.locator( '[data-ot-ticker]' ).evaluate( ( el ) => {
+      const style = getComputedStyle( el );
+      return { name: style.animationName, duration: style.animationDuration, loops: style.animationIterationCount };
+    } );
+    expect( motion ).toEqual( { name: 'ot-ticker', duration: '70s', loops: 'infinite' } );
+    await expect( page.locator( '.ot-ticker__track--copy' ) ).toBeAttached();
+  } );
 } );
 
 test.describe( 'placeholders must never reach a rendered page', () => {
