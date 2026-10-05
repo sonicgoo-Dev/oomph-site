@@ -510,15 +510,18 @@ final class Seed {
 	 * headline_corrections(): an empty headline renders the old default line,
 	 * so it counts as the old wording too.
 	 *
+	 * @param bool $dry_run Count without writing.
 	 * @return int Sentences replaced.
 	 */
-	private static function correct_destination( int $id ): int {
+	private static function correct_destination( int $id, bool $dry_run = false ): int {
 		$done = 0;
 		$slug = (string) get_post_field( 'post_name', $id );
 		foreach ( self::headline_corrections()[ $slug ] ?? array() as $c ) {
 			$headline = Fields::value( $id, 'headline' );
 			if ( '' === $headline || $headline === $c['from'] ) {
-				Fields::write( $id, 'headline', 'field_oomph_dest_headline', $c['to'] );
+				if ( ! $dry_run ) {
+					Fields::write( $id, 'headline', 'field_oomph_dest_headline', $c['to'] );
+				}
 				++$done;
 			}
 		}
@@ -527,12 +530,40 @@ final class Seed {
 			for ( $i = 0; $i < $rows; $i++ ) {
 				$name = "{$c['field']}_{$i}_{$c['sub']}";
 				if ( (string) get_post_meta( $id, $name, true ) === $c['from'] ) {
-					Fields::write( $id, $name, $c['sub_key'], $c['to'] );
+					if ( ! $dry_run ) {
+						Fields::write( $id, $name, $c['sub_key'], $c['to'] );
+					}
 					++$done;
 				}
 			}
 		}
 		return $done;
+	}
+
+	/**
+	 * The corrections alone, for the destinations that exist. Creates nothing
+	 * and fills nothing, which is what lets it run on production with every
+	 * release (deploy.yml): the full seed stays a staging step, and reworded
+	 * seed copy still reaches the live record.
+	 *
+	 * @return array<int,array{slug:string,title:string,action:string,id:int}>
+	 */
+	public static function correct_destinations( bool $dry_run = false ): array {
+		$rows = array();
+		foreach ( self::destinations() as $record ) {
+			$existing = get_page_by_path( $record['slug'], OBJECT, CPT_Destination::POST_TYPE );
+			if ( ! $existing instanceof \WP_Post ) {
+				continue;
+			}
+			$corrected = self::correct_destination( (int) $existing->ID, $dry_run );
+			$rows[]    = array(
+				'slug'   => $record['slug'],
+				'title'  => $record['title'],
+				'action' => sprintf( '%d sentence(s) %s', $corrected, $dry_run ? 'would be corrected' : 'corrected' ),
+				'id'     => (int) $existing->ID,
+			);
+		}
+		return $rows;
 	}
 
 	/**
