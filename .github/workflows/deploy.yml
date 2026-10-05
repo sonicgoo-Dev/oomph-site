@@ -141,6 +141,17 @@ jobs:
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
             "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations && wp oomph seed operators && wp oomph seed tours && wp oomph seed pages"
 
+      # Production only. Applies the seed's wording corrections and nothing
+      # else: no record is created, no empty field is filled.
+      - name: Apply destination wording corrections on production (WP-CLI via SSH)
+        if: steps.target.outputs.env == 'production'
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
+            -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180 \
+            ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
+            "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations --corrections-only"
+
       - name: Purge SiteGround cache (WP-CLI via SSH)
         continue-on-error: true
         run: |
