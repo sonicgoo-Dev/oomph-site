@@ -1087,7 +1087,8 @@ header:has( > .ot-header ),
 /* Band / Ticker (homepage only)                                       */
 /* ------------------------------------------------------------------ */
 
-/* Destination postcards on the marine navy band (Eric, 2026-10-04). */
+/* Destination names with round photo stamps on the marine navy band
+   (Eric, 2026-10-04). */
 .ot-ticker {
 	position: relative;
 	overflow: hidden;
@@ -1101,50 +1102,45 @@ header:has( > .ot-header ),
 	width: max-content;
 	animation: ot-ticker var(--wp--custom--motion--ticker) linear infinite;
 }
-.ot-ticker__list {
+.ot-ticker__list,
+.ot-ticker__list li {
 	display: flex;
-	gap: var(--space-md);
+	align-items: center;
+	gap: var(--space-lg);
+}
+.ot-ticker__list {
 	margin: 0;
-	padding: 0 var(--space-md) 0 0;
+	padding: 0 var(--space-lg) 0 0;
 	list-style: none;
 }
-.ot-ticker__card {
-	position: relative;
-	display: block;
-	width: 236px;
-	height: 152px;
-	overflow: hidden;
-	border-radius: var(--radius-card);
-	background: var(--navy-deep); /* until the photo arrives, and for a record without one */
+.ot-ticker__name {
+	font-family: var(--font-display);
+	font-size: var(--type-h2-size);
+	font-style: italic;
+	font-weight: 300;
+	line-height: 1.2;
+	white-space: nowrap;
+	color: var(--surface-on-navy-light);
 	text-decoration: none;
+}
+.ot-ticker__name:hover { color: var(--accent-teal-on-navy); }
+.ot-ticker__name:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 3px; }
+/* A 60px circle with a thin teal ring, set off the photo by a navy gap. */
+.ot-ticker__stamp {
+	flex: none;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	border-radius: 50%;
+	background: var(--navy-deep); /* until the photo arrives */
+	box-shadow: 0 0 0 2px var(--navy-marine), 0 0 0 3px var(--accent-teal-on-navy);
 }
 .ot-ticker__img {
 	display: block;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	transition: transform var(--wp--custom--motion--photo) ease;
 }
-.ot-ticker__card::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient( to top, color-mix( in srgb, var(--navy-deep) 72%, transparent ), transparent 60% );
-}
-.ot-ticker__name {
-	position: absolute;
-	left: var(--space-md);
-	right: var(--space-md);
-	bottom: var(--space-sm);
-	z-index: 1;
-	font-family: var(--font-display);
-	font-size: var(--type-h3-size);
-	line-height: 1.1;
-	letter-spacing: -0.01em;
-	color: var(--surface-white);
-}
-.ot-ticker__card:hover .ot-ticker__img { transform: scale(1.05); }
-.ot-ticker__card:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 3px; }
 
 .ot-ticker:hover .ot-ticker__rail,
 .ot-ticker:focus-within .ot-ticker__rail,
@@ -1155,13 +1151,14 @@ header:has( > .ot-header ),
 	to   { transform: translateX(-50%); }
 }
 
-/* A navy chip in the band's bottom-right corner, over the photos. */
+/* A navy chip at the band's right edge, over the moving row. */
 .ot-ticker__toggle {
 	position: absolute;
 	right: var(--space-md);
-	bottom: var(--space-xs);
+	top: 50%;
+	transform: translateY(-50%);
 	appearance: none;
-	min-height: 24px;
+	min-height: 32px;
 	padding: 0 var(--space-sm);
 	background: var(--navy-marine);
 	border: 0;
@@ -1175,7 +1172,10 @@ header:has( > .ot-header ),
 .ot-ticker__toggle:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 2px; }
 
 @media (max-width: 767px) {
-	.ot-ticker__card { width: 184px; height: 120px; }
+	.ot-ticker__list,
+	.ot-ticker__list li { gap: var(--space-md); }
+	.ot-ticker__list { padding-right: var(--space-md); }
+	.ot-ticker__stamp { width: 46px; height: 46px; }
 }
 
 /*

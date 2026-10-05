@@ -85,14 +85,14 @@ test.describe( 'component rules that must not regress', () => {
   } );
 
   // The CI seed publishes Italy and Greece; the other nine destinations are
-  // drafts and must not get a postcard that links to a 404.
-  test( 'the ticker shows a postcard for each published destination only', async ( { page } ) => {
+  // drafts and must not get a link that 404s.
+  test( 'the ticker names each published destination only', async ( { page } ) => {
     await page.goto( '/pattern-band-ticker/', { waitUntil: 'domcontentloaded' } );
 
-    const cards = page.locator( '.ot-ticker__list:not([aria-hidden]) .ot-ticker__card' );
-    await expect( cards.locator( '.ot-ticker__name' ) ).toHaveText( [ 'Italy', 'Greece' ] );
-    await expect( cards.nth( 0 ) ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
-    await expect( cards.nth( 1 ) ).toHaveAttribute( 'href', /\/destinations\/greece\/$/ );
+    const names = page.locator( '.ot-ticker__list:not([aria-hidden]) .ot-ticker__name' );
+    await expect( names ).toHaveText( [ 'Italy', 'Greece' ] );
+    await expect( names.nth( 0 ) ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
+    await expect( names.nth( 1 ) ).toHaveAttribute( 'href', /\/destinations\/greece\/$/ );
   } );
 } );
 

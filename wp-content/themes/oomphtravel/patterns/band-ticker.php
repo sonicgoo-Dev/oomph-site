@@ -3,13 +3,13 @@
  * Title: Band / Ticker
  * Slug: oomphtravel/band-ticker
  * Categories: oomphtravel
- * Description: Homepage only. Destination postcards (photo, name over a scrim) scrolling on the marine navy band, one loop per 70 seconds, pausing on hover (D23).
+ * Description: Homepage only. Destination names in light italic Fraunces on the marine navy band, each followed by a round photo "stamp", one loop per 70 seconds, pausing on hover (D23).
  *
- * The places are the destinations Eric plans (D07 + D33); each postcard is
- * the destination record's featured image, so changing a destination's photo
- * changes its postcard. A record that is not published is left out, so the
- * band never links to a 404. Postcards and navy band chosen by Eric on
- * 2026-10-04 (option A on option D's band).
+ * The places are the destinations Eric plans (D07 + D33); each stamp is the
+ * destination record's featured image (its square thumbnail), so changing a
+ * destination's photo changes its stamp. A record that is not published is
+ * left out, so the band never links to a 404. Navy band with stamps chosen by
+ * Eric on 2026-10-04 (option D; photo postcards were tried and read as busy).
  *
  * The list is printed twice inside one rail that slides by half its width,
  * so the loop is seamless; the copy is hidden from assistive tech. Pictures
@@ -51,10 +51,24 @@ foreach ( $ot_places as $ot_place ) {
 	if ( ! $ot_post ) {
 		continue;
 	}
+	$ot_thumb = (int) get_post_thumbnail_id( $ot_post );
 	$ot_cards[] = array(
 		'label' => (string) $ot_place[0],
 		'url'   => (string) get_permalink( $ot_post ),
-		'image' => oomphtravel_card_image( (int) get_post_thumbnail_id( $ot_post ), '', '(min-width: 768px) 236px, 184px', false, array( 'class' => 'ot-ticker__img' ) ),
+		/* The 150px square crop: a 60px circle needs no more, even at 2x. */
+		'stamp' => $ot_thumb ? oomphtravel_defer_image(
+			(string) wp_get_attachment_image(
+				$ot_thumb,
+				'thumbnail',
+				false,
+				array(
+					'alt'      => '',
+					'class'    => 'ot-ticker__img',
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+				)
+			)
+		) : '',
 	);
 }
 if ( ! $ot_cards ) {
@@ -71,12 +85,11 @@ $ot_print_list = static function ( array $cards, bool $copy ): void {
 	printf( '<ul class="ot-ticker__list"%s>', $copy ? ' aria-hidden="true"' : '' );
 	foreach ( $cards as $card ) {
 		printf(
-			'<li><a class="ot-ticker__card%s" href="%s"%s>%s<span class="ot-ticker__name">%s</span></a></li>',
-			'' === $card['image'] ? ' ot-ticker__card--empty' : '',
+			'<li><a class="ot-ticker__name" href="%s"%s>%s</a>%s</li>',
 			esc_url( $card['url'] ),
 			$copy ? ' tabindex="-1"' : '',
-			$card['image'], // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_get_attachment_image() markup.
-			esc_html( $card['label'] )
+			esc_html( $card['label'] ),
+			'' === $card['stamp'] ? '' : '<span class="ot-ticker__stamp">' . $card['stamp'] . '</span>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_get_attachment_image() markup.
 		);
 	}
 	echo '</ul>';
