@@ -1087,71 +1087,96 @@ header:has( > .ot-header ),
 /* Band / Ticker (homepage only)                                       */
 /* ------------------------------------------------------------------ */
 
+/* Destination postcards on the marine navy band (Eric, 2026-10-04). */
 .ot-ticker {
 	position: relative;
-	display: flex;
-	align-items: center;
-	height: 60px;
 	overflow: hidden;
-	background: var(--surface-mist-deep);
+	padding-block: var(--space-lg);
+	background: var(--navy-marine);
 }
-.ot-ticker__track {
+/* Both copies of the list ride one rail, which slides by half its width —
+   exactly one list — so the loop closes without a jump. */
+.ot-ticker__rail {
 	display: flex;
-	align-items: center;
 	width: max-content;
-	margin: 0;
-	padding: 0;
-	list-style: none;
 	animation: ot-ticker var(--wp--custom--motion--ticker) linear infinite;
 }
-.ot-ticker__track li {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-lg);
-	padding-right: var(--space-lg);
-	white-space: nowrap;
+.ot-ticker__list {
+	display: flex;
+	gap: var(--space-md);
+	margin: 0;
+	padding: 0 var(--space-md) 0 0;
+	list-style: none;
 }
-.ot-ticker__track a {
-	/* A one-line link is 22px tall; WCAG 2.2 target size (Lighthouse's
-	   target-size audit) wants 24. The band is 60px, so the extra height
-	   sits inside it and moves nothing. */
-	display: inline-flex;
-	align-items: center;
-	min-height: 24px;
-	font-family: var(--font-body);
-	font-size: var(--type-body-small-size);
-	font-weight: 500;
-	color: var(--text-slate);
+.ot-ticker__card {
+	position: relative;
+	display: block;
+	width: 236px;
+	height: 152px;
+	overflow: hidden;
+	border-radius: var(--radius-card);
+	background: var(--navy-deep); /* until the photo arrives, and for a record without one */
 	text-decoration: none;
 }
-.ot-ticker__track a:hover { color: var(--accent-teal); }
-.ot-ticker__plane { flex: none; color: var(--accent-teal); }
+.ot-ticker__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform var(--wp--custom--motion--photo) ease;
+}
+.ot-ticker__card::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient( to top, color-mix( in srgb, var(--navy-deep) 72%, transparent ), transparent 60% );
+}
+.ot-ticker__name {
+	position: absolute;
+	left: var(--space-md);
+	right: var(--space-md);
+	bottom: var(--space-sm);
+	z-index: 1;
+	font-family: var(--font-display);
+	font-size: var(--type-h3-size);
+	line-height: 1.1;
+	letter-spacing: -0.01em;
+	color: var(--surface-white);
+}
+.ot-ticker__card:hover .ot-ticker__img { transform: scale(1.05); }
+.ot-ticker__card:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 3px; }
 
-.ot-ticker:hover .ot-ticker__track,
-.ot-ticker:focus-within .ot-ticker__track,
-.ot-ticker__track.is-paused { animation-play-state: paused; }
+.ot-ticker:hover .ot-ticker__rail,
+.ot-ticker:focus-within .ot-ticker__rail,
+.ot-ticker__rail.is-paused { animation-play-state: paused; }
 
 @keyframes ot-ticker {
 	from { transform: translateX(0); }
 	to   { transform: translateX(-50%); }
 }
 
+/* A navy chip in the band's bottom-right corner, over the photos. */
 .ot-ticker__toggle {
 	position: absolute;
 	right: var(--space-md);
-	top: 50%;
-	transform: translateY(-50%);
+	bottom: var(--space-xs);
 	appearance: none;
-	min-height: 32px;
+	min-height: 24px;
 	padding: 0 var(--space-sm);
-	background: var(--surface-mist-deep);
+	background: var(--navy-marine);
 	border: 0;
+	border-radius: var(--radius-card);
 	font-family: var(--font-body);
 	font-size: var(--wp--custom--type--desktop--meta--size);
-	color: var(--text-slate); /* muted on mist-deep fails AA contrast (axe, Stage 12) */
+	color: var(--text-on-navy);
 	cursor: pointer;
 }
-.ot-ticker__toggle:hover { color: var(--text-ink); }
+.ot-ticker__toggle:hover { color: var(--surface-white); }
+.ot-ticker__toggle:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 2px; }
+
+@media (max-width: 767px) {
+	.ot-ticker__card { width: 184px; height: 120px; }
+}
 
 /*
  * The row scrolls whatever the system's motion setting, as on CruiseOomph
@@ -1161,7 +1186,7 @@ header:has( > .ot-header ),
  * under that setting, so the lap length and the loop are pinned back.
  */
 @media (prefers-reduced-motion: reduce) {
-	.ot-ticker__track {
+	.ot-ticker__rail {
 		animation-duration: var(--wp--custom--motion--ticker) !important;
 		animation-iteration-count: infinite !important;
 	}

@@ -81,7 +81,18 @@ test.describe( 'component rules that must not regress', () => {
       return { name: style.animationName, duration: style.animationDuration, loops: style.animationIterationCount };
     } );
     expect( motion ).toEqual( { name: 'ot-ticker', duration: '70s', loops: 'infinite' } );
-    await expect( page.locator( '.ot-ticker__track--copy' ) ).toBeAttached();
+    await expect( page.locator( '.ot-ticker__list[aria-hidden="true"]' ) ).toHaveCount( 1 );
+  } );
+
+  // The CI seed publishes Italy and Greece; the other nine destinations are
+  // drafts and must not get a postcard that links to a 404.
+  test( 'the ticker shows a postcard for each published destination only', async ( { page } ) => {
+    await page.goto( '/pattern-band-ticker/', { waitUntil: 'domcontentloaded' } );
+
+    const cards = page.locator( '.ot-ticker__list:not([aria-hidden]) .ot-ticker__card' );
+    await expect( cards.locator( '.ot-ticker__name' ) ).toHaveText( [ 'Italy', 'Greece' ] );
+    await expect( cards.nth( 0 ) ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
+    await expect( cards.nth( 1 ) ).toHaveAttribute( 'href', /\/destinations\/greece\/$/ );
   } );
 } );
 

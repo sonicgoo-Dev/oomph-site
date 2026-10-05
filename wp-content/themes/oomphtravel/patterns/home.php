@@ -145,7 +145,7 @@ $ot_credentials = array(
 		<p class="ot-hero__caption"><?php esc_html_e( 'Varenna, Lake Como', 'oomphtravel' ); ?></p>
 	</section>
 
-	<?php /* 2. Place-name ticker takes the credential strip's position (D23). */ ?>
+	<?php /* 2. Destination ticker (postcards on navy) takes the credential strip's position (D23). */ ?>
 	<?php echo do_blocks( '<!-- wp:pattern {"slug":"oomphtravel/band-ticker"} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pattern output. ?>
 
 	<?php /* 3. Statement band. */ ?>
