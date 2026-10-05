@@ -15,7 +15,7 @@ test.describe( 'destination template (Italy)', () => {
     await page.goto( '/destinations/italy/', { waitUntil: 'domcontentloaded' } );
 
     await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
-    await expect( page.locator( 'h1' ) ).toHaveText( 'Italy, planned by someone who keeps going back.' );
+    await expect( page.locator( 'h1' ) ).toHaveText( 'Custom trips to Italy, planned by someone who keeps going back.' );
 
     const img = page.locator( '.ot-dest-hero__picture img' );
     await expect( img ).toHaveAttribute( 'fetchpriority', 'high' );
