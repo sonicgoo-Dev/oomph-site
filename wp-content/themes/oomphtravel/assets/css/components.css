@@ -1087,55 +1087,71 @@ header:has( > .ot-header ),
 /* Band / Ticker (homepage only)                                       */
 /* ------------------------------------------------------------------ */
 
+/* Destination names with round photo stamps on the marine navy band
+   (Eric, 2026-10-04). */
 .ot-ticker {
 	position: relative;
-	display: flex;
-	align-items: center;
-	height: 60px;
 	overflow: hidden;
-	background: var(--surface-mist-deep);
+	padding-block: var(--space-lg);
+	background: var(--navy-marine);
 }
-.ot-ticker__track {
+/* Both copies of the list ride one rail, which slides by half its width —
+   exactly one list — so the loop closes without a jump. */
+.ot-ticker__rail {
 	display: flex;
-	align-items: center;
 	width: max-content;
-	margin: 0;
-	padding: 0;
-	list-style: none;
 	animation: ot-ticker var(--wp--custom--motion--ticker) linear infinite;
 }
-.ot-ticker__track li {
-	display: inline-flex;
+.ot-ticker__list,
+.ot-ticker__list li {
+	display: flex;
 	align-items: center;
 	gap: var(--space-lg);
-	padding-right: var(--space-lg);
-	white-space: nowrap;
 }
-.ot-ticker__track a {
-	/* A one-line link is 22px tall; WCAG 2.2 target size (Lighthouse's
-	   target-size audit) wants 24. The band is 60px, so the extra height
-	   sits inside it and moves nothing. */
-	display: inline-flex;
-	align-items: center;
-	min-height: 24px;
-	font-family: var(--font-body);
-	font-size: var(--type-body-small-size);
-	font-weight: 500;
-	color: var(--text-slate);
+.ot-ticker__list {
+	margin: 0;
+	padding: 0 var(--space-lg) 0 0;
+	list-style: none;
+}
+.ot-ticker__name {
+	font-family: var(--font-display);
+	font-size: var(--type-h2-size);
+	font-style: italic;
+	font-weight: 300;
+	line-height: 1.2;
+	white-space: nowrap;
+	color: var(--surface-on-navy-light);
 	text-decoration: none;
 }
-.ot-ticker__track a:hover { color: var(--accent-teal); }
-.ot-ticker__plane { flex: none; color: var(--accent-teal); }
+.ot-ticker__name:hover { color: var(--accent-teal-on-navy); }
+.ot-ticker__name:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 3px; }
+/* A 60px circle with a thin teal ring, set off the photo by a navy gap. */
+.ot-ticker__stamp {
+	flex: none;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	border-radius: 50%;
+	background: var(--navy-deep); /* until the photo arrives */
+	box-shadow: 0 0 0 2px var(--navy-marine), 0 0 0 3px var(--accent-teal-on-navy);
+}
+.ot-ticker__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
 
-.ot-ticker:hover .ot-ticker__track,
-.ot-ticker:focus-within .ot-ticker__track,
-.ot-ticker__track.is-paused { animation-play-state: paused; }
+.ot-ticker:hover .ot-ticker__rail,
+.ot-ticker:focus-within .ot-ticker__rail,
+.ot-ticker__rail.is-paused { animation-play-state: paused; }
 
 @keyframes ot-ticker {
 	from { transform: translateX(0); }
 	to   { transform: translateX(-50%); }
 }
 
+/* A navy chip at the band's right edge, over the moving row. */
 .ot-ticker__toggle {
 	position: absolute;
 	right: var(--space-md);
@@ -1144,20 +1160,36 @@ header:has( > .ot-header ),
 	appearance: none;
 	min-height: 32px;
 	padding: 0 var(--space-sm);
-	background: var(--surface-mist-deep);
+	background: var(--navy-marine);
 	border: 0;
+	border-radius: var(--radius-card);
 	font-family: var(--font-body);
 	font-size: var(--wp--custom--type--desktop--meta--size);
-	color: var(--text-slate); /* muted on mist-deep fails AA contrast (axe, Stage 12) */
+	color: var(--text-on-navy);
 	cursor: pointer;
 }
-.ot-ticker__toggle:hover { color: var(--text-ink); }
+.ot-ticker__toggle:hover { color: var(--surface-white); }
+.ot-ticker__toggle:focus-visible { outline: 2px solid var(--accent-teal-on-navy); outline-offset: 2px; }
 
+@media (max-width: 767px) {
+	.ot-ticker__list,
+	.ot-ticker__list li { gap: var(--space-md); }
+	.ot-ticker__list { padding-right: var(--space-md); }
+	.ot-ticker__stamp { width: 46px; height: 46px; }
+}
+
+/*
+ * The row scrolls whatever the system's motion setting, as on CruiseOomph
+ * (Eric, 2026-10-04: Windows "Animation effects" off is common and the band
+ * sat still). The Pause button and the hold-still-on-hover rule are the
+ * controls (WCAG 2.2.2). theme.css cuts every animation to one 0.01ms run
+ * under that setting, so the lap length and the loop are pinned back.
+ */
 @media (prefers-reduced-motion: reduce) {
-	.ot-ticker { height: auto; padding-block: var(--space-sm); }
-	.ot-ticker__track { width: auto; flex-wrap: wrap; justify-content: center; animation: none; }
-	.ot-ticker__track--copy,
-	.ot-ticker__toggle { display: none; }
+	.ot-ticker__rail {
+		animation-duration: var(--wp--custom--motion--ticker) !important;
+		animation-iteration-count: infinite !important;
+	}
 }
 
 /* ------------------------------------------------------------------ */

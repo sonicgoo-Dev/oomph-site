@@ -28,7 +28,7 @@ Every approval and change has a row. If one of these has to change, change it on
 | **D20** | Carried forward: no planning fee; Fraunces + Inter; WCAG 2.2 AA; real-visitor CWV | Eric, prior |
 | **D21** | Palette: Direction B Deep Teal. Warm Bone and Old Brass retired. Navy #17212E, Deep Navy #0F1620, Ink #1A202C, Slate #2D3748, Muted #64707D, Mist #EFF3F4, Mist deep #E3EBEC, White; accent #1F6F78, #7FC7CE on dark | Eric, Sep 9 |
 | **D22** | Logo: Eric's luggage symbol in full colour beside a Fraunces wordmark; symbol alone = favicon/avatar/404; coral appears nowhere else | Eric, Sep 9 |
-| **D23** | Motion motif: contrail under H1 once per page + static contrail beside section labels; hero drift; 3-step fade-up; homepage place-name ticker; card lift; arrow nudge; all off under reduced-motion | Eric, Sep 9 |
+| **D23** | Motion motif: contrail under H1 once per page + static contrail beside section labels; hero drift; 3-step fade-up; homepage place-name ticker; card lift; arrow nudge; all off under reduced-motion — except the ticker, which keeps scrolling (with Pause and hover-to-hold) as CruiseOomph's does (Eric, Oct 4) | Eric, Sep 9 |
 | **D24** | The Oomph Travel Homepage canvas (desktop 1440 + mobile 390, Direction B) is the approved reference; the Figma file matches it | Eric, Sep 9 |
 | **D25** | Escorted tour operators: Globus, Tauck, Insight Vacations, Abercrombie & Kent, National Geographic Expeditions. FIT suppliers: Classic Vacations, Avanti Destinations. All named publicly on the site. | Eric, Sep 9 |
 | **D26** | First three tour cards built from real Insight, Globus and Tauck trips supplied by Eric. | Eric, Sep 9 |

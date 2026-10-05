@@ -70,6 +70,30 @@ test.describe( 'component rules that must not regress', () => {
     await toggle.click();
     await expect( toggle ).toHaveAttribute( 'aria-pressed', 'true' );
   } );
+
+  // This config runs with reducedMotion: 'reduce' — the setting behind
+  // Windows "Animation effects" off. The band still scrolls (Eric, 2026-10-04).
+  test( 'the ticker keeps scrolling under reduced motion', async ( { page } ) => {
+    await page.goto( '/pattern-band-ticker/', { waitUntil: 'domcontentloaded' } );
+
+    const motion = await page.locator( '[data-ot-ticker]' ).evaluate( ( el ) => {
+      const style = getComputedStyle( el );
+      return { name: style.animationName, duration: style.animationDuration, loops: style.animationIterationCount };
+    } );
+    expect( motion ).toEqual( { name: 'ot-ticker', duration: '70s', loops: 'infinite' } );
+    await expect( page.locator( '.ot-ticker__list[aria-hidden="true"]' ) ).toHaveCount( 1 );
+  } );
+
+  // The CI seed publishes Italy and Greece; the other nine destinations are
+  // drafts and must not get a link that 404s.
+  test( 'the ticker names each published destination only', async ( { page } ) => {
+    await page.goto( '/pattern-band-ticker/', { waitUntil: 'domcontentloaded' } );
+
+    const names = page.locator( '.ot-ticker__list:not([aria-hidden]) .ot-ticker__name' );
+    await expect( names ).toHaveText( [ 'Italy', 'Greece' ] );
+    await expect( names.nth( 0 ) ).toHaveAttribute( 'href', /\/destinations\/italy\/$/ );
+    await expect( names.nth( 1 ) ).toHaveAttribute( 'href', /\/destinations\/greece\/$/ );
+  } );
 } );
 
 test.describe( 'placeholders must never reach a rendered page', () => {
