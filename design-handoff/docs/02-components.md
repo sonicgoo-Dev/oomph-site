@@ -70,8 +70,8 @@ Mist ground, centred, one idea. Heading measure capped at 820, body at 720. **Gh
 Discover, Design, Depart. Mist-deep ground so it separates from the Mist statement band. Numerals are Fraunces Light in teal — the only place a numeral carries the accent.
 Each step has three named text nodes: `Number`, `Title`, `Body`. **Address them by name, never by sibling index.**
 
-### Band / Ticker · 1440 × 60
-Homepage only. Place names separated by a small outlined plane, one loop per 70 seconds, pausing on hover (D23). Takes the position the credential strip used to hold.
+### Band / Ticker · 1440 × 200
+Homepage only. Destination postcards — each destination's featured photo, 236 × 152 (184 × 120 on mobile), its name in Fraunces H3 white over the card scrim — scrolling on a marine navy band, one loop per 70 seconds, pausing on hover, with a Pause chip bottom right (D23). Takes the position the credential strip used to hold. Replaced the original 60px mist-deep strip of place names (Eric, 2026-10-04).
 
 ### Quotation · 560 × 76
 A client story. Fraunces Light Italic on a 2px teal rule, attribution in muted slate. **No star ratings and no photographs of strangers** — the words carry it. Properties: `Quote`, `Attribution`.
