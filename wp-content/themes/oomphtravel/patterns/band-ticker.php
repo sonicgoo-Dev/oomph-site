@@ -7,8 +7,9 @@
  *
  * The names are the destinations Eric plans (D07 + D33). The list is printed
  * twice so the loop is seamless; the copy is hidden from assistive tech. The
- * Pause / Play control is there for keyboard users (WCAG 2.2.2); under
- * reduced motion the names simply wrap and nothing moves.
+ * Pause / Play control is there for keyboard users (WCAG 2.2.2). The band
+ * keeps scrolling under reduced motion, as CruiseOomph's does (Eric,
+ * 2026-10-04); Pause and hover are the way to stop it.
  *
  * @package OomphTravel
  */

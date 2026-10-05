@@ -1153,11 +1153,18 @@ header:has( > .ot-header ),
 }
 .ot-ticker__toggle:hover { color: var(--text-ink); }
 
+/*
+ * The row scrolls whatever the system's motion setting, as on CruiseOomph
+ * (Eric, 2026-10-04: Windows "Animation effects" off is common and the band
+ * sat still). The Pause button and the hold-still-on-hover rule are the
+ * controls (WCAG 2.2.2). theme.css cuts every animation to one 0.01ms run
+ * under that setting, so the lap length and the loop are pinned back.
+ */
 @media (prefers-reduced-motion: reduce) {
-	.ot-ticker { height: auto; padding-block: var(--space-sm); }
-	.ot-ticker__track { width: auto; flex-wrap: wrap; justify-content: center; animation: none; }
-	.ot-ticker__track--copy,
-	.ot-ticker__toggle { display: none; }
+	.ot-ticker__track {
+		animation-duration: var(--wp--custom--motion--ticker) !important;
+		animation-iteration-count: infinite !important;
+	}
 }
 
 /* ------------------------------------------------------------------ */
