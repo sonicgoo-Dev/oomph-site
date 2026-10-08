@@ -178,7 +178,7 @@ final class Schema {
 				'caption'    => 'Oomph Travel',
 			),
 			'image'        => array( '@id' => $site . '#logo' ),
-			'description'  => 'Premium and luxury cruises, and custom European journeys, planned by one named advisor.',
+			'description'  => 'Custom journeys, escorted tours, resort and villa stays and multi-generational trips, planned by one named advisor. Premium and luxury cruises are planned by the same advisor at CruiseOomph.',
 			'slogan'       => 'Life is short — travel with Oomph.',
 			'priceRange'   => '$$$$',
 			'telephone'    => '+1-360-775-4644',
@@ -197,13 +197,21 @@ final class Schema {
 				'areaServed'        => 'US',
 				'availableLanguage' => 'English',
 			),
-			'knowsAbout' => array(
-				'Luxury cruises',
-				'Silversea Cruises',
+			// The profiles the footer links (patterns/footer.php): the same
+			// person, the same pages as CruiseOomph's footer.
+			'sameAs'       => array(
+				'https://www.facebook.com/profile.php?id=100087673102528',
+				'https://www.instagram.com/oomph_travel/',
+			),
+			'knowsAbout'   => array(
 				'Custom European travel',
+				'Escorted tours',
+				'Resort and villa stays',
 				'Multi-generational travel',
 				'Italy travel planning',
 				'United Kingdom travel planning',
+				'Hawaii, Mexico and Caribbean travel',
+				'Premium and luxury cruises',
 			),
 		);
 	}
@@ -248,6 +256,8 @@ final class Schema {
 			),
 			'knowsLanguage' => 'en',
 			'knowsAbout'    => Advisor::knows_about(),
+			// His LinkedIn profile, the one the footer links.
+			'sameAs'        => array( 'https://www.linkedin.com/in/erichempeloomphtravel/' ),
 		);
 
 		// Never emit an empty description — an empty Biographical Info field

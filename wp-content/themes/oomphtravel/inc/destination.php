@@ -339,13 +339,88 @@ function oomphtravel_destination_is_live( string $slug ): bool {
 }
 
 /**
+ * The search title and description for each destination, by slug (R5, R6;
+ * SEO audit 2026-10-08, B1): the query the page is written for first, the
+ * angle the H1 takes, " | Oomph Travel" last. Used only while Rank Math's
+ * own fields on the record are empty, so anything Eric types there wins.
+ * Italy's were written in Rank Math on 2026-10-04 and are not repeated here.
+ *
+ * @return array<string,array{title:string,description:string}>
+ */
+function oomphtravel_destination_seo_copy(): array {
+	return array(
+		'uk-ireland' => array(
+			'title'       => __( 'Custom trips to Britain & Ireland, by county | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to England, Scotland, Wales and Ireland planned a county at a time, with real drive times, country hotels and the trains that beat the car.', 'oomphtravel' ),
+		),
+		'france'     => array(
+			'title'       => __( 'Custom trips to France, beyond Paris | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to France planned by one advisor: four nights in Paris, then Provence, the Dordogne, Burgundy or the Loire, with drivers, guides and hotels booked.', 'oomphtravel' ),
+		),
+		'spain'      => array(
+			'title'       => __( 'Custom trips to Spain, city by city | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Spain planned around its late clock: Madrid, Barcelona, Seville and the Basque coast, with trains, hotels and tables booked in the right order.', 'oomphtravel' ),
+		),
+		'portugal'   => array(
+			'title'       => __( 'Custom trips to Portugal, Lisbon to the Douro | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Portugal: Lisbon, Porto, the Douro valley and the Algarve, planned by one advisor who has driven the roads. A ten-day outline and when to go.', 'oomphtravel' ),
+		),
+		'greece'     => array(
+			'title'       => __( 'Custom trips to Greece, Athens to the islands | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Greece planned from Athens outward: which islands, how many, and the ferries and flights between them, with hotels chosen for the view.', 'oomphtravel' ),
+		),
+		'croatia'    => array(
+			'title'       => __( 'Custom trips to Croatia and the Adriatic | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips along the Dalmatian coast: Split, Hvar, Korčula and Dubrovnik by road and ferry, planned by one advisor, with the islands chosen for your pace.', 'oomphtravel' ),
+		),
+		'hawaii'     => array(
+			'title'       => __( 'Custom Hawaii trips, one island at a time | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Hawaii planned island by island: Oahu, Maui, Kauai or the Big Island, which suits families, couples or three generations, and the resorts worth the rate.', 'oomphtravel' ),
+		),
+		'mexico'     => array(
+			'title'       => __( 'Custom Mexico trips from one good base | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Mexico planned from one good base: Riviera Maya, Los Cabos, Puerto Vallarta or the colonial towns, with the flights, resorts and days out booked by one advisor.', 'oomphtravel' ),
+		),
+		'caribbean'  => array(
+			'title'       => __( 'Caribbean trips, planned island by island | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'The Caribbean planned island by island: which one fits the group, the flight that gets you there, and resort versus staffed villa, with real costs for each.', 'oomphtravel' ),
+		),
+		'africa'     => array(
+			'title'       => __( 'Safari planning, with the right guide | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'A first safari planned by one advisor: Kenya, Tanzania, Botswana or South Africa, escorted or private, the camps, the light aircraft and the right seasons.', 'oomphtravel' ),
+		),
+	);
+}
+
+/**
+ * The search title for a destination page, from oomphtravel_destination_seo_copy()
+ * while Rank Math's title field on the record is empty. Without this Rank
+ * Math prints the record name and the site name ("France - Oomph Travel"),
+ * which says nothing a searcher typed.
+ */
+function oomphtravel_destination_seo_title( string $title ): string {
+	if ( ! is_singular( 'oomph_destination' ) ) {
+		return $title;
+	}
+	$post_id = (int) get_queried_object_id();
+	if ( '' !== trim( (string) get_post_meta( $post_id, 'rank_math_title', true ) ) ) {
+		return $title;
+	}
+	$copy = oomphtravel_destination_seo_copy()[ (string) get_post_field( 'post_name', $post_id ) ] ?? null;
+	return $copy ? (string) $copy['title'] : $title;
+}
+add_filter( 'rank_math/frontend/title', 'oomphtravel_destination_seo_title' );
+
+/**
  * Meta description for destination pages (plan 8.6: every page has a unique
  * description). The record has no post content for Rank Math to fall back
  * on, so without this the tag is empty. Nothing is set in Rank Math's own
  * field, so a description Eric writes there still wins.
  *
- * A single destination uses the first sentence or two of its intro, cut at
- * a word boundary under 155 characters. The index gets a fixed line.
+ * A single destination uses the written line from
+ * oomphtravel_destination_seo_copy(), else the first sentence or two of its
+ * intro, cut at a word boundary under 155 characters. The index gets a
+ * fixed line.
  */
 function oomphtravel_destination_seo_description( string $description ): string {
 	$current = trim( $description );
@@ -363,6 +438,10 @@ function oomphtravel_destination_seo_description( string $description ): string 
 	}
 
 	$post_id = (int) get_queried_object_id();
+	$copy    = oomphtravel_destination_seo_copy()[ (string) get_post_field( 'post_name', $post_id ) ] ?? null;
+	if ( $copy && '' !== (string) $copy['description'] ) {
+		return (string) $copy['description'];
+	}
 	$intro   = class_exists( '\OomphTravel\Core\Fields' ) ? \OomphTravel\Core\Fields::value( $post_id, 'intro' ) : (string) get_post_meta( $post_id, 'intro', true );
 	$intro   = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $intro ) ) ?? '' );
 	if ( '' === $intro ) {
