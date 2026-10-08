@@ -79,7 +79,8 @@ test.describe( 'destination template (Italy)', () => {
     await expect( block.locator( '.ot-section-heading__title' ) ).toHaveText( 'Notes on Italy, written after going.' );
     // Both CI posts are tagged italy (tests/fixtures/ci-seed.php).
     await expect( block.locator( '.ot-card-journal' ) ).toHaveCount( 2 );
-    await expect( block.locator( '.ot-card-journal__link' ).first() ).toHaveAttribute( 'href', /\/journal\/ci-/ );
+    // CI's permalinks have no /journal/ base; the slug is what matters.
+    await expect( block.locator( '.ot-card-journal__link' ).first() ).toHaveAttribute( 'href', /\/ci-[a-z-]+\/$/ );
     await expect( block.locator( '.ot-grid__foot a' ) ).toHaveAttribute( 'href', /\/journal\/$/ );
   } );
 
