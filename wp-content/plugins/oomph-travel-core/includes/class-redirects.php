@@ -23,8 +23,14 @@
  * cruiseoomph.com under the same slug at the site root, and CruiseOomph's own
  * copies had been canonicalising to these addresses. A 301 to the article
  * itself is better for a reader and for search engines than a 404, so the
- * nine are listed by slug below. /trip-quiz/, the old /cruise-travel-trends/
- * page and everything else deleted still return the theme's 404 page.
+ * nine are listed by slug below.
+ *
+ * Two more deleted pages were given successors on 2026-10-08 (Eric, from
+ * the SEO audit): /trip-quiz/ still drew eight landing visits a month from
+ * old social links and now goes to Start planning, and
+ * /cruise-travel-trends/ still ranked for "cruise trends" and goes to the
+ * Travel Trends guide. Everything else deleted still returns the theme's
+ * 404 page.
  *
  * The list is explicit slugs, never a /journal/ wildcard. The tenth old
  * article, /journal/10-day-united-kingdom-itinerary/, was retired on
@@ -69,6 +75,8 @@ final class Redirects {
 			'/discovery-call/'         => '/start-planning/',
 			'/contact/'                => '/start-planning/',
 			'/journal/10-day-united-kingdom-itinerary/' => '/journal/',
+			'/trip-quiz/'              => '/start-planning/',
+			'/cruise-travel-trends/'   => '/travel-trends/',
 		);
 	}
 

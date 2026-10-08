@@ -16,6 +16,8 @@ const MOVED: Array<[ string, RegExp ]> = [
   [ '/luxury-cruise-planning/', /\/cruise-planning\/$/ ],
   [ '/discovery-call/', /\/start-planning\/$/ ],
   [ '/contact/', /\/start-planning\/$/ ],
+  [ '/trip-quiz/', /\/start-planning\/$/ ],
+  [ '/cruise-travel-trends/', /\/travel-trends\/$/ ],
 ];
 
 test.describe( 'redirects', () => {
@@ -67,7 +69,9 @@ test.describe( 'redirects', () => {
   } );
 
   test( 'the deleted pages are not redirected (D02): they are 404s', async ( { request } ) => {
-    for ( const from of [ '/trip-quiz/', '/cruise-travel-trends/' ] ) {
+    // /trip-quiz/ and /cruise-travel-trends/ gained successors on 2026-10-08;
+    // the old site's addresses stand in.
+    for ( const from of [ '/services/', '/faq/' ] ) {
       const response = await request.get( from, { maxRedirects: 0 } );
       expect( response.status(), from ).toBe( 404 );
     }

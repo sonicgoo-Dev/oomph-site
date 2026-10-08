@@ -94,6 +94,9 @@ final class Seed {
 			// points at. It already exists on staging and production (Stage 2 of
 			// the old build), so there it is found, not created.
 			array( 'slug' => 'links',                              'title' => 'Links' ),
+			// The privacy page (SEO audit 2026-10-08, B5): the copy in the
+			// theme's pattern; the footer's legal row links it once published.
+			array( 'slug' => 'privacy-policy',                     'title' => 'Privacy' ),
 		);
 	}
 
