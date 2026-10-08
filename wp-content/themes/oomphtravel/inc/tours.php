@@ -786,3 +786,38 @@ function oomphtravel_tour_operator_seo_description( string $description ): strin
 	return $description;
 }
 add_filter( 'rank_math/frontend/description', 'oomphtravel_tour_operator_seo_description' );
+
+/**
+ * The search title for a tour page while Rank Math's title field on the
+ * record is empty (R5; SEO audit 2026-10-08, B1): the operator first, since
+ * that is what people search, then the tour name and its length, then the
+ * site. "Tauck Italy, Rome to the Lakes, 12 nights | Oomph Travel". The
+ * nights go when the line would pass 60 characters; the operator never does.
+ */
+function oomphtravel_tour_seo_title( string $title ): string {
+	if ( ! is_singular( 'oomph_tour' ) ) {
+		return $title;
+	}
+	$id = (int) get_queried_object_id();
+	if ( '' !== trim( (string) get_post_meta( $id, 'rank_math_title', true ) ) ) {
+		return $title;
+	}
+	$card = oomphtravel_tour_card( $id );
+	$name = trim( (string) $card['title'] );
+	if ( '' === $name ) {
+		return $title;
+	}
+	if ( '' !== $card['operator'] && false === stripos( $name, (string) $card['operator'] ) ) {
+		$name = $card['operator'] . ' ' . $name;
+	}
+	$suffix = ' | ' . ( get_bloginfo( 'name' ) ?: 'Oomph Travel' );
+	if ( $card['nights'] > 0 ) {
+		/* translators: 1: operator and tour name, 2: number of nights */
+		$with_nights = sprintf( __( '%1$s, %2$d nights', 'oomphtravel' ), $name, (int) $card['nights'] );
+		if ( mb_strlen( $with_nights . $suffix ) <= 60 ) {
+			return $with_nights . $suffix;
+		}
+	}
+	return $name . $suffix;
+}
+add_filter( 'rank_math/frontend/title', 'oomphtravel_tour_seo_title' );
