@@ -112,6 +112,7 @@ final class CLI {
 		\WP_CLI\Utils\format_items( 'table', $rows, array( 'slug', 'title', 'action', 'id' ) );
 
 		$created = count( array_filter( $rows, static fn( array $row ): bool => 0 === strpos( $row['action'], 'created' ) ) );
+		$existed = count( array_filter( $rows, static fn( array $row ): bool => 0 === strpos( $row['action'], 'exists' ) ) );
 		$failed  = count( array_filter( $rows, static fn( array $row ): bool => 'failed' === $row['action'] ) );
 
 		if ( $failed ) {
@@ -120,7 +121,8 @@ final class CLI {
 		if ( $dry_run ) {
 			\WP_CLI::success( 'Dry run — nothing written.' );
 		} else {
-			\WP_CLI::success( sprintf( '%d created, %d already existed.', $created, count( $rows ) - $created ) );
+			// Correction rows (posts, page SEO fields) ride along and are neither.
+			\WP_CLI::success( sprintf( '%d created, %d already existed.', $created, $existed ) );
 		}
 	}
 
