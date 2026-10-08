@@ -69,14 +69,15 @@ final class CLI {
 	 * : Report what would be created without writing anything.
 	 *
 	 * [--corrections-only]
-	 * : Destinations only. Create nothing and fill nothing; apply just the
-	 * wording corrections to the records that exist. The production deploy
-	 * runs this.
+	 * : Destinations and pages. Create nothing and fill nothing; apply just
+	 * the wording and SEO-field corrections to the records that exist. The
+	 * production deploy runs both.
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp oomph seed destinations --dry-run
 	 *     wp oomph seed destinations --corrections-only --dry-run
+	 *     wp oomph seed pages --corrections-only --dry-run
 	 *     wp @stage oomph seed destinations
 	 *     wp @stage oomph seed operators
 	 *     wp @stage oomph seed tours
@@ -94,10 +95,10 @@ final class CLI {
 		}
 
 		if ( \WP_CLI\Utils\get_flag_value( $assoc_args, 'corrections-only', false ) ) {
-			if ( 'destinations' !== $what ) {
-				\WP_CLI::error( '--corrections-only works with "destinations" only.' );
+			if ( ! in_array( $what, array( 'destinations', 'pages' ), true ) ) {
+				\WP_CLI::error( '--corrections-only works with "destinations" and "pages" only.' );
 			}
-			$rows = Seed::correct_destinations( (bool) $dry_run );
+			$rows = 'pages' === $what ? Seed::correct_pages( (bool) $dry_run ) : Seed::correct_destinations( (bool) $dry_run );
 			\WP_CLI\Utils\format_items( 'table', $rows, array( 'slug', 'title', 'action', 'id' ) );
 			\WP_CLI::success( $dry_run ? 'Dry run — nothing written.' : 'Corrections applied; nothing created.' );
 			return;
