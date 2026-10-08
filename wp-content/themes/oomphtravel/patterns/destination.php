@@ -80,6 +80,7 @@ $ot_months = array(
  * @param int        $post_id Destination ID.
  */
 $ot_quote = apply_filters( 'oomphtravel_destination_quote', null, $ot_id );
+$ot_posts = oomphtravel_destination_posts( $ot_id );
 
 $ot_stay_types = array(
 	'hotel'        => __( 'Hotel', 'oomphtravel' ),
@@ -301,7 +302,22 @@ $ot_stay_types = array(
 	</section>
 	<?php endif; ?>
 
-	<?php /* 10. By ship: coastal destinations only, to CruiseOomph with the UTM tag. */ ?>
+	<?php /* 10. From the Journal: the posts tagged with this destination, or nothing (SEO audit 2026-10-08, B4). */ ?>
+	<?php if ( $ot_posts ) : ?>
+	<section class="ot-band ot-band--mist ot-dest-journal" aria-label="<?php esc_attr_e( 'Journal posts about this destination', 'oomphtravel' ); ?>">
+		<div class="ot-container">
+			<?php echo oomphtravel_section_heading( __( 'From the Journal', 'oomphtravel' ), sprintf( /* translators: %s: destination name */ __( 'Notes on %s, written after going.', 'oomphtravel' ), $ot_d['title'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+			<div class="ot-grid ot-grid--3 ot-dest-journal__cards">
+				<?php foreach ( $ot_posts as $ot_post ) : ?>
+					<?php echo oomphtravel_card_journal( $ot_post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
+				<?php endforeach; ?>
+			</div>
+			<p class="ot-grid__foot"><?php echo oomphtravel_link( __( 'All journal posts', 'oomphtravel' ), home_url( '/journal/' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?></p>
+		</div>
+	</section>
+	<?php endif; ?>
+
+	<?php /* 11. By ship: coastal destinations only, to CruiseOomph with the UTM tag. */ ?>
 	<?php if ( '' !== $ot_d['cruiseoomph_region'] ) : ?>
 	<aside class="ot-band ot-band--mist-deep ot-dest-ship">
 		<div class="ot-container ot-dest-ship__inner">
@@ -319,7 +335,7 @@ $ot_stay_types = array(
 	</aside>
 	<?php endif; ?>
 
-	<?php /* 11. Closing invitation, Start planning pre-set to this destination. */ ?>
+	<?php /* 12. Closing invitation, Start planning pre-set to this destination. */ ?>
 	<?php echo oomphtravel_closing_band( $ot_plan ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 
 </article>

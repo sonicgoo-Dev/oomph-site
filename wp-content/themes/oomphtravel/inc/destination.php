@@ -137,6 +137,36 @@ function oomphtravel_destination_tours( int $post_id, int $limit = 3 ): array {
 }
 
 /**
+ * The journal posts about a destination: published posts carrying a tag or
+ * category whose slug is the destination's, newest first, three at most
+ * (R17: the pillar links down to its cluster; the posts already link up
+ * through oomphtravel_post_destination_card()). An empty list when none
+ * does, and the page shows no block.
+ *
+ * @return WP_Post[]
+ */
+function oomphtravel_destination_posts( int $post_id, int $limit = 3 ): array {
+	$slug = (string) get_post_field( 'post_name', $post_id );
+	if ( '' === $slug ) {
+		return array();
+	}
+	$posts = get_posts(
+		array(
+			'post_type'        => 'post',
+			'post_status'      => 'publish',
+			'numberposts'      => $limit,
+			'suppress_filters' => false,
+			'tax_query'        => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- three posts, one page.
+				'relation' => 'OR',
+				array( 'taxonomy' => 'post_tag', 'field' => 'slug', 'terms' => array( $slug ) ),
+				array( 'taxonomy' => 'category', 'field' => 'slug', 'terms' => array( $slug ) ),
+			),
+		)
+	);
+	return array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof WP_Post ) );
+}
+
+/**
  * Hero sources for a destination: the featured image when there is one,
  * else the theme's own renditions for that slug (assets/img/dest-{slug}-*),
  * else nothing and the hero is a navy band.
