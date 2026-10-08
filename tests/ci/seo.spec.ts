@@ -67,6 +67,9 @@ test.describe( 'organization and advisor schema', () => {
     expect( org.sameAs ).toEqual( expect.arrayContaining( [ 'https://www.instagram.com/oomph_travel/' ] ) );
     expect( org.knowsAbout[ 0 ] ).not.toMatch( /cruise/i );
 
+    // The home page is the trail's first item; it carries no breadcrumb of its own.
+    expect( nodes.find( ( n ) => n[ '@type' ] === 'BreadcrumbList' ) ).toBeUndefined();
+
     const person = nodes.find( ( n ) => n[ '@type' ] === 'Person' && n[ '@id' ] && n[ '@id' ].endsWith( '/about/#advisor' ) );
     expect( person ).toBeTruthy();
     expect( person.jobTitle ).toContain( 'Travel Advisor' );

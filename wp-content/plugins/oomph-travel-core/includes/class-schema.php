@@ -113,7 +113,9 @@ final class Schema {
 			$graph[] = self::second_person( $second );
 		}
 
-		if ( is_singular() || is_front_page() ) {
+		// Every interior page (R12): the records, the pages, and the two
+		// hubs; the home page is the trail's first item and gets none.
+		if ( ( is_singular() && ! is_front_page() ) || is_post_type_archive( array( CPT_Destination::POST_TYPE, CPT_Tour::POST_TYPE ) ) ) {
 			$graph[] = self::breadcrumb();
 		}
 
@@ -139,14 +141,17 @@ final class Schema {
 			}
 		}
 
-		// Client stories: attach Review[] + AggregateRating to the org via a
-		// second TravelAgency node with the same @id (Google merges by @id).
-		// Source of truth for testimonials is the theme's
-		// oomph_client_testimonials filter, so on-page and schema can't drift.
+		// Client stories: Review[] + AggregateRating join the Organization
+		// node itself. They used to ride on a second TravelAgency node with
+		// the same @id, which Google merges but validators report as a
+		// duplicate (SEO audit 2026-10-08, B6). Source of truth for the
+		// testimonials is the theme's oomph_client_testimonials filter, so
+		// on-page and schema can't drift.
 		if ( is_page( 'client-stories' ) ) {
 			$reviews_node = self::client_stories_reviews();
 			if ( $reviews_node ) {
-				$graph[] = $reviews_node;
+				$graph[0]['aggregateRating'] = $reviews_node['aggregateRating'];
+				$graph[0]['review']          = $reviews_node['review'];
 			}
 		}
 
@@ -481,7 +486,7 @@ final class Schema {
 			),
 		);
 
-		if ( is_singular( CPT_Destination::POST_TYPE ) ) {
+		if ( is_singular( CPT_Destination::POST_TYPE ) || is_post_type_archive( CPT_Destination::POST_TYPE ) ) {
 			$items[] = array(
 				'@type'    => 'ListItem',
 				'position' => 2,
@@ -492,7 +497,7 @@ final class Schema {
 
 		// Tours and operators both sit under the escorted tours index; a tour
 		// also passes through its operator's page when that page is live.
-		if ( is_singular( array( CPT_Tour::POST_TYPE, CPT_Operator::POST_TYPE ) ) ) {
+		if ( is_singular( array( CPT_Tour::POST_TYPE, CPT_Operator::POST_TYPE ) ) || is_post_type_archive( CPT_Tour::POST_TYPE ) ) {
 			$items[] = array(
 				'@type'    => 'ListItem',
 				'position' => 2,
@@ -612,9 +617,9 @@ final class Schema {
 	/**
 	 * Reviews + AggregateRating for /client-stories/.
 	 *
-	 * Returns a partial TravelAgency node carrying review[] + aggregateRating,
-	 * sharing the #organization @id with self::organization() so Google merges
-	 * them into a single org entity. Data comes from the theme's
+	 * Returns a partial TravelAgency node carrying review[] + aggregateRating;
+	 * output() copies those two properties onto the Organization node (one
+	 * node per @id). Data comes from the theme's
 	 * `oomph_client_testimonials` filter (inc/client-stories.php) so on-page
 	 * and schema stay in sync (cro-rules R12).
 	 *
