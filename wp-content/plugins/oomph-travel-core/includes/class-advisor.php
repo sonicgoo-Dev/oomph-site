@@ -130,7 +130,9 @@ final class Advisor {
 	public static function job_title(): array {
 		$titles = apply_filters(
 			'oomph_advisor_job_title',
-			array( 'Luxury Travel Advisor', 'Physician' )
+			// "Travel advisor", as the About page and the email signature put
+			// it (docs/voice-guide.md); the medical credential is on /about too.
+			array( 'Travel Advisor', 'Physician' )
 		);
 
 		return array_values( array_filter( array_map( 'strval', (array) $titles ) ) );
@@ -144,14 +146,16 @@ final class Advisor {
 	public static function knows_about(): array {
 		$topics = apply_filters(
 			'oomph_advisor_knows_about',
+			// The subjects the site covers since the repositioning (D01):
+			// land travel first, the cruises he still plans at CruiseOomph last.
 			array(
-				'Luxury cruising',
-				'Expedition cruising',
-				'Silversea Cruises',
 				'Italy travel',
 				'United Kingdom travel',
+				'Custom European travel',
+				'Escorted tours',
 				'Multi-generational travel',
 				'Travel health',
+				'Silversea Cruises',
 			)
 		);
 
