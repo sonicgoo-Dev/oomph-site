@@ -94,6 +94,9 @@ final class Seed {
 			// points at. It already exists on staging and production (Stage 2 of
 			// the old build), so there it is found, not created.
 			array( 'slug' => 'links',                              'title' => 'Links' ),
+			// The privacy page (SEO audit 2026-10-08, B5): the copy in the
+			// theme's pattern; the footer's legal row links it once published.
+			array( 'slug' => 'privacy-policy',                     'title' => 'Privacy' ),
 		);
 	}
 
@@ -133,6 +136,14 @@ final class Seed {
 			$existing = get_page_by_path( $record['slug'], OBJECT, $post_type );
 			if ( $existing instanceof \WP_Post ) {
 				$action = 'exists (' . $existing->post_status . ')';
+				// WordPress installs its own "Privacy Policy" draft at this
+				// slug. Off production it stands in for the seeded page: it
+				// is published under the seed's title so the theme's
+				// template renders it. On production Eric publishes it.
+				if ( ! $dry_run && 'pages' === $what && self::is_default_privacy_draft( $existing ) && ! Environment::is_production() ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_title' => $record['title'], 'post_status' => 'publish' ) );
+					$action .= ', published';
+				}
 				// Records seeded before the draft copy existed get their empty
 				// fields filled; anything Eric has typed is left alone.
 				if ( ! $dry_run && in_array( $what, array( 'operators', 'destinations' ), true ) ) {
@@ -218,6 +229,16 @@ final class Seed {
 		}
 		self::fill_operator( $id, (string) $record['slug'] );
 		return $id;
+	}
+
+	/**
+	 * WordPress's own privacy page placeholder: the draft wp_install_defaults()
+	 * makes at /privacy-policy/, still carrying its default title.
+	 */
+	private static function is_default_privacy_draft( \WP_Post $page ): bool {
+		return 'privacy-policy' === $page->post_name
+			&& 'draft' === $page->post_status
+			&& 'Privacy Policy' === $page->post_title;
 	}
 
 	/**
