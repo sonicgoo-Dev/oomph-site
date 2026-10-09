@@ -434,6 +434,69 @@ function oomphtravel_operator_kind( int $id ): string {
 }
 
 /**
+ * Four questions and answers per operator, shown on its page under "What
+ * people ask me about ..." (SEO audit 2026-10-08, B4: the operator pages
+ * were 207 to 227 words, which search engines file as thin). Kept in code,
+ * like the operator copy the seed writes, so the wording ships through a
+ * pull request. No first-hand claims that are not Eric's.
+ *
+ * @return array<int,array{question:string,answer:string}>
+ */
+function oomphtravel_operator_questions( string $slug ): array {
+	$all = array(
+		'globus'                            => array(
+			array( 'question' => __( 'Is Globus a good first tour?', 'oomphtravel' ), 'answer' => __( 'It is the one I suggest most for a first coach tour of Europe. The itineraries cover the capitals and the famous stops, the hotels are central and dependable, and the tour director handles the luggage, the tickets and the timings. You see a great deal in a week; what you give up is slow mornings.', 'oomphtravel' ) ),
+			array( 'question' => __( 'How full are the days?', 'oomphtravel' ), 'answer' => __( 'Full. Most days start early and include a guided morning, a coach leg and a free afternoon or evening in the next city. If that sounds like too much, Insight runs a slower version of the same routes, and Tauck slower still.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Can I add nights before or after the tour?', 'oomphtravel' ), 'answer' => __( 'Yes, and I usually suggest it. Arriving a day early takes the jet lag off day one, and a night or two at the end lets you stay in the city you liked best. I book those nights with the tour so the transfers line up.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking Globus through you?', 'oomphtravel' ), 'answer' => __( 'No. Globus pays me a commission on the booking and your price is the same as booking direct; I do not charge a planning fee. What you gain is someone who has compared the departures, knows which hotels on a given itinerary are the better ones, and is on your side if something goes wrong on the road.', 'oomphtravel' ) ),
+		),
+		'tauck'                             => array(
+			array( 'question' => __( 'Why does Tauck cost more than the others?', 'oomphtravel' ), 'answer' => __( 'Because the price is the whole price. Most meals, the guides, every gratuity, the airport transfers and the entries other tours sell as optional extras are in it. When clients add up what they spent on a cheaper tour, the gap is smaller than it looks, and on Tauck nobody passes an envelope.', 'oomphtravel' ) ),
+			array( 'question' => __( 'What are the hotels like?', 'oomphtravel' ), 'answer' => __( 'Usually the landmark hotel in each town, or a resort of the same standing, and Tauck tends to book them two nights at a time. The tour pages here name the hotels so you can look them up.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Who is Tauck right for?', 'oomphtravel' ), 'answer' => __( 'Couples marking an anniversary or a retirement, and families on the Tauck Bridges departures built for grandparents, parents and children travelling together. Less so for travellers who want to choose their own restaurant every night, since so many meals are included.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking Tauck through you?', 'oomphtravel' ), 'answer' => __( 'No. Tauck pays me a commission on the booking and your price is the same as booking direct; I do not charge a planning fee. What you gain is someone who has compared the departures, knows which hotels on a given itinerary are the better ones, and is on your side if something goes wrong on the road.', 'oomphtravel' ) ),
+		),
+		'insight-vacations'                 => array(
+			array( 'question' => __( 'How is Insight different from Globus?', 'oomphtravel' ), 'answer' => __( 'Insight runs the same regions with fewer people on the coach, hotels a notch up and more time in each place. The coaches have extra legroom, and the itineraries include dinners with local hosts rather than only hotel dining rooms. It costs more than Globus and less than Tauck.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Which Insight tours do you like most?', 'oomphtravel' ), 'answer' => __( 'The country-roads itineraries: Tuscany, Puglia, the west of Ireland. They stay longer in fewer places, which is how I plan custom trips too.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Can I combine an Insight tour with a custom trip?', 'oomphtravel' ), 'answer' => __( 'Yes. A common shape is a week on the tour and a week on your own before or after it, with the hotels, rail and a driver booked by me. The tour gives you a country’s greatest hits with someone else driving; the custom week gives you the long lunches.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking Insight through you?', 'oomphtravel' ), 'answer' => __( 'No. Insight pays me a commission on the booking and your price is the same as booking direct; I do not charge a planning fee. What you gain is someone who has compared the departures, knows which hotels on a given itinerary are the better ones, and is on your side if something goes wrong on the road.', 'oomphtravel' ) ),
+		),
+		'abercrombie-kent'                  => array(
+			array( 'question' => __( 'What makes Abercrombie & Kent different from the other escorted operators?', 'oomphtravel' ), 'answer' => __( 'Group size and guiding. Journeys are capped at eighteen, and the guide is a resident of the country rather than a tour director who flies in. The hotels, lodges and camps are the ones you would choose yourself, and internal flights are included where the distances need them.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Is A&K the right choice for a first safari?', 'oomphtravel' ), 'answer' => __( 'It is the one I recommend most. A&K runs its own offices, vehicles and guides in East and Southern Africa, so the guide, the driver and the camp answer to the same company. That matters when a flight is late or the rains come early.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Small group or private?', 'oomphtravel' ), 'answer' => __( 'Both exist. The small-group journeys have set departure dates and a resident guide; the private journeys take the same routes on your dates with your own guide and driver. The private version costs more; for a family of four or more it often costs less per person than you expect.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking A&K through you?', 'oomphtravel' ), 'answer' => __( 'No. A&K pays me a commission on the booking and your price is the same as booking direct; I do not charge a planning fee. What you gain is someone who has compared the departures, knows which hotels on a given itinerary are the better ones, and is on your side if something goes wrong on the road.', 'oomphtravel' ) ),
+		),
+		'national-geographic-expeditions'   => array(
+			array( 'question' => __( 'Who travels with National Geographic Expeditions?', 'oomphtravel' ), 'answer' => __( 'Curious travellers who want the trip to be about something. Each departure travels with a National Geographic expert in the subject, so a Sicily trip has an archaeologist and a safari a wildlife biologist, alongside an expedition leader who handles the logistics.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Are these land trips or voyages?', 'oomphtravel' ), 'answer' => __( 'The land expeditions are what I list here. The ship-based voyages sell through my sister site, CruiseOomph, and the link on this page goes straight there.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Are they suitable for grandparents and grandchildren?', 'oomphtravel' ), 'answer' => __( 'Several are built for exactly that, with the expert’s talks pitched for mixed ages and a pace that leaves room for a rest. Ask me which departures are designated family trips; not all are.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking National Geographic Expeditions through you?', 'oomphtravel' ), 'answer' => __( 'No. National Geographic Expeditions pays me a commission on the booking and your price is the same as booking direct; I do not charge a planning fee. What you gain is someone who has compared the departures, knows which hotels on a given itinerary are the better ones, and is on your side if something goes wrong on the road.', 'oomphtravel' ) ),
+		),
+		'classic-vacations'                 => array(
+			array( 'question' => __( 'Why book through Classic Vacations rather than direct with the resort?', 'oomphtravel' ), 'answer' => __( 'Rates, room categories and recourse. Classic holds contracted rates and room blocks at the resorts I use most in Hawaii, Mexico and the Caribbean, often with a resort credit or an included breakfast the public rate does not carry. And when a room is not what was promised, a wholesaler with that much business at the property gets it fixed faster than a guest can.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Will I see the Classic Vacations name anywhere?', 'oomphtravel' ), 'answer' => __( 'Only on the paperwork. Your confirmation comes from me, the resort greets you as its own guest, and any question comes to my phone.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do you package flights too?', 'oomphtravel' ), 'answer' => __( 'Yes, when it helps. Air packaged with the stay is sometimes cheaper, and it means one company is responsible for the whole trip if a flight is cancelled. I compare it with booking the flights separately and tell you which came out ahead.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more booking a resort through you?', 'oomphtravel' ), 'answer' => __( 'No. Classic pays me from the rate, and I check the resort’s own rate before I book; if the resort is cheaper, I tell you. I do not charge a planning fee.', 'oomphtravel' ) ),
+		),
+		'avanti-destinations'               => array(
+			array( 'question' => __( 'What is Avanti Destinations?', 'oomphtravel' ), 'answer' => __( 'The supplier behind most of my custom journeys in Europe: hotels of character, rail in the right class, private drivers for the days a train does not work, and guides booked by name. It is machinery, not a package, and you will not see its name on your trip.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Why not book the hotels and trains myself?', 'oomphtravel' ), 'answer' => __( 'You can, and for a single city it is easy. A three-region trip with four hotels, two rail legs and a driver day is a different thing: one booking that someone is responsible for, one invoice, and a desk to call in Europe’s time zone if a train is cancelled. That is what Avanti gives me.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Does using Avanti limit which hotels I can stay in?', 'oomphtravel' ), 'answer' => __( 'Rarely. Its hotel list is long, and I can add a property it does not carry; the difference is only who holds the booking.', 'oomphtravel' ) ),
+			array( 'question' => __( 'Do I pay more for a custom journey booked this way?', 'oomphtravel' ), 'answer' => __( 'No. Avanti pays me from the booking, your price is what the hotels and trains cost, and I do not charge a planning fee.', 'oomphtravel' ) ),
+		),
+	);
+	/**
+	 * Filters the questions shown on an operator page.
+	 *
+	 * @param array  $questions Question/answer pairs.
+	 * @param string $slug      Operator slug.
+	 */
+	return (array) apply_filters( 'oomphtravel_operator_questions', $all[ $slug ] ?? array(), $slug );
+}
+
+/**
  * Everything the operator template needs, in one array.
  *
  * @return array<string,mixed>
