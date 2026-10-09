@@ -34,6 +34,7 @@ $ot_o  = oomphtravel_operator_data( $ot_id );
 $ot_quote = apply_filters( 'oomphtravel_operator_quote', null, $ot_id );
 
 $ot_kind_label = 'fit' === $ot_o['kind'] ? __( 'Supplier', 'oomphtravel' ) : __( 'Escorted tour operator', 'oomphtravel' );
+$ot_questions  = oomphtravel_operator_questions( $ot_o['slug'] );
 ?>
 <article class="ot-op">
 
@@ -98,6 +99,32 @@ $ot_kind_label = 'fit' === $ot_o['kind'] ? __( 'Supplier', 'oomphtravel' ) : __(
 					</dl>
 				</aside>
 			<?php endif; ?>
+		</div>
+	</section>
+	<?php endif; ?>
+
+	<?php /* 2b. Questions: four per operator, from oomphtravel_operator_questions(). */ ?>
+	<?php if ( $ot_questions ) : ?>
+	<section class="ot-band ot-op-questions">
+		<div class="ot-container">
+			<?php
+			echo oomphtravel_section_heading( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper.
+				__( 'Questions', 'oomphtravel' ),
+				/* translators: %s: operator name */
+				sprintf( __( 'What people ask me about %s.', 'oomphtravel' ), $ot_o['name'] )
+			);
+			?>
+			<div class="ot-accordion ot-op-questions__list">
+				<?php foreach ( $ot_questions as $ot_qa ) : ?>
+					<details class="ot-accordion__item ot-faq__item">
+						<summary class="ot-accordion__summary">
+							<span class="ot-accordion__title"><?php echo esc_html( $ot_qa['question'] ); ?></span>
+							<span class="ot-accordion__marker" aria-hidden="true"></span>
+						</summary>
+						<p class="ot-accordion__body"><?php echo esc_html( $ot_qa['answer'] ); ?></p>
+					</details>
+				<?php endforeach; ?>
+			</div>
 		</div>
 	</section>
 	<?php endif; ?>

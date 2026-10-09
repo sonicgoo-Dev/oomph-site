@@ -76,6 +76,14 @@
 	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
 }
 .ot-dest-hero__copy .ot-btn { margin-top: var(--space-sm); }
+.ot-dest-hero__lead {
+	margin: 0;
+	max-width: var(--wp--custom--measure--body);
+	color: var(--text-on-navy);
+	font-size: var(--type-lead-size, 1.125rem);
+	line-height: var(--type-lead-line, 1.5);
+	text-shadow: 0 1px 2px color-mix( in srgb, var(--navy-deep) 60%, transparent );
+}
 
 /* ------------------------------------------------------------------ */
 /* Intro                                                               */
@@ -327,6 +335,11 @@
 	margin: 0 0 var(--space-lg);
 	font-size: var(--type-h2-size);
 	line-height: var(--type-h2-line);
+}
+.ot-dest-index__heading:has(+ .ot-dest-index__intro) { margin-bottom: var(--space-sm); }
+.ot-dest-index__intro {
+	margin: 0 0 var(--space-lg);
+	max-width: var(--wp--custom--measure--body);
 }
 .ot-dest-index__empty {
 	margin: 0;
