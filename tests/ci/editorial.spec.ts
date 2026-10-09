@@ -117,6 +117,8 @@ test.describe( '/client-stories/', () => {
 
     const org = nodes.find( ( n ) => n[ '@type' ] === 'TravelAgency' && Array.isArray( n.review ) );
     expect( org, 'no review node' ).toBeTruthy();
+    // One Organization node, carrying the reviews itself (no duplicate @id).
+    expect( nodes.filter( ( n ) => n[ '@type' ] === 'TravelAgency' ) ).toHaveLength( 1 );
     expect( org.review ).toHaveLength( 4 );
     expect( org.aggregateRating.ratingValue ).toBe( '5.0' );
     expect( org.aggregateRating.reviewCount ).toBe( '4' );

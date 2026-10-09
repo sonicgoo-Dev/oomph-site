@@ -1344,3 +1344,23 @@ header:has( > .ot-header ),
 	.ot-btn:hover .ot-arrow { transform: none; }
 	.ot-contrail--draw path { animation: none; stroke-dashoffset: 0; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Legal pages (privacy): one measure of prose and nothing else        */
+/* ------------------------------------------------------------------ */
+.ot-legal__hero { padding-block: var(--space-xl); }
+.ot-legal__lead {
+	max-width: var(--wp--custom--measure--body);
+	margin: var(--space-sm) 0 0;
+	font-size: 1.125rem;
+}
+.ot-legal__updated {
+	margin: var(--space-sm) 0 0;
+	color: var(--text-muted);
+	font-size: 0.9375rem;
+}
+.ot-legal__body { max-width: var(--wp--custom--measure--body); }
+.ot-legal__body h2 { margin: var(--space-lg) 0 var(--space-sm); }
+.ot-legal__body h2:first-child { margin-top: 0; }
+.ot-legal__body p { margin: 0 0 var(--space-md); }
+.ot-legal__body p:last-child { margin-bottom: 0; }

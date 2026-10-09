@@ -94,6 +94,9 @@ final class Seed {
 			// points at. It already exists on staging and production (Stage 2 of
 			// the old build), so there it is found, not created.
 			array( 'slug' => 'links',                              'title' => 'Links' ),
+			// The privacy page (SEO audit 2026-10-08, B5): the copy in the
+			// theme's pattern; the footer's legal row links it once published.
+			array( 'slug' => 'privacy-policy',                     'title' => 'Privacy' ),
 		);
 	}
 
@@ -133,6 +136,14 @@ final class Seed {
 			$existing = get_page_by_path( $record['slug'], OBJECT, $post_type );
 			if ( $existing instanceof \WP_Post ) {
 				$action = 'exists (' . $existing->post_status . ')';
+				// WordPress installs its own "Privacy Policy" draft at this
+				// slug. Off production it stands in for the seeded page: it
+				// is published under the seed's title so the theme's
+				// template renders it. On production Eric publishes it.
+				if ( ! $dry_run && 'pages' === $what && self::is_default_privacy_draft( $existing ) && ! Environment::is_production() ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_title' => $record['title'], 'post_status' => 'publish' ) );
+					$action .= ', published';
+				}
 				// Records seeded before the draft copy existed get their empty
 				// fields filled; anything Eric has typed is left alone.
 				if ( ! $dry_run && in_array( $what, array( 'operators', 'destinations' ), true ) ) {
@@ -175,9 +186,11 @@ final class Seed {
 			$rows[] = array( 'slug' => $record['slug'], 'title' => $record['title'], 'action' => $id ? 'created (' . $status . ')' : 'failed', 'id' => $id );
 		}
 
-		// The staging deploy runs `seed pages`, so Journal wording fixes ride on it.
+		// The staging deploy runs `seed pages`, so the Journal wording fixes and
+		// the page SEO fields ride on it; production gets them through
+		// `seed pages --corrections-only`.
 		if ( 'pages' === $what ) {
-			$rows = array_merge( $rows, self::correct_posts( $dry_run ) );
+			$rows = array_merge( $rows, self::correct_pages( $dry_run ) );
 		}
 
 		return $rows;
@@ -216,6 +229,16 @@ final class Seed {
 		}
 		self::fill_operator( $id, (string) $record['slug'] );
 		return $id;
+	}
+
+	/**
+	 * WordPress's own privacy page placeholder: the draft wp_install_defaults()
+	 * makes at /privacy-policy/, still carrying its default title.
+	 */
+	private static function is_default_privacy_draft( \WP_Post $page ): bool {
+		return 'privacy-policy' === $page->post_name
+			&& 'draft' === $page->post_status
+			&& 'Privacy Policy' === $page->post_title;
 	}
 
 	/**
@@ -443,6 +466,102 @@ final class Seed {
 	}
 
 	/**
+	 * Rank Math focus keywords for the destination records, by slug: the
+	 * query each page is written for (SEO audit 2026-10-08, appendix B).
+	 * Italy's was set by hand on 2026-10-04 and is kept.
+	 *
+	 * @return array<string,string>
+	 */
+	private static function destination_focus_keywords(): array {
+		return array(
+			'italy'      => 'custom trips to italy',
+			'uk-ireland' => 'custom trips to britain and ireland',
+			'france'     => 'custom trips to france',
+			'spain'      => 'custom trips to spain',
+			'portugal'   => 'custom trips to portugal',
+			'greece'     => 'custom trips to greece',
+			'croatia'    => 'custom trips to croatia',
+			'hawaii'     => 'hawaii travel advisor',
+			'mexico'     => 'mexico travel advisor',
+			'caribbean'  => 'caribbean travel advisor',
+			'africa'     => 'safari travel advisor',
+		);
+	}
+
+	/**
+	 * Rank Math fields on the pages that still carried the cruise-era wording
+	 * after the relaunch (SEO audit 2026-10-08, A2), keyed by page slug then
+	 * meta key. Each entry replaces the stored value when it is empty or
+	 * contains the marker phrase; anything else has been typed by Eric since
+	 * and is left alone. Add to this list, never edit an entry.
+	 *
+	 * @return array<string,array<string,array{marker:string,to:string}>>
+	 */
+	private static function page_seo_corrections(): array {
+		return array(
+			'about'          => array(
+				'rank_math_title'         => array( 'marker' => 'Cruise &', 'to' => 'Eric Hempel, travel advisor, Port Angeles WA | Oomph Travel' ),
+				'rank_math_description'   => array( 'marker' => 'Silversea', 'to' => 'Eric Hempel, CLIA member and Nexion-affiliated travel advisor in Port Angeles, WA. I plan custom trips, escorted tours and villa stays, one client at a time.' ),
+				'rank_math_focus_keyword' => array( 'marker' => 'Eric Hempel', 'to' => 'Eric Hempel,travel advisor port angeles' ),
+			),
+			'client-stories' => array(
+				'rank_math_title'         => array( 'marker' => 'Cruise &', 'to' => 'Client reviews: custom trips & tours | Oomph Travel' ),
+				'rank_math_description'   => array( 'marker' => 'Silversea', 'to' => 'What clients say after the trip, in their own words: the planning, the hotels, the pace, and what they would do again. Four reviews, with names and dates.' ),
+			),
+		);
+	}
+
+	/**
+	 * Apply page_seo_corrections() to the pages that exist. Post meta, so no
+	 * revision; the old value is in this file's history.
+	 *
+	 * @return array<int,array{slug:string,title:string,action:string,id:int}>
+	 */
+	private static function correct_page_seo( bool $dry_run ): array {
+		$rows = array();
+		foreach ( self::page_seo_corrections() as $slug => $fields ) {
+			$page = get_page_by_path( $slug, OBJECT, 'page' );
+			if ( ! $page instanceof \WP_Post ) {
+				continue;
+			}
+			$done = 0;
+			foreach ( $fields as $key => $c ) {
+				$current = (string) get_post_meta( (int) $page->ID, $key, true );
+				// Both spellings of the ampersand: the database may hold either.
+				$marker  = (string) $c['marker'];
+				$matches = '' === trim( $current )
+					|| false !== strpos( $current, $marker )
+					|| false !== strpos( $current, str_replace( '&', '&amp;', $marker ) );
+				if ( ! $matches || $current === $c['to'] ) {
+					continue;
+				}
+				if ( ! $dry_run ) {
+					update_post_meta( (int) $page->ID, $key, $c['to'] );
+				}
+				++$done;
+			}
+			$rows[] = array(
+				'slug'   => $slug,
+				'title'  => (string) $page->post_title,
+				'action' => sprintf( 'page, %d SEO field(s) %s', $done, $dry_run ? 'would be corrected' : 'corrected' ),
+				'id'     => (int) $page->ID,
+			);
+		}
+		return $rows;
+	}
+
+	/**
+	 * The page-side corrections alone: journal wording and page SEO fields.
+	 * Creates nothing, so the production deploy can run it every release,
+	 * like correct_destinations().
+	 *
+	 * @return array<int,array{slug:string,title:string,action:string,id:int}>
+	 */
+	public static function correct_pages( bool $dry_run = false ): array {
+		return array_merge( self::correct_posts( $dry_run ), self::correct_page_seo( $dry_run ) );
+	}
+
+	/**
 	 * Apply post_corrections() to the posts that exist. A revision is saved
 	 * first, so the old wording can be restored from the post's Revisions.
 	 *
@@ -516,6 +635,15 @@ final class Seed {
 	private static function correct_destination( int $id, bool $dry_run = false ): int {
 		$done = 0;
 		$slug = (string) get_post_field( 'post_name', $id );
+		// Rank Math's focus keyword, written once when the field is empty
+		// (SEO audit 2026-10-08, B1). A keyword Eric has typed is left alone.
+		$keyword = self::destination_focus_keywords()[ $slug ] ?? '';
+		if ( '' !== $keyword && '' === trim( (string) get_post_meta( $id, 'rank_math_focus_keyword', true ) ) ) {
+			if ( ! $dry_run ) {
+				update_post_meta( $id, 'rank_math_focus_keyword', $keyword );
+			}
+			++$done;
+		}
 		foreach ( self::headline_corrections()[ $slug ] ?? array() as $c ) {
 			$headline = Fields::value( $id, 'headline' );
 			if ( '' === $headline || $headline === $c['from'] ) {

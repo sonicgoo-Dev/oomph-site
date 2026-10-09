@@ -137,6 +137,87 @@ function oomphtravel_destination_tours( int $post_id, int $limit = 3 ): array {
 }
 
 /**
+ * The journal posts about a destination: published posts carrying a tag or
+ * category whose slug is the destination's, newest first, three at most
+ * (R17: the pillar links down to its cluster; the posts already link up
+ * through oomphtravel_post_destination_card()). An empty list when none
+ * does, and the page shows no block.
+ *
+ * @return WP_Post[]
+ */
+function oomphtravel_destination_posts( int $post_id, int $limit = 3 ): array {
+	$slug = (string) get_post_field( 'post_name', $post_id );
+	if ( '' === $slug ) {
+		return array();
+	}
+	$posts = get_posts(
+		array(
+			'post_type'        => 'post',
+			'post_status'      => 'publish',
+			'numberposts'      => $limit,
+			'suppress_filters' => false,
+			'tax_query'        => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- three posts, one page.
+				'relation' => 'OR',
+				array( 'taxonomy' => 'post_tag', 'field' => 'slug', 'terms' => array( $slug ) ),
+				array( 'taxonomy' => 'category', 'field' => 'slug', 'terms' => array( $slug ) ),
+			),
+		)
+	);
+	$posts = array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof WP_Post ) );
+	if ( $posts ) {
+		return $posts;
+	}
+
+	// No post is tagged or categorised with the place (the Journal's
+	// categories are topics: destinations, planning, resorts-villas, tours),
+	// so fall back to the posts whose title names it or a place in it.
+	$names = oomphtravel_destination_place_names()[ $slug ] ?? array();
+	if ( ! $names ) {
+		return array();
+	}
+	$pattern = '/(' . implode( '|', array_map( static fn( string $n ): string => preg_quote( $n, '/' ), $names ) ) . ')/iu';
+	$all     = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => 60, 'suppress_filters' => false ) );
+	$found   = array();
+	foreach ( $all as $p ) {
+		if ( $p instanceof WP_Post && preg_match( $pattern, (string) $p->post_title ) ) {
+			$found[] = $p;
+			if ( count( $found ) >= $limit ) {
+				break;
+			}
+		}
+	}
+	return $found;
+}
+
+/**
+ * The place names a post title can carry for each destination, for the
+ * title fallback in oomphtravel_destination_posts(). Filterable.
+ *
+ * @return array<string,string[]>
+ */
+function oomphtravel_destination_place_names(): array {
+	$names = array(
+		'italy'      => array( 'Italy', 'Italian', 'Rome', 'Florence', 'Venice', 'Tuscany', 'Puglia', 'Amalfi', 'Sicily', 'Lake Como', 'Milan', 'Naples' ),
+		'uk-ireland' => array( 'UK', 'United Kingdom', 'Britain', 'England', 'Scotland', 'Wales', 'Ireland', 'London', 'Cotswolds', 'Edinburgh', 'Dublin' ),
+		'france'     => array( 'France', 'French', 'Paris', 'Provence', 'Normandy', 'Dordogne', 'Loire', 'Burgundy', 'Bordeaux' ),
+		'spain'      => array( 'Spain', 'Spanish', 'Madrid', 'Barcelona', 'Seville', 'Andalusia', 'Basque' ),
+		'portugal'   => array( 'Portugal', 'Portuguese', 'Lisbon', 'Porto', 'Douro', 'Algarve' ),
+		'greece'     => array( 'Greece', 'Greek', 'Athens', 'Santorini', 'Crete', 'Mykonos', 'Corfu' ),
+		'croatia'    => array( 'Croatia', 'Croatian', 'Dubrovnik', 'Split', 'Hvar', 'Dalmatia', 'Adriatic' ),
+		'hawaii'     => array( 'Hawaii', 'Hawaiian', 'Maui', 'Kauai', 'Oahu', 'Big Island', 'Honolulu' ),
+		'mexico'     => array( 'Mexico', 'Mexican', 'Cabo', 'Los Cabos', 'Riviera Maya', 'Cancun', 'Cancún', 'Puerto Vallarta', 'Oaxaca' ),
+		'caribbean'  => array( 'Caribbean', 'Turks and Caicos', 'Turks & Caicos', 'St Lucia', 'St. Lucia', 'Barbados', 'Anguilla', 'Antigua', 'Jamaica', 'Bahamas' ),
+		'africa'     => array( 'Africa', 'African', 'safari', 'Kenya', 'Tanzania', 'Botswana', 'South Africa', 'Namibia', 'Rwanda', 'Serengeti' ),
+	);
+	/**
+	 * Filters the place names a post title can carry for each destination.
+	 *
+	 * @param array<string,string[]> $names Names by destination slug.
+	 */
+	return (array) apply_filters( 'oomphtravel_destination_place_names', $names );
+}
+
+/**
  * Hero sources for a destination: the featured image when there is one,
  * else the theme's own renditions for that slug (assets/img/dest-{slug}-*),
  * else nothing and the hero is a navy band.
@@ -256,16 +337,22 @@ add_action( 'wp_head', 'oomphtravel_preload_destination_hero', 2 );
  */
 function oomphtravel_destination_groups(): array {
 	$groups = array(
+		// Each group carries a short intro (SEO audit 2026-10-08, B4: the hub
+		// was 107 words, which search engines file as thin). Still one
+		// paragraph each; the cards do the rest.
 		array(
 			'heading' => __( 'Europe, planned region by region', 'oomphtravel' ),
+			'intro'   => __( 'Europe is where most of my custom journeys go, and the rule is the same in every country: fewer places, more nights. Italy gets a region at a time, Britain and Ireland a county or two, France is Paris plus one region, Spain is built around its late clock, and Portugal, Greece and Croatia each have their own page because each is planned differently. Choose the country, and its page says how I would spend ten days there, which months suit it and where to stay.', 'oomphtravel' ),
 			'slugs'   => array( 'italy', 'uk-ireland', 'france', 'spain', 'portugal', 'greece', 'croatia' ),
 		),
 		array(
 			'heading' => __( 'Sun and sea', 'oomphtravel' ),
+			'intro'   => __( 'Hawaii, Mexico and the Caribbean are resort and villa trips, and the planning turns on one decision: which island or coast fits the way you rest. After that comes the flight that gets you there without a second night in transit, and a property whose room categories I know. These pages say which island suits couples, families and three generations travelling together, and what the rate buys.', 'oomphtravel' ),
 			'slugs'   => array( 'hawaii', 'mexico', 'caribbean' ),
 		),
 		array(
 			'heading' => __( 'Guided, through the operators I trust', 'oomphtravel' ),
+			'intro'   => __( 'A first safari is the trip with the most moving parts, so I plan it through an operator whose camps, vehicles and guides are its own. The page covers the countries, the seasons the animals move, and the difference between an escorted group and a private departure.', 'oomphtravel' ),
 			'slugs'   => array( 'africa' ),
 		),
 	);
@@ -280,7 +367,7 @@ function oomphtravel_destination_groups(): array {
 			}
 		}
 		if ( $cards ) {
-			$out[] = array( 'heading' => $group['heading'], 'cards' => $cards );
+			$out[] = array( 'heading' => $group['heading'], 'intro' => (string) ( $group['intro'] ?? '' ), 'cards' => $cards );
 		}
 	}
 	return $out;
@@ -339,13 +426,88 @@ function oomphtravel_destination_is_live( string $slug ): bool {
 }
 
 /**
+ * The search title and description for each destination, by slug (R5, R6;
+ * SEO audit 2026-10-08, B1): the query the page is written for first, the
+ * angle the H1 takes, " | Oomph Travel" last. Used only while Rank Math's
+ * own fields on the record are empty, so anything Eric types there wins.
+ * Italy's were written in Rank Math on 2026-10-04 and are not repeated here.
+ *
+ * @return array<string,array{title:string,description:string}>
+ */
+function oomphtravel_destination_seo_copy(): array {
+	return array(
+		'uk-ireland' => array(
+			'title'       => __( 'Custom trips to Britain & Ireland, by county | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to England, Scotland, Wales and Ireland planned a county at a time, with real drive times, country hotels and the trains that beat the car.', 'oomphtravel' ),
+		),
+		'france'     => array(
+			'title'       => __( 'Custom trips to France, beyond Paris | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to France planned by one advisor: four nights in Paris, then Provence, the Dordogne, Burgundy or the Loire, with drivers, guides and hotels booked.', 'oomphtravel' ),
+		),
+		'spain'      => array(
+			'title'       => __( 'Custom trips to Spain, city by city | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Spain planned around its late clock: Madrid, Barcelona, Seville and the Basque coast, with trains, hotels and tables booked in the right order.', 'oomphtravel' ),
+		),
+		'portugal'   => array(
+			'title'       => __( 'Custom trips to Portugal, Lisbon to the Douro | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Portugal: Lisbon, Porto, the Douro valley and the Algarve, planned by one advisor who has driven the roads. A ten-day outline and when to go.', 'oomphtravel' ),
+		),
+		'greece'     => array(
+			'title'       => __( 'Custom trips to Greece, Athens to the islands | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips to Greece planned from Athens outward: which islands, how many, and the ferries and flights between them, with hotels chosen for the view.', 'oomphtravel' ),
+		),
+		'croatia'    => array(
+			'title'       => __( 'Custom trips to Croatia and the Adriatic | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Custom trips along the Dalmatian coast: Split, Hvar, Korčula and Dubrovnik by road and ferry, planned by one advisor, with the islands chosen for your pace.', 'oomphtravel' ),
+		),
+		'hawaii'     => array(
+			'title'       => __( 'Custom Hawaii trips, one island at a time | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Hawaii planned island by island: Oahu, Maui, Kauai or the Big Island, which suits families, couples or three generations, and the resorts worth the rate.', 'oomphtravel' ),
+		),
+		'mexico'     => array(
+			'title'       => __( 'Custom Mexico trips from one good base | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'Mexico planned from one good base: Riviera Maya, Los Cabos, Puerto Vallarta or the colonial towns, with the flights, resorts and days out booked by one advisor.', 'oomphtravel' ),
+		),
+		'caribbean'  => array(
+			'title'       => __( 'Caribbean trips, planned island by island | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'The Caribbean planned island by island: which one fits the group, the flight that gets you there, and resort versus staffed villa, with real costs for each.', 'oomphtravel' ),
+		),
+		'africa'     => array(
+			'title'       => __( 'Safari planning, with the right guide | Oomph Travel', 'oomphtravel' ),
+			'description' => __( 'A first safari planned by one advisor: Kenya, Tanzania, Botswana or South Africa, escorted or private, the camps, the light aircraft and the right seasons.', 'oomphtravel' ),
+		),
+	);
+}
+
+/**
+ * The search title for a destination page, from oomphtravel_destination_seo_copy()
+ * while Rank Math's title field on the record is empty. Without this Rank
+ * Math prints the record name and the site name ("France - Oomph Travel"),
+ * which says nothing a searcher typed.
+ */
+function oomphtravel_destination_seo_title( string $title ): string {
+	if ( ! is_singular( 'oomph_destination' ) ) {
+		return $title;
+	}
+	$post_id = (int) get_queried_object_id();
+	if ( '' !== trim( (string) get_post_meta( $post_id, 'rank_math_title', true ) ) ) {
+		return $title;
+	}
+	$copy = oomphtravel_destination_seo_copy()[ (string) get_post_field( 'post_name', $post_id ) ] ?? null;
+	return $copy ? (string) $copy['title'] : $title;
+}
+add_filter( 'rank_math/frontend/title', 'oomphtravel_destination_seo_title' );
+
+/**
  * Meta description for destination pages (plan 8.6: every page has a unique
  * description). The record has no post content for Rank Math to fall back
  * on, so without this the tag is empty. Nothing is set in Rank Math's own
  * field, so a description Eric writes there still wins.
  *
- * A single destination uses the first sentence or two of its intro, cut at
- * a word boundary under 155 characters. The index gets a fixed line.
+ * A single destination uses the written line from
+ * oomphtravel_destination_seo_copy(), else the first sentence or two of its
+ * intro, cut at a word boundary under 155 characters. The index gets a
+ * fixed line.
  */
 function oomphtravel_destination_seo_description( string $description ): string {
 	$current = trim( $description );
@@ -363,6 +525,10 @@ function oomphtravel_destination_seo_description( string $description ): string 
 	}
 
 	$post_id = (int) get_queried_object_id();
+	$copy    = oomphtravel_destination_seo_copy()[ (string) get_post_field( 'post_name', $post_id ) ] ?? null;
+	if ( $copy && '' !== (string) $copy['description'] ) {
+		return (string) $copy['description'];
+	}
 	$intro   = class_exists( '\OomphTravel\Core\Fields' ) ? \OomphTravel\Core\Fields::value( $post_id, 'intro' ) : (string) get_post_meta( $post_id, 'intro', true );
 	$intro   = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $intro ) ) ?? '' );
 	if ( '' === $intro ) {

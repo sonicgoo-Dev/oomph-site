@@ -91,6 +91,9 @@ test.describe( 'operator page (Globus)', () => {
     await expect( page.locator( '.ot-facts__row' ) ).toHaveCount( 3 );
     await expect( page.locator( '.ot-op-tours .ot-card-tour' ) ).toHaveCount( 3 );
     await expect( page.locator( '.ot-dest-ship' ) ).toHaveCount( 0 );
+    // Four questions, in the accordion the destination FAQ uses (SEO audit 2026-10-08, B4).
+    await expect( page.locator( '.ot-op-questions .ot-accordion__item' ) ).toHaveCount( 4 );
+    await expect( page.locator( '.ot-op-questions .ot-accordion__title' ).first() ).toHaveText( 'Is Globus a good first tour?' );
 
     const primaries = page.locator( 'main .ot-btn--primary' );
     await expect( primaries ).toHaveCount( 2 );

@@ -1,0 +1,32 @@
+{
+  "slug": "tauck-elegant-art-of-italy",
+  "title": "The Elegant Art of Italy: Lake Como to Rome",
+  "operator": "tauck",
+  "destination": "italy",
+  "nights": 10,
+  "start_city": "Milan (Lake Como)",
+  "end_city": "Rome",
+  "months": [4, 5, 6, 7, 9, 10],
+  "from_price": 13690,
+  "price_note": "per person, two sharing, land only",
+  "blurb": "Lake Como, Venice, Florence, Tuscany and Rome in ten nights, with the guides, most meals and every gratuity included.",
+  "group_size": "Small group, about 24",
+  "pace": "Full days with early starts; two nights in every hotel",
+  "inclusions": "Grand Hotel Victoria in Menaggio, Hotel Gabrielli in Venice, The St. Regis Florence, Fonteverde in San Casciano dei Bagni and The St. Regis Rome, two nights each\nMost meals, with wine at dinner\nAll gratuities, including the Tauck director and driver\nA private boat on Lake Como with a stop in Bellagio and a visit to Villa del Balbianello\nHigh-speed train from Venice to Florence\nA lecture by an art historian in Florence before the museum visits\nPrivately guided visits to the Vatican Museums and Sistine Chapel, the Uffizi and the Galleria dell'Accademia\nAirport transfers on arrival and departure",
+  "brochure_link": "https://www.tauck.com/tours/lake-como-venice-tour",
+  "erics_note": "<p>This is the Tauck itinerary I point couples to when they want Italy done properly once and never want to reach for a wallet on the road. It runs north to south, which is the right direction: the lake first, while you are fresh, and Rome last, when you have the measure of the country. Two nights in every hotel means you unpack five times in ten nights, not eight.</p><p>The hotels are the point. The St. Regis in Florence and in Rome, Fonteverde with its thermal pools in the Tuscan hills, a lakeside grand hotel in Menaggio. The art is privately guided, so the Vatican and the Uffizi happen without the queue. Go in May, June or late September; July is hot in Rome.</p>",
+  "featured": false,
+  "itinerary": [
+    { "day": 1, "title": "Arrive Milan and on to Menaggio on Lake Como", "overnight": "Menaggio", "text": "A transfer from Milan to the Grand Hotel Victoria on the lake. The evening is a welcome dinner with the group." },
+    { "day": 2, "title": "A day on fashionable Lake Como", "overnight": "Menaggio", "text": "A private boat across the lake to Bellagio, and a visit to Villa del Balbianello and its terraced gardens. The afternoon is yours on the waterfront." },
+    { "day": 3, "title": "A wine-pairing lunch and arrival in Venice", "overnight": "Venice", "text": "East across Lombardy and the Veneto with a wine-pairing lunch on the way. Arrive at the Hotel Gabrielli, on the waterfront near St Mark's." },
+    { "day": 4, "title": "A day well spent in Venice", "overnight": "Venice", "text": "A guided morning in St Mark's and the lanes behind it, then a gondola and a free afternoon." },
+    { "day": 5, "title": "By high-speed rail to Renaissance Florence", "overnight": "Florence", "text": "The train to Florence in under two and a half hours. An art historian's lecture sets up the next day's museums." },
+    { "day": 6, "title": "Treasures of the Uffizi Gallery", "overnight": "Florence", "text": "Privately guided visits to the Uffizi and the Galleria dell'Accademia, Michelangelo's David included." },
+    { "day": 7, "title": "Through Tuscany via medieval Siena", "overnight": "San Casciano dei Bagni", "text": "South through the Chianti hills with a stop in Siena, then on to Fonteverde, a spa hotel above the Tuscan countryside." },
+    { "day": 8, "title": "A taste of the Tuscan countryside", "overnight": "San Casciano dei Bagni", "text": "A day in the hills: a tasting, a village, the thermal pools in the afternoon." },
+    { "day": 9, "title": "The treasures of Imperial Rome", "overnight": "Rome", "text": "On to Rome and The St. Regis. A guided afternoon among the Forum and the Colosseum." },
+    { "day": 10, "title": "Impressive Vatican wonders", "overnight": "Rome", "text": "A privately guided visit to the Vatican Museums and the Sistine Chapel. A farewell dinner closes the tour." },
+    { "day": 11, "title": "Arrivederci, Roma", "overnight": "", "text": "Transfer to the airport, or stay on; I can add nights in Rome or a few days on the Amalfi coast." }
+  ]
+}

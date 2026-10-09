@@ -84,3 +84,22 @@ test.describe( 'theme chrome', () => {
     await expect( page.locator( '#ot-drawer' ) ).toBeVisible();
   } );
 } );
+
+/**
+ * The privacy page (patterns/privacy-policy.php; SEO audit 2026-10-08, B5):
+ * seeded as a page, one H1, question-form headings, and the footer's legal
+ * row links it once it is published, which in CI it is.
+ */
+test.describe( '/privacy-policy/', () => {
+  test( 'renders, with one H1, and the footer links it from every page', async ( { page } ) => {
+    const response = await page.goto( '/privacy-policy/', { waitUntil: 'domcontentloaded' } );
+    expect( response?.status() ).toBe( 200 );
+    await expect( page.locator( 'h1' ) ).toHaveCount( 1 );
+    await expect( page.locator( 'h1' ) ).toHaveText( 'Privacy' );
+    await expect( page.locator( '.ot-legal__body h2' ).first() ).toHaveText( /\?$/ );
+    await expect( page.locator( '.ot-legal__updated time' ) ).toHaveAttribute( 'datetime', /^\d{4}-\d{2}-\d{2}$/ );
+
+    await page.goto( '/', { waitUntil: 'domcontentloaded' } );
+    await expect( page.locator( 'footer .ot-footer__legal a[href$="/privacy-policy/"]' ) ).toHaveText( 'Privacy' );
+  } );
+} );

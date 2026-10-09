@@ -72,6 +72,18 @@ test.describe( 'destination template (Italy)', () => {
     await context.close();
   } );
 
+  test( 'From the Journal: the posts tagged italy, as cards, newest first, with a link to the index', async ( { page } ) => {
+    await page.goto( '/destinations/italy/', { waitUntil: 'domcontentloaded' } );
+    const block = page.locator( '.ot-dest-journal' );
+    await expect( block ).toHaveCount( 1 );
+    await expect( block.locator( '.ot-section-heading__title' ) ).toHaveText( 'Notes on Italy, written after going.' );
+    // Both CI posts are tagged italy (tests/fixtures/ci-seed.php).
+    await expect( block.locator( '.ot-card-journal' ) ).toHaveCount( 2 );
+    // CI's permalinks have no /journal/ base; the slug is what matters.
+    await expect( block.locator( '.ot-card-journal__link' ).first() ).toHaveAttribute( 'href', /\/ci-[a-z-]+\/$/ );
+    await expect( block.locator( '.ot-grid__foot a' ) ).toHaveAttribute( 'href', /\/journal\/$/ );
+  } );
+
   test( 'schema: TouristDestination and FAQPage with six questions, breadcrumb through Destinations', async ( { page } ) => {
     await page.goto( '/destinations/italy/', { waitUntil: 'domcontentloaded' } );
     const graphs = await page.locator( 'script[type="application/ld+json"]' ).allInnerTexts();
@@ -101,6 +113,8 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
     await expect( page.locator( '.ot-months__month.is-best' ) ).toHaveCount( 4 );
     await expect( page.locator( '.ot-faq__item' ) ).toHaveCount( 6 );
     await expect( page.locator( '.ot-dest-ship a[href*="cruiseoomph.com"]' ) ).toHaveAttribute( 'href', /region=Mediterranean/ );
+    // No post is tagged greece, so the Journal block stays off the page.
+    await expect( page.locator( '.ot-dest-journal' ) ).toHaveCount( 0 );
 
     const text = await page.locator( 'main' ).innerText();
     expect( text ).not.toMatch( /\[[A-Z]|\$X,XXX/ );
@@ -120,6 +134,24 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
 } );
 
 test.describe( 'all destinations (index)', () => {
+  test( 'has a lead under the H1 and an intro paragraph under every group heading', async ( { page } ) => {
+    await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
+    await expect( page.locator( '.ot-dest-hero__lead' ) ).toHaveText( /Eleven places/ );
+    const headings = await page.locator( '.ot-dest-index__heading' ).count();
+    expect( headings ).toBeGreaterThan( 0 );
+    await expect( page.locator( '.ot-dest-index__intro' ) ).toHaveCount( headings );
+  } );
+
+  test( 'schema: a breadcrumb through Home and Destinations, like the records under it', async ( { page } ) => {
+    await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
+    const nodes = await page.locator( 'script[type="application/ld+json"]' ).evaluateAll( ( els ) =>
+      els.flatMap( ( el ) => { const j = JSON.parse( el.textContent || '{}' ); return j[ '@graph' ] || [ j ]; } )
+    );
+    const crumbs = nodes.find( ( n ) => n[ '@type' ] === 'BreadcrumbList' );
+    expect( crumbs, 'no BreadcrumbList node' ).toBeTruthy();
+    expect( crumbs.itemListElement.map( ( i: { name: string } ) => i.name ) ).toEqual( [ 'Home', 'Destinations' ] );
+  } );
+
   test( 'lists published records only, under their group heading', async ( { page } ) => {
     const response = await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
     expect( response?.status() ).toBe( 200 );
