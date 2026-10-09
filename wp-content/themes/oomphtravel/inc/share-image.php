@@ -92,3 +92,45 @@ function oomphtravel_share_image_fallback( $images ): void {
 }
 add_action( 'rank_math/opengraph/facebook/add_additional_images', 'oomphtravel_share_image_fallback' );
 add_action( 'rank_math/opengraph/twitter/add_additional_images', 'oomphtravel_share_image_fallback' );
+
+/**
+ * The net under the nets. On staging (theme 0.10.12) the home page, the
+ * ways pages and About still printed no og:image: Rank Math reached
+ * neither the add_additional_images action nor the image filter on a page
+ * that gave it no image. So the head is buffered while it is written, and
+ * when nothing in it names og:image the theme appends its own og:image and
+ * twitter:image. A head that already carries one is echoed untouched.
+ */
+function oomphtravel_share_image_head_start(): void {
+	if ( is_admin() || is_feed() ) {
+		return;
+	}
+	$GLOBALS['oomphtravel_share_ob_level'] = ob_get_level();
+	ob_start();
+}
+add_action( 'wp_head', 'oomphtravel_share_image_head_start', 0 );
+
+function oomphtravel_share_image_head_end(): void {
+	if ( ! isset( $GLOBALS['oomphtravel_share_ob_level'] ) ) {
+		return;
+	}
+	$level = (int) $GLOBALS['oomphtravel_share_ob_level'];
+	unset( $GLOBALS['oomphtravel_share_ob_level'] );
+	if ( ob_get_level() !== $level + 1 ) {
+		// Something else opened a buffer inside wp_head and left it open;
+		// leave every buffer alone and let PHP flush them in order.
+		return;
+	}
+	$html = (string) ob_get_clean();
+	if ( false === stripos( $html, 'og:image' ) ) {
+		$url   = oomphtravel_share_image( '' );
+		$html .= sprintf(
+			'<meta property="og:image" content="%1$s">' . "
+" . '<meta name="twitter:image" content="%1$s">' . "
+",
+			esc_url( $url )
+		);
+	}
+	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the head as the other hooks wrote it, plus two escaped tags.
+}
+add_action( 'wp_head', 'oomphtravel_share_image_head_end', PHP_INT_MAX );
