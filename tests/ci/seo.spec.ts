@@ -78,3 +78,22 @@ test.describe( 'organization and advisor schema', () => {
     expect( person.knowsAbout ).not.toContain( 'Luxury cruising' );
   } );
 } );
+
+/**
+ * The share image (inc/share-image.php): every page carries og:image and
+ * twitter:image. Rank Math is not installed in CI, so these are the theme's
+ * own tags; on the site they only appear when Rank Math printed none.
+ */
+test.describe( 'share image', () => {
+  for ( const [ path, expected ] of [
+    [ '/', /hero-varenna-1280\.webp$/ ],
+    [ '/about/', /share-varenna-1200x630\.jpg$/ ],
+    [ '/custom-journeys/', /\.webp$/ ],
+  ] as const ) {
+    test( `${ path } has og:image and twitter:image`, async ( { page } ) => {
+      await page.goto( path, { waitUntil: 'domcontentloaded' } );
+      await expect( page.locator( 'meta[property="og:image"]' ) ).toHaveAttribute( 'content', expected );
+      await expect( page.locator( 'meta[name="twitter:image"]' ) ).toHaveAttribute( 'content', expected );
+    } );
+  }
+} );

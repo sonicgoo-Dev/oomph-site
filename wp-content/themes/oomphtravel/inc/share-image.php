@@ -16,15 +16,11 @@
  * photograph everywhere else. An image Rank Math found on the page (the
  * record's field, the featured image, an image in the content) is kept.
  *
- * Two hooks, because Rank Math's no-image path is conditional. Its
- * set_images() runs the add_additional_images action before it looks at
- * the default image setting; then, only when that setting is empty, it
- * calls add_image() with nothing so the {network}/image filter can
- * supply a URL. On this site the setting still held a deleted cruise-era
- * attachment, so the filter never ran and About, Client stories and the
- * rest kept shipping without an image (seen on staging, 2026-10-08). The
- * action adds the fallback whenever nothing was found on the page, ahead
- * of that setting; the filter stays as a second net.
+ * Rank Math reaches its image filter only when it adds an image; on a page
+ * that gives it none it adds nothing and calls nothing (staging, theme
+ * 0.10.12). So the filter records whether an image was added, and a late
+ * wp_head hook prints the theme's own tags when none was. Without Rank
+ * Math (CI) the same hook prints them on every page.
  *
  * @package OomphTravel
  */
@@ -63,32 +59,55 @@ function oomphtravel_share_image_url(): string {
  * site-wide fallback is a JPEG cut of the Varenna photograph at the
  * 1200×630 the networks ask for.
  *
+ * Rank Math runs this filter once for every image it adds, so it doubles
+ * as the record of whether it added any: oomphtravel_share_image_tags()
+ * prints the theme's own tags at the end of the head when it did not.
+ *
  * @param string $image The URL Rank Math has, '' when none.
  */
 function oomphtravel_share_image( $image ): string {
 	$image = (string) $image;
 	if ( '' !== trim( $image ) ) {
+		oomphtravel_share_image_seen( true );
 		return $image;
 	}
 	$url = oomphtravel_share_image_url();
-	return '' !== $url ? $url : OOMPHTRAVEL_THEME_URI . 'assets/img/share-varenna-1200x630.jpg';
+	$url = '' !== $url ? $url : OOMPHTRAVEL_THEME_URI . 'assets/img/share-varenna-1200x630.jpg';
+	oomphtravel_share_image_seen( true );
+	return $url;
 }
 add_filter( 'rank_math/opengraph/facebook/image', 'oomphtravel_share_image' );
 add_filter( 'rank_math/opengraph/twitter/image', 'oomphtravel_share_image' );
 
-/**
- * Add the fallback to Rank Math's image set when the page gave it none.
- *
- * @param object $images Rank Math's OpenGraph Image object for the network.
- */
-function oomphtravel_share_image_fallback( $images ): void {
-	if ( ! is_object( $images ) || ! method_exists( $images, 'has_images' ) || ! method_exists( $images, 'add_image' ) ) {
-		return;
+/** Whether Rank Math has added a share image on this request. */
+function oomphtravel_share_image_seen( ?bool $set = null ): bool {
+	static $seen = false;
+	if ( null !== $set ) {
+		$seen = $set;
 	}
-	if ( $images->has_images() ) {
-		return;
-	}
-	$images->add_image( oomphtravel_share_image( '' ) );
+	return $seen;
 }
-add_action( 'rank_math/opengraph/facebook/add_additional_images', 'oomphtravel_share_image_fallback' );
-add_action( 'rank_math/opengraph/twitter/add_additional_images', 'oomphtravel_share_image_fallback' );
+
+/**
+ * The theme's own og:image and twitter:image, printed at the end of the
+ * head when nothing else added one.
+ *
+ * On a page that gives Rank Math no image it reaches neither its image
+ * filter nor its add_additional_images action (staging, theme 0.10.12: the
+ * home page, the ways pages and About all went out without one), and
+ * without Rank Math (CI) nobody prints the tags at all. So the filter above
+ * records whether an image was added, and this prints the fallback when
+ * none was.
+ */
+function oomphtravel_share_image_tags(): void {
+	if ( is_admin() || is_feed() || oomphtravel_share_image_seen() ) {
+		return;
+	}
+	$url = oomphtravel_share_image_url();
+	$url = '' !== $url ? $url : OOMPHTRAVEL_THEME_URI . 'assets/img/share-varenna-1200x630.jpg';
+	printf(
+		'<meta property="og:image" content="%1$s">' . "\n" . '<meta name="twitter:image" content="%1$s">' . "\n",
+		esc_url( $url )
+	);
+}
+add_action( 'wp_head', 'oomphtravel_share_image_tags', 999 );
