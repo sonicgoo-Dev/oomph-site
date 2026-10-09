@@ -1,7 +1,8 @@
-# Next session: the week after launch (runbook §4)
+# Next session: after the SEO audit (October 2026)
 
-> Rewritten 2026-09-15, after the launch. The launch-day handoff this file
-> used to hold is in git history (#126, #131, #133).
+> Rewritten 2026-09-15, after the launch; the 2026-10-08 section and the
+> Open list are current. The launch-day handoff this file used to hold is in
+> git history (#126, #131, #133).
 
 ## Where things stand
 
@@ -51,20 +52,84 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
   merge-commit PR, `-s ours`); every release PR this week was unmergeable
   until that was done.
 
+## 2026-10-08: the SEO audit and its first phase
+
+- **The audit** is `docs/seo-audit-2026-10.md` (#183): 17 of 41 sitemap
+  pages indexed and no journal post; titles, descriptions and schema still
+  reading as the cruise site; GA4 about 85% bots. Four phases; Phase 1 is
+  below, Phase 2 is the next session's work.
+- **Phase 1 shipped on `develop`** (theme 0.10.7 → 0.10.10, plugin 1.9.6 →
+  1.9.8), one PR each:
+  - #184 metadata and schema: destination and tour search titles and
+    descriptions come from code while Rank Math's fields are empty
+    (`inc/destination.php`, `inc/tours.php`); focus keywords, the About
+    and Client stories fields and the Journal wording fixes are applied by
+    `wp oomph seed pages --corrections-only`, which the production deploy
+    now runs; the Organization node describes the land business and
+    points at the real Facebook and Instagram; the Person node carries
+    both job titles and LinkedIn.
+  - #185 "From the Journal" on every destination page: the posts tagged or
+    categorised with the destination's slug, newest three.
+  - #186 share images: `og:image` and `twitter:image` for the home page,
+    the ways pages, destinations and the Journal index, with
+    `assets/img/share-varenna-1200x630.jpg` as the fallback
+    (`inc/share-image.php`).
+  - #187 two redirects, `/trip-quiz/` → `/start-planning/` and
+    `/cruise-travel-trends/` → `/travel-trends/` (Eric amended D02 for these
+    two on 2026-10-08; recorded in the PR and in `class-redirects.php`, not
+    in the decisions log), and the privacy page, `patterns/privacy-policy.php`
+    at `/privacy-policy/`. Off production the seed publishes WordPress's
+    own privacy draft under the title "Privacy"; on production Eric does.
+  - #188 breadcrumbs on `/destinations/` and `/tours/` and none on the home
+    page; the Client stories reviews sit on the one Organization node.
+- **Phase 2 began the same night:** #190 (theme 0.10.11) puts intros on
+  the `/destinations/` hub, four questions on every operator page
+  (`oomphtravel_operator_questions()` in `inc/tours.php`) and records
+  Tauck's Lake Como to Rome tour in `content/tours/` for the Add a tour
+  button.
+- **Performance (B3), what the numbers mean:** Lighthouse's 5 to 7 s LCP is
+  the simulated model counting every request made before first paint (the
+  Google tag and three fonts); observed LCP on the same runs was 1.4 to
+  2.3 s. The images are already WebP and sized. Worth doing, in order:
+  the Site Kit tag loading later, the italic Fraunces cut off the home
+  page's first paint, then critical CSS; measure after each.
+- **Rank Math, done and not done.** The title separator is now "|" (set in
+  wp-admin, 2026-10-08). The homepage title "Travel advisor for custom
+  trips & tours | Oomph Travel", its description and the focus keyword are
+  typed into the Home page's Rank Math snippet editor in Eric's Chrome and
+  **not saved**: live-site writes from this machine are refused by the
+  tooling, so Eric clicks Save on that tab, then Purge SG Cache. Still to
+  set: author sitemap off; IndexNow for destinations, tours and operators;
+  a default OpenGraph image (optional now that the theme sends one).
+  SiteGround's captcha blocked the connector all night.
+- **The audit's tooling notes** (connectors, the captcha, Lighthouse) are in
+  the audit's Appendix C.
+
 ## Open
 
-1. **Done 2026-09-15:** newsletter confirmation arrived from a fresh
+1. **Eric, after this release:** publish the privacy page (Pages → Drafts →
+   "Privacy Policy", title to "Privacy", Publish; or Add New with the slug
+   `privacy-policy`); the Rank Math settings above; request indexing for
+   the 24 addresses in the audit's Appendix A, ten a day; GA4's internal
+   traffic filter and key events; confirm the Google Business Profile.
+2. **Phase 2 (audit §plan):** performance (WebP heroes with `sizes`, card
+   and ticker image sizes, font preload order, SG Optimizer minify JS,
+   critical CSS); operator pages to 600–800 words; the Tauck tour page;
+   an intro on `/destinations/`; the multi-generational pillar; keep Site
+   Kit's tag off the Playwright runner; Kadence Blocks and the child theme
+   deleted (ask first).
+3. **Done 2026-09-15:** newsletter confirmation arrived from a fresh
    address; Clarity and GA4 Realtime show visits.
-2. **Week after (runbook §4):** delete Fluent Forms; delete the
+4. **Week after (runbook §4):** delete Fluent Forms; delete the
    `kadence-oomph-child` theme in wp-admin, then a PR removes it from the
    repo and from `deploy.yml`.
-3. **ACF Pro is still the live fields plugin.** Secure Custom Fields was
+5. **ACF Pro is still the live fields plugin.** Secure Custom Fields was
    never installed (checked 2026-09-15: `advanced-custom-fields-pro/` present,
    `secure-custom-fields/` absent). Keep ACF Pro until Eric chooses the swap
    in `docs/stage-4-fields-runbook.md`, staging first; only then cancel the
    licence.
-4. **Search Console, weekly for a month:** Pages → Not found (404) will list
+6. **Search Console, weekly for a month:** Pages → Not found (404) will list
    the old cruise addresses; that is expected (D02). Watch Core Web Vitals.
-5. **Eric's decisions still open:** operator logos (add or hide the slot);
+7. **Eric's decisions still open:** operator logos (add or hide the slot);
    the Hawaii Stays name. Kept by decision: the hidden cruise regions,
    trip styles and itinerary records; the Rank Math redirect duplicates.
