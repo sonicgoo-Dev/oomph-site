@@ -33,7 +33,8 @@ export const ROUTES: RouteFixture[] = [
   {
     path: '/',
     name: 'Home',
-    types: ['BreadcrumbList'],
+    // No BreadcrumbList: the home page is the root of every trail (#188).
+    types: [],
   },
   {
     path: '/destinations/',
