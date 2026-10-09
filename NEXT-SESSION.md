@@ -76,9 +76,11 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
   - #186 share images: `og:image` and `twitter:image` for the home page,
     the ways pages, destinations and the Journal index, with
     `assets/img/share-varenna-1200x630.jpg` as the fallback
-    (`inc/share-image.php`). #192 makes the fallback run ahead of Rank
-    Math's default-image setting, which names a deleted attachment and
-    had been swallowing it (About still had no image on staging).
+    (`inc/share-image.php`). Rank Math never reached the theme's hooks on
+    a page with no image (About, the home page and the ways pages still
+    had none on staging at 0.10.12, #192), so #194 buffers `wp_head` and
+    appends the theme's own `og:image` and `twitter:image` when the head
+    carries none.
   - #187 two redirects, `/trip-quiz/` → `/start-planning/` and
     `/cruise-travel-trends/` → `/travel-trends/` (Eric amended D02 for these
     two on 2026-10-08; recorded in the PR and in `class-redirects.php`, not
@@ -87,8 +89,8 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
     own privacy draft under the title "Privacy"; on production Eric does.
   - #188 breadcrumbs on `/destinations/` and `/tours/` and none on the home
     page; the Client stories reviews sit on the one Organization node.
-- **Phase 2 began the same night:** #190 (theme 0.10.11; 0.10.13 after
-  #192 and #193) puts intros on
+- **Phase 2 began the same night:** #190 (theme 0.10.11; 0.10.14 after
+  #192, #193 and #194) puts intros on
   the `/destinations/` hub, four questions on every operator page
   (`oomphtravel_operator_questions()` in `inc/tours.php`) and records
   Tauck's Lake Como to Rome tour in `content/tours/` for the Add a tour
