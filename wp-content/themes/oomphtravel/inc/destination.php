@@ -286,16 +286,22 @@ add_action( 'wp_head', 'oomphtravel_preload_destination_hero', 2 );
  */
 function oomphtravel_destination_groups(): array {
 	$groups = array(
+		// Each group carries a short intro (SEO audit 2026-10-08, B4: the hub
+		// was 107 words, which search engines file as thin). Still one
+		// paragraph each; the cards do the rest.
 		array(
 			'heading' => __( 'Europe, planned region by region', 'oomphtravel' ),
+			'intro'   => __( 'Europe is where most of my custom journeys go, and the rule is the same in every country: fewer places, more nights. Italy gets a region at a time, Britain and Ireland a county or two, France is Paris plus one region, Spain is built around its late clock, and Portugal, Greece and Croatia each have their own page because each is planned differently. Choose the country, and its page says how I would spend ten days there, which months suit it and where to stay.', 'oomphtravel' ),
 			'slugs'   => array( 'italy', 'uk-ireland', 'france', 'spain', 'portugal', 'greece', 'croatia' ),
 		),
 		array(
 			'heading' => __( 'Sun and sea', 'oomphtravel' ),
+			'intro'   => __( 'Hawaii, Mexico and the Caribbean are resort and villa trips, and the planning turns on one decision: which island or coast fits the way you rest. After that comes the flight that gets you there without a second night in transit, and a property whose room categories I know. These pages say which island suits couples, families and three generations travelling together, and what the rate buys.', 'oomphtravel' ),
 			'slugs'   => array( 'hawaii', 'mexico', 'caribbean' ),
 		),
 		array(
 			'heading' => __( 'Guided, through the operators I trust', 'oomphtravel' ),
+			'intro'   => __( 'A first safari is the trip with the most moving parts, so I plan it through an operator whose camps, vehicles and guides are its own. The page covers the countries, the seasons the animals move, and the difference between an escorted group and a private departure.', 'oomphtravel' ),
 			'slugs'   => array( 'africa' ),
 		),
 	);
@@ -310,7 +316,7 @@ function oomphtravel_destination_groups(): array {
 			}
 		}
 		if ( $cards ) {
-			$out[] = array( 'heading' => $group['heading'], 'cards' => $cards );
+			$out[] = array( 'heading' => $group['heading'], 'intro' => (string) ( $group['intro'] ?? '' ), 'cards' => $cards );
 		}
 	}
 	return $out;
