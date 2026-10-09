@@ -131,7 +131,7 @@ $ci_posts = array(
 	),
 	array(
 		'post_name'    => 'ci-what-to-pack-for-a-cruise-week',
-		'post_title'   => 'What I pack for a week on a ship',
+		'post_title'   => 'What I pack for a week on a ship to Greece',
 		'post_author'  => $ci_amy_id,
 		'post_excerpt' => 'One carry-on, one checked bag, and the four things that are never in either of them.',
 		'post_content' => '<p>Eric packs the night before. I pack the week before, and I have never once needed the shop on deck five.</p>',

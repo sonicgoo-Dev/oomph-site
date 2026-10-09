@@ -113,8 +113,10 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
     await expect( page.locator( '.ot-months__month.is-best' ) ).toHaveCount( 4 );
     await expect( page.locator( '.ot-faq__item' ) ).toHaveCount( 6 );
     await expect( page.locator( '.ot-dest-ship a[href*="cruiseoomph.com"]' ) ).toHaveAttribute( 'href', /region=Mediterranean/ );
-    // No post is tagged greece, so the Journal block stays off the page.
-    await expect( page.locator( '.ot-dest-journal' ) ).toHaveCount( 0 );
+    // No post is tagged greece, so the Journal block falls back to titles
+    // that name the place (#193): the fixture's "...on a ship to Greece".
+    await expect( page.locator( '.ot-dest-journal .ot-card-journal' ) ).toHaveCount( 1 );
+    await expect( page.locator( '.ot-dest-journal .ot-card-journal' ).first() ).toContainText( 'What I pack' );
 
     const text = await page.locator( 'main' ).innerText();
     expect( text ).not.toMatch( /\[[A-Z]|\$X,XXX/ );
