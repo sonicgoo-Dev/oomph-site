@@ -142,6 +142,16 @@ test.describe( 'all destinations (index)', () => {
     await expect( page.locator( '.ot-dest-index__intro' ) ).toHaveCount( headings );
   } );
 
+  test( 'schema: a breadcrumb through Home and Destinations, like the records under it', async ( { page } ) => {
+    await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
+    const nodes = await page.locator( 'script[type="application/ld+json"]' ).evaluateAll( ( els ) =>
+      els.flatMap( ( el ) => { const j = JSON.parse( el.textContent || '{}' ); return j[ '@graph' ] || [ j ]; } )
+    );
+    const crumbs = nodes.find( ( n ) => n[ '@type' ] === 'BreadcrumbList' );
+    expect( crumbs, 'no BreadcrumbList node' ).toBeTruthy();
+    expect( crumbs.itemListElement.map( ( i: { name: string } ) => i.name ) ).toEqual( [ 'Home', 'Destinations' ] );
+  } );
+
   test( 'lists published records only, under their group heading', async ( { page } ) => {
     const response = await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
     expect( response?.status() ).toBe( 200 );
