@@ -163,7 +163,58 @@ function oomphtravel_destination_posts( int $post_id, int $limit = 3 ): array {
 			),
 		)
 	);
-	return array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof WP_Post ) );
+	$posts = array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof WP_Post ) );
+	if ( $posts ) {
+		return $posts;
+	}
+
+	// No post is tagged or categorised with the place (the Journal's
+	// categories are topics: destinations, planning, resorts-villas, tours),
+	// so fall back to the posts whose title names it or a place in it.
+	$names = oomphtravel_destination_place_names()[ $slug ] ?? array();
+	if ( ! $names ) {
+		return array();
+	}
+	$pattern = '/(' . implode( '|', array_map( static fn( string $n ): string => preg_quote( $n, '/' ), $names ) ) . ')/iu';
+	$all     = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => 60, 'suppress_filters' => false ) );
+	$found   = array();
+	foreach ( $all as $p ) {
+		if ( $p instanceof WP_Post && preg_match( $pattern, (string) $p->post_title ) ) {
+			$found[] = $p;
+			if ( count( $found ) >= $limit ) {
+				break;
+			}
+		}
+	}
+	return $found;
+}
+
+/**
+ * The place names a post title can carry for each destination, for the
+ * title fallback in oomphtravel_destination_posts(). Filterable.
+ *
+ * @return array<string,string[]>
+ */
+function oomphtravel_destination_place_names(): array {
+	$names = array(
+		'italy'      => array( 'Italy', 'Italian', 'Rome', 'Florence', 'Venice', 'Tuscany', 'Puglia', 'Amalfi', 'Sicily', 'Lake Como', 'Milan', 'Naples' ),
+		'uk-ireland' => array( 'UK', 'United Kingdom', 'Britain', 'England', 'Scotland', 'Wales', 'Ireland', 'London', 'Cotswolds', 'Edinburgh', 'Dublin' ),
+		'france'     => array( 'France', 'French', 'Paris', 'Provence', 'Normandy', 'Dordogne', 'Loire', 'Burgundy', 'Bordeaux' ),
+		'spain'      => array( 'Spain', 'Spanish', 'Madrid', 'Barcelona', 'Seville', 'Andalusia', 'Basque' ),
+		'portugal'   => array( 'Portugal', 'Portuguese', 'Lisbon', 'Porto', 'Douro', 'Algarve' ),
+		'greece'     => array( 'Greece', 'Greek', 'Athens', 'Santorini', 'Crete', 'Mykonos', 'Corfu' ),
+		'croatia'    => array( 'Croatia', 'Croatian', 'Dubrovnik', 'Split', 'Hvar', 'Dalmatia', 'Adriatic' ),
+		'hawaii'     => array( 'Hawaii', 'Hawaiian', 'Maui', 'Kauai', 'Oahu', 'Big Island', 'Honolulu' ),
+		'mexico'     => array( 'Mexico', 'Mexican', 'Cabo', 'Los Cabos', 'Riviera Maya', 'Cancun', 'Cancún', 'Puerto Vallarta', 'Oaxaca' ),
+		'caribbean'  => array( 'Caribbean', 'Turks and Caicos', 'Turks & Caicos', 'St Lucia', 'St. Lucia', 'Barbados', 'Anguilla', 'Antigua', 'Jamaica', 'Bahamas' ),
+		'africa'     => array( 'Africa', 'African', 'safari', 'Kenya', 'Tanzania', 'Botswana', 'South Africa', 'Namibia', 'Rwanda', 'Serengeti' ),
+	);
+	/**
+	 * Filters the place names a post title can carry for each destination.
+	 *
+	 * @param array<string,string[]> $names Names by destination slug.
+	 */
+	return (array) apply_filters( 'oomphtravel_destination_place_names', $names );
 }
 
 /**
