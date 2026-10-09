@@ -116,6 +116,19 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
 - **The audit's tooling notes** (connectors, the captcha, Lighthouse) are in
   the audit's Appendix C.
 
+- **The live suite was red for two days, and it was the audit's doing.** The
+  10-08 crawl put this PC's home IP on SiteGround's all-requests challenge
+  (HTTP 202 on every path of prod, staging and cruiseoomph.com), and the
+  runner is this PC. The suite's warm-up took the challenge page's own
+  `<h1>` as proof the site had cleared, saved a cookie-less session, and
+  every test started walled. Fixed in #201 (judge clearance on the
+  `SG-Captcha` header and the page), #202 (browse as the test device; the
+  clearance is per user agent; log a self-check) and #203 (the Home route
+  no longer expects a BreadcrumbList, after #188). Staging run 37979848011:
+  40 passed. The nightly run uses **main's** specs, so it stays red until
+  the next release. Every curl or browser-pane request from this machine
+  counts against the runner; keep live checks in Eric's Chrome.
+
 ## Open
 
 1. **Eric, after this release:** publish the privacy page (Pages → Drafts →
