@@ -125,9 +125,7 @@ function oomphtravel_share_image_head_end(): void {
 	if ( false === stripos( $html, 'og:image' ) ) {
 		$url   = oomphtravel_share_image( '' );
 		$html .= sprintf(
-			'<meta property="og:image" content="%1$s">' . "
-" . '<meta name="twitter:image" content="%1$s">' . "
-",
+			'<meta property="og:image" content="%1$s">' . "\n" . '<meta name="twitter:image" content="%1$s">' . "\n",
 			esc_url( $url )
 		);
 	}
