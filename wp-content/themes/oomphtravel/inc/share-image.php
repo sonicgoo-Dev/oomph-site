@@ -13,8 +13,18 @@
  * This fills the gap from what the page already shows: the hero photograph
  * on the home page, the ways and a destination without a featured image,
  * the newest post's picture on the Journal index, and the Varenna
- * photograph everywhere else. An image Rank Math already found, or a
- * default Eric sets in its panel, is kept.
+ * photograph everywhere else. An image Rank Math found on the page (the
+ * record's field, the featured image, an image in the content) is kept.
+ *
+ * Two hooks, because Rank Math's no-image path is conditional. Its
+ * set_images() runs the add_additional_images action before it looks at
+ * the default image setting; then, only when that setting is empty, it
+ * calls add_image() with nothing so the {network}/image filter can
+ * supply a URL. On this site the setting still held a deleted cruise-era
+ * attachment, so the filter never ran and About, Client stories and the
+ * rest kept shipping without an image (seen on staging, 2026-10-08). The
+ * action adds the fallback whenever nothing was found on the page, ahead
+ * of that setting; the filter stays as a second net.
  *
  * @package OomphTravel
  */
@@ -65,3 +75,20 @@ function oomphtravel_share_image( $image ): string {
 }
 add_filter( 'rank_math/opengraph/facebook/image', 'oomphtravel_share_image' );
 add_filter( 'rank_math/opengraph/twitter/image', 'oomphtravel_share_image' );
+
+/**
+ * Add the fallback to Rank Math's image set when the page gave it none.
+ *
+ * @param object $images Rank Math's OpenGraph Image object for the network.
+ */
+function oomphtravel_share_image_fallback( $images ): void {
+	if ( ! is_object( $images ) || ! method_exists( $images, 'has_images' ) || ! method_exists( $images, 'add_image' ) ) {
+		return;
+	}
+	if ( $images->has_images() ) {
+		return;
+	}
+	$images->add_image( oomphtravel_share_image( '' ) );
+}
+add_action( 'rank_math/opengraph/facebook/add_additional_images', 'oomphtravel_share_image_fallback' );
+add_action( 'rank_math/opengraph/twitter/add_additional_images', 'oomphtravel_share_image_fallback' );
