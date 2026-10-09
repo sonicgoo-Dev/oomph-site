@@ -175,7 +175,7 @@ function oomphtravel_destination_posts( int $post_id, int $limit = 3 ): array {
 	if ( ! $names ) {
 		return array();
 	}
-	$pattern = '/(' . implode( '|', array_map( static fn( string $n ): string => preg_quote( $n, '/' ), $names ) ) . ')/iu';
+	$pattern = '/\b(' . implode( '|', array_map( static fn( string $n ): string => preg_quote( $n, '/' ), $names ) ) . ')\b/iu';
 	$all     = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => 60, 'suppress_filters' => false ) );
 	$found   = array();
 	foreach ( $all as $p ) {
