@@ -92,6 +92,7 @@ test.describe( 'share image', () => {
   ] as const ) {
     test( `${ path } has og:image and twitter:image`, async ( { page } ) => {
       await page.goto( path, { waitUntil: 'domcontentloaded' } );
+      console.log( 'HEAD-DEBUG ' + path + ' ' + ( await page.evaluate( () => document.head.innerHTML ) ).replace( /\s+/g, ' ' ).slice( 0, 6000 ) );
       await expect( page.locator( 'meta[property="og:image"]' ) ).toHaveAttribute( 'content', expected );
       await expect( page.locator( 'meta[name="twitter:image"]' ) ).toHaveAttribute( 'content', expected );
     } );
