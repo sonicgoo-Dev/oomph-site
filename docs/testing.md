@@ -65,6 +65,15 @@ datacenter IPs with an HTTP 202 challenge page. The live suite warms up once
 connection it runs in parallel. The e2e workflow (`e2e.yml`) therefore runs on
 the self-hosted runner on Eric's PC, not on GitHub's machines.
 
+A home IP can be challenged too, for every request, after a burst of
+non-browser traffic from it (the 2026-10-08 audit crawl did this; the nightly
+run was red for two days). A real browser clears it by running the
+proof-of-work on `/.well-known/sgcaptcha/`, and the warm-up waits for that
+round trip and confirms a clean 200 before saving the session — the
+challenge page has an `<h1>` of its own, so "an h1 appeared" is not proof.
+If the warm-up still reports `Could not get a clean 200`, the IP is on the
+visible-captcha fallback and only SiteGround support can clear it.
+
 ## Running locally
 
 ```bash
