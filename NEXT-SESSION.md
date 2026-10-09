@@ -76,11 +76,14 @@ Search Console: sitemap resubmitted; indexing requested for `/`,
   - #186 share images: `og:image` and `twitter:image` for the home page,
     the ways pages, destinations and the Journal index, with
     `assets/img/share-varenna-1200x630.jpg` as the fallback
-    (`inc/share-image.php`). Rank Math never reached the theme's hooks on
-    a page with no image (About, the home page and the ways pages still
-    had none on staging at 0.10.12, #192), so #194 buffers `wp_head` and
-    appends the theme's own `og:image` and `twitter:image` when the head
-    carries none.
+    (`inc/share-image.php`). Resolving #187's version conflict with the
+    branch's `functions.php` dropped the `require` for that file, so
+    nothing in it ran on staging from 0.10.10; #192 and most of #194
+    chased Rank Math before that was found. #194 restores the require and
+    makes the design stand without Rank Math: its image filter records
+    whether it added an image, and a late `wp_head` hook prints the
+    theme's own `og:image` and `twitter:image` when none was. Lesson, in
+    memory: resolve version conflicts on the version line only.
   - #187 two redirects, `/trip-quiz/` → `/start-planning/` and
     `/cruise-travel-trends/` → `/travel-trends/` (Eric amended D02 for these
     two on 2026-10-08; recorded in the PR and in `class-redirects.php`, not
