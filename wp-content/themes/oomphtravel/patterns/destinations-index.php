@@ -34,6 +34,7 @@ $ot_img    = OOMPHTRAVEL_THEME_URI . 'assets/img/';
 			<div class="ot-dest-hero__copy">
 				<?php echo oomphtravel_eyebrow( __( 'All destinations', 'oomphtravel' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 				<h1 class="ot-dest-hero__title"><?php esc_html_e( 'Where to', 'oomphtravel' ); ?></h1>
+				<p class="ot-dest-hero__lead"><?php esc_html_e( 'Eleven places, grouped by how I plan them. Each page gives the months that suit it, how long to give it, where to stay and what I would skip.', 'oomphtravel' ); ?></p>
 			</div>
 		</div>
 	</section>
@@ -43,6 +44,9 @@ $ot_img    = OOMPHTRAVEL_THEME_URI . 'assets/img/';
 	<section class="ot-band ot-dest-index__group">
 		<div class="ot-container">
 			<h2 class="ot-dest-index__heading"><?php echo esc_html( $ot_group['heading'] ); ?></h2>
+			<?php if ( '' !== $ot_group['intro'] ) : ?>
+				<p class="ot-dest-index__intro"><?php echo esc_html( $ot_group['intro'] ); ?></p>
+			<?php endif; ?>
 			<div class="ot-grid ot-grid--4 ot-grid--scroll">
 				<?php foreach ( $ot_group['cards'] as $ot_i => $ot_card ) : ?>
 					<?php echo oomphtravel_card_destination( $ot_card, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>

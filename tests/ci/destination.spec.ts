@@ -134,6 +134,14 @@ test.describe( 'destination template (Greece, seeded draft copy)', () => {
 } );
 
 test.describe( 'all destinations (index)', () => {
+  test( 'has a lead under the H1 and an intro paragraph under every group heading', async ( { page } ) => {
+    await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
+    await expect( page.locator( '.ot-dest-hero__lead' ) ).toHaveText( /Eleven places/ );
+    const headings = await page.locator( '.ot-dest-index__heading' ).count();
+    expect( headings ).toBeGreaterThan( 0 );
+    await expect( page.locator( '.ot-dest-index__intro' ) ).toHaveCount( headings );
+  } );
+
   test( 'schema: a breadcrumb through Home and Destinations, like the records under it', async ( { page } ) => {
     await page.goto( '/destinations/', { waitUntil: 'domcontentloaded' } );
     const nodes = await page.locator( 'script[type="application/ld+json"]' ).evaluateAll( ( els ) =>
