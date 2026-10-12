@@ -33,8 +33,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Inquiry {
 
-	/** Every enquiry is sent here (plan §6.15). Filterable, never a public setting. */
+	/** The address travelers see and reply to (plan §6.15). */
 	public const RECIPIENT = 'Hello@oomphtravel.com';
+
+	/**
+	 * Where the enquiry notice goes. Filterable, never a public setting.
+	 * Not Hello@ (2026-10-11): the site sends through Eric's own Gmail
+	 * (FluentSMTP, smtp.gmail.com as eric@), and Gmail files a message
+	 * from eric@ to his own Hello@ alias under Sent only, never the inbox,
+	 * so every notice since launch was sent but unseen. Sent to eric@
+	 * itself, it arrives in the inbox like the site's other notices.
+	 */
+	public const NOTIFY_TO = 'eric@oomphtravel.com';
 
 	/** The page the form lives on. */
 	public const PAGE_SLUG = 'start-planning';
@@ -578,7 +588,7 @@ final class Inquiry {
 	 * @param array<string,mixed> $d Clean fields.
 	 */
 	private static function notify( int $post_id, array $d ): bool {
-		$to        = (string) apply_filters( 'oomph_inquiry_recipient', self::RECIPIENT );
+		$to        = (string) apply_filters( 'oomph_inquiry_recipient', self::NOTIFY_TO );
 		$reference = self::reference( $post_id );
 		$about     = self::about( $d );
 
