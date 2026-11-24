@@ -53,6 +53,12 @@ jobs:
       name: ${{ inputs.environment }}
 
     steps:
+      - name: Checkout the purge script
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github/scripts
+
       - name: Determine target environment
         id: target
         run: |
@@ -105,7 +111,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
-            "cd ${{ steps.target.outputs.path }}/../../.. && ( wp sg purge || echo 'SG Optimizer not active — skipping wp sg purge' ) && ( wp cache flush || echo 'wp cache flush failed — skipping' )"
+            "bash -s -- '${{ steps.target.outputs.path }}/../../..'" < .github/scripts/purge-caches.sh
 
       - name: Clean up SSH key
         if: always()
