@@ -152,13 +152,13 @@ jobs:
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
             "cd ${{ steps.target.outputs.path }}/../../.. && wp oomph seed destinations --corrections-only && wp oomph seed pages --corrections-only"
 
-      - name: Purge SiteGround cache (WP-CLI via SSH)
+      - name: Clear saved pages (Breeze + server cache on Cloudways; SG purge on staging)
         continue-on-error: true
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ steps.target.outputs.port }} \
             -o ControlMaster=auto -o ControlPath=~/.ssh/cm/%r@%h-%p -o ControlPersist=180 \
             ${{ steps.target.outputs.user }}@${{ steps.target.outputs.host }} \
-            "cd ${{ steps.target.outputs.path }}/../../.. && ( wp sg purge || echo 'SG Optimizer not active — skipping wp sg purge' ) && ( wp cache flush || echo 'wp cache flush failed — skipping' )"
+            "bash -s -- '${{ steps.target.outputs.path }}/../../..'" < .github/scripts/purge-caches.sh
 
       - name: Clean up SSH key
         if: always()
@@ -180,15 +180,22 @@ jobs:
 # ─────────────────────────────────────────────────────────────────────────
 # Required GitHub repository secrets (Settings → Secrets and variables → Actions):
 #
-#   SG_SSH_PRIVATE_KEY     The private half of the deploy keypair.
-#                          Add the public half to SiteGround Site Tools →
-#                          Devs → SSH Keys Manager.
+#   SG_SSH_PRIVATE_KEY     The private half of the deploy keypair (see below).
 #
-#   SG_PROD_HOST           Production SSH host (e.g., us31.siteground.us)
-#   SG_PROD_USER           Production SSH username
-#   SG_PROD_PORT           Production SSH port (usually 18765)
-#   SG_PROD_THEME_PATH     Absolute path to child theme on prod
-#                          (e.g., /home/customer/www/oomphtravel.com/public_html/wp-content/themes/kadence-oomph-child)
+#   Production has been on Cloudways since 2026-11-22 (the secret names keep
+#   their SG_ prefix so nothing else had to change):
+#   SG_PROD_HOST           147.182.242.250 (the Cloudways server)
+#   SG_PROD_USER           oomphdeploy — the OomphTravel application's own SSH
+#                          user; it sees this one application only. Needs
+#                          "SSH Shell Access" on in Cloudways → the application
+#                          → Application Settings.
+#   SG_PROD_PORT           22
+#   SG_PROD_THEME_PATH     /home/1690792.cloudwaysapps.com/gttjkjstkm/public_html/wp-content/themes/kadence-oomph-child
+#
+#   SG_SSH_PRIVATE_KEY is the key "github-deploy-oomphtravel" (private half:
+#   ~/.ssh/oomphtravel-github-deploy on Eric's Mac). Its public half is on
+#   oomphdeploy in Cloudways AND in SiteGround's SSH Keys Manager, because
+#   staging below still lives on SiteGround and uses the same key.
 #
 #   SG_STAGE_HOST          Staging SSH host
 #   SG_STAGE_USER          Staging SSH username
